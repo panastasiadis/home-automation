@@ -4,7 +4,7 @@ class MqttHandler {
   constructor() {
     this.mqttClient = null;
     // this.host = "mqtt://broker.mqttdashboard.com";
-    this.host = "mqtt://172.25.105.187";
+    this.host = "mqtt://172.24.14.116";
     this.username = "YOUR_USER"; // mqtt credentials if these are needed to connect
     this.password = "YOUR_PASSWORD";
     this.clientId = "test-client";

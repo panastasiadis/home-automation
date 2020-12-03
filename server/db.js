@@ -12,7 +12,6 @@ MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 
     console.log("MongoDB: Connected to Database");
     db = client.db("my-home-auto-db");
-    db.collection('devices');
     mongodb = db;
     callbackFunc();
   })

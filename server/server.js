@@ -9,14 +9,11 @@ const db = require("./db");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-// app.use(express.json());
-// app.use(urlencoded({ extended: true }))
-// app.use(express.static(path.join(__dirname, "build")));
 
 db.connectDb(() => {
   // server listens to 3000
   const server = app.listen(3000, function () {
-    console.log("app running on port.", server.address().port);
+    console.log("App: Running on port ", server.address().port);
 
     const broker = new aedesBroker();
     //access the mqtt broker
@@ -30,6 +27,11 @@ db.connectDb(() => {
       broker.publishMessage(topic, msg);
       res.status(200).send("Message sent to mqtt");
     });
+
+    app.get("/measurements", function (req, res) {
+      res.send("hello world!");
+      console.log("ho");
+    });
   });
 });
 
@@ -38,12 +40,6 @@ app.get("/", function (req, res) {
   console.log("ho");
 });
 
-app.post("/rooms", (req, res) => {
-  roomsCollection.insertOne(req.body).then((result) => {
-    // console.log(result);
-    res.redirect("/");
-  });
-});
 
 app.get("/devices", function (req, res) {
   // res.send("hello world!");

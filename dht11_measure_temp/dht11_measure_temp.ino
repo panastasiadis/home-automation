@@ -7,7 +7,7 @@
 #define DHTTYPE DHT11 // DHT 11
 #define DHT_DPIN D1
 #define BULB_DPIN D3
-#define PUBLISH_TIME_PERIOD 5000
+#define PUBLISH_TIME_PERIOD 30000
 
 // Update these with values suitable for your network.
 
@@ -16,15 +16,15 @@ const char *password = "YOUR_PASSWORD";
 const char *mqtt_server = "192.168.1.66";
 
 const char *topicTemperature =
-	"home/living-room/temperature"; // Topic temperature
-const char *topicHumidity = "home/livingroom/humidity"; // Topic humidity
-const char *topicLightBulb = "home/livingroom/light-bulb";
-const char *topicLightBulbState = "home/living-room/lightbulb/state";
+	"livingroom/lr-NodeMCU/temperature"; // Topic temperature
+const char *topicHumidity = "livingroom/lr-NodeMCU/humidity"; // Topic humidity
+const char *topicLightBulb = "livingroom/lr-NodeMCU/lightbulb";
+const char *topicLightBulbState = "livingroom/lr-NodeMCU/lightbulb/state";
 
 const char *clientID =
-	"lr-sensor-NodeMCU"; // The client id identifies the NodeMCU device.
+	"lr-NodeMCU"; // The client id identifies the NodeMCU device.
 
-const char *willTopic = "devices/livingroom/lr-sensor-NodeMCU"; // Topic Status
+const char *willTopic = "devices/livingroom/lr-NodeMCU"; // Topic Status
 const char *willMessage = "offline"; // 0 - Disconnecetd
 char buffer[256];
 
@@ -143,9 +143,12 @@ void setup(void)
 
 	// doc["room"] = "living-room";
 	JsonArray pub_protocols = doc.createNestedArray("pub_protocols");
-	pub_protocols.add("temperature");
-	pub_protocols.add("humidity");
-	pub_protocols.add("light-bulb/state");
+	// pub_protocols.add("temperature");
+	// pub_protocols.add("humidity");
+	// pub_protocols.add("lightbulb/state");
+	pub_protocols.add(topicTemperature);
+	pub_protocols.add(topicHumidity);
+	pub_protocols.add(topicLightBulbState);
 
 	// JsonArray sub_protocols = doc.createNestedArray("sub_protocols");
 	// sub_protocols.add("light-bulb");
