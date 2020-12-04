@@ -15,9 +15,10 @@ const char *ssid = "YOUR_SSID";
 const char *password = "YOUR_PASSWORD";
 const char *mqtt_server = "192.168.1.66";
 
-const char *topicTemperature =
-	"livingroom/lr-NodeMCU/temperature"; // Topic temperature
-const char *topicHumidity = "livingroom/lr-NodeMCU/humidity"; // Topic humidity
+// const char *topicTemperature =
+// 	"livingroom/lr-NodeMCU/temperature"; // Topic temperature
+// const char *topicHumidity = "livingroom/lr-NodeMCU/humidity"; // Topic humidity
+const char *topicTemperHumid = "livingroom/lr-NodeMCU/temperature-humidity";
 const char *topicLightBulb = "livingroom/lr-NodeMCU/lightbulb";
 const char *topicLightBulbState = "livingroom/lr-NodeMCU/lightbulb/state";
 
@@ -141,17 +142,11 @@ void setup(void)
 
 	StaticJsonDocument<256> doc;
 
-	// doc["room"] = "living-room";
 	JsonArray pub_protocols = doc.createNestedArray("pub_protocols");
-	// pub_protocols.add("temperature");
-	// pub_protocols.add("humidity");
-	// pub_protocols.add("lightbulb/state");
-	pub_protocols.add(topicTemperature);
-	pub_protocols.add(topicHumidity);
-	pub_protocols.add(topicLightBulbState);
 
-	// JsonArray sub_protocols = doc.createNestedArray("sub_protocols");
-	// sub_protocols.add("light-bulb");
+	// pub_protocols.add(topicTemperature);
+	pub_protocols.add(topicTemperHumid);
+	pub_protocols.add(topicLightBulbState);
 
 	serializeJson(doc, buffer);
 
@@ -189,12 +184,18 @@ void loop()
 
 		char temp[16];
 		dtostrf(t, 3, 2, temp); // To convert float into char
-		client.publish(topicTemperature,
-			       temp); // Publishing temperature
-
+		
 		char humi[16];
 		dtostrf(h, 3, 2, humi); // To convert float into char
-		client.publish(topicHumidity, humi); // Publishing humidity
+
+		char temperHumid[32];
+		strcpy(temperHumid, temp);
+		strcat(temperHumid, "-");
+		strcat(temperHumid, humi);
+		client.publish(topicTemperHumid,
+			       temperHumid); // Publishing temperature
+
+		// client.publish(topicHumidity, humi); // Publishing humidity
 
 		if (isnan(temp[16]) ||
 		    isnan(humi[16])) { // Check if there DHT is working

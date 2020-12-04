@@ -4,10 +4,12 @@ const db = require("./db");
 const Sensor = require("./sensor");
 const port = 1883;
 
-let activeSensors = [];
 
 class MqttBroker {
-  constructor() {}
+  constructor() {
+    this.activeSensors = [];
+
+  }
 
   connect() {
     server.listen(port, function () {
@@ -24,7 +26,7 @@ class MqttBroker {
 
     aedes.on("clientDisconnect", function (client) {
       let index;
-      const arrayEl = activeSensors.find((element, idx) => {
+      const arrayEl = this.activeSensors.find((element, idx) => {
         if (element.client_id === client.id) {
           index = idx;
           return element;
@@ -36,30 +38,7 @@ class MqttBroker {
         aedes.unsubscribe(sub, deliverFunc);
       }
 
-      activeSensors.splice(index, 1);
-
-      // const query = {
-      //   client_id: client.id,
-      // };
-
-      // const d = new Date();
-      // const update = {
-      //   $set: {
-      //     last_time_active: d.toLocaleString()
-      //   },
-      // };
-
-      // db.getDb()
-      //   .collection("devices")
-      //   .updateOne(query, update)
-      //   .then((result) => {
-      //     console.log("Mongo DB: " + client.id + " was last time active on " + d.toLocaleString());
-      //   })
-      //   .catch((err) => {
-      //     if (err) {
-      //       throw err;
-      //     }
-      //   });
+      this.activeSensors.splice(index, 1);
 
       console.log(
         "Broker: Client Disconnected: \x1b[31m" +
@@ -72,7 +51,7 @@ class MqttBroker {
     aedes.on("subscribe", (subscriptions, client) => {
       const subs = subscriptions.map((s) => s.topic);
 
-      const device = activeSensors.find((element) => {
+      const device = this.activeSensors.find((element) => {
         if (element.client_id === client.id) {
           return element;
         }
@@ -82,15 +61,10 @@ class MqttBroker {
         device.sub_protocols = subs;
       }
 
-      // db.getDb()
-      //   .collection("devices")
-      //   .updateOne({ client_id: client.id }, { $set: { sub_protocols: subs } })
-      //   .then((result) => {
-      //     console.log("MongoDB: Subs of " + client.id + " were stored to DB" );
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
+      for (const subTopic of subs) {
+        const sensor = new Sensor(subTopic);
+        db.storeSensorData(sensor);
+      }
 
       console.log(
         "Broker: MQTT client \x1b[32m" +
@@ -98,8 +72,6 @@ class MqttBroker {
           "\x1b[0m subscribed to topics: " +
           subscriptions.map((s) => s.topic).join(",")
       );
-
-      // sensorNode.subs = subscriptions.map((s) => s.topic);
     });
 
     aedes.on("unsubscribe", function (subscriptions, client) {
@@ -126,50 +98,16 @@ class MqttBroker {
         let sensorNodeEntry = JSON.parse(msg);
         // console.log(sensorNodeEntry);
 
-        //add the topic prefix to the topic endpoints
-        // sensorNodeEntry.pub_protocols.forEach((element, idx, array) => {
-        //   array[idx] = "home/" + roomFromTopic + "/" + element;
-        // });
-
         sensorNodeEntry.client_id = idFromTopic;
         sensorNodeEntry.room_name = roomFromTopic;
         sensorNodeEntry.last_time_active = "now";
-        activeSensors.push(sensorNodeEntry);
+        this.activeSensors.push(sensorNodeEntry);
 
         const pub_protocols = sensorNodeEntry.pub_protocols;
 
         for (const protocol of pub_protocols) {
           aedes.subscribe(protocol, deliverFunc);
         }
-
-        // const query = {
-        //   client_id: idFromTopic,
-        // };
-
-        // const update = {
-        //   $set: {
-        //     room_name: roomFromTopic,
-        //     last_time_active: "now",
-        //     pub_protocols: pub_protocols,
-        //   },
-        // };
-
-        // const options = {
-        //   upsert: true,
-        // };
-
-        // db.getDb()
-        //   .collection("devices")
-        //   .updateOne(query, update, options)
-        //   .then((result) => {
-        //     console.log("MongoDB: Client " + idFromTopic + " was updated");
-        //   })
-        //   .catch((err) => {
-        //     if (err) {
-        //       throw err;
-        //     }
-        //   });
-
         cb();
       }
     });
@@ -187,22 +125,11 @@ class MqttBroker {
 }
 
 function deliverFunc(packet, cb) {
-
   const sensor = new Sensor(packet.topic.toString(), packet.payload.toString());
+  db.storeSensorData(sensor);
+  console.log(sensor.payload, sensor.topic);
 
-  if (sensor.type === "temperature" || sensor.type === "humidity") {
-
-    updateEntries = sensor.convertToMongoEntry();
-
-    if (sensor.type === "temperature") {
-      db.getDb().collection("temperatures").updateOne(updateEntries.query, updateEntries.update, {upsert: true});
-    }
-    else {
-      db.getDb().collection("humidities").updateOne(updateEntries.query, updateEntries.update, {upsert: true});
-    }
-
-  }
   cb();
 }
 
-module.exports = { MqttBroker, aedes, activeSensors };
+module.exports = { MqttBroker };
