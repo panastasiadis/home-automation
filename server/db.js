@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const MongoClient = require("mongodb").MongoClient;
 const url =
   "mongodb+srv://panagiotis_an:3101@cluster0.9glmt.mongodb.net/my-home-auto-db?retryWrites=true&w=majority";
@@ -6,16 +7,39 @@ let dbClient;
 let mongodb;
 
 const connectDb = (callbackFunc) => {
-  MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then((client) => {
-      dbClient = client;
+  mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  });
 
-      console.log("MongoDB: Connected to Database");
-      db = client.db("my-home-auto-db");
-      mongodb = db;
-      callbackFunc();
-    })
-    .catch((error) => console.error(error));
+  //Get the default connection
+  const db = mongoose.connection;
+
+  // MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+  //   .then((client) => {
+  //     dbClient = client;
+
+  //     console.log("MongoDB: Connected to Database");
+  //     db = client.db("my-home-auto-db");
+  //     mongodb = db;
+  //     callbackFunc();
+  //   })
+  //   .catch((error) => console.error(error));
+  db.on("connected", () => {
+    console.log("MongoDB: Connected to Database");
+    callbackFunc();
+  });
+
+  db.on("disconnected", () => {
+    console.log("MongoDB: Mongoose disconnected!");
+  });
+
+  db.on("error", (err) => {
+    console.log("MongoDB: Mongoose connection error: " + err);
+  });
+
 };
 
 const getDb = () => {
@@ -63,7 +87,6 @@ const storeSensorData = (sensorObj) => {
     getDb()
       .collection("measurements")
       .updateOne(query, update, { upsert: true });
-      
   } else if (sensorObj.type === "lightbulb") {
     query = {
       deviceId: sensorObj.deviceId,
@@ -98,9 +121,34 @@ const storeSensorData = (sensorObj) => {
   }
 };
 
+const getMeasurements = (callbackFunc) => {
+  // date = getFixedDate(0,0,3,4,12,2020);
+  // console.log(date);
+  getDb()
+    .collection("measurements")
+    .find({})
+    .toArray()
+    .then((results) => {
+      console.log(results);
+      callbackFunc(results);
+    })
+    .catch((error) => {
+      console.error();
+    });
+};
+
 //get current hour of today but specify minutes and seconds
-const getFixedDate = (seconds, minutes, hours) => {
+const getFixedDate = (seconds, minutes, hours, day, month, year) => {
   const date = new Date();
+  if (year === undefined) {
+    year = date.getFullYear();
+  }
+  if (month === undefined) {
+    month = date.getMonth();
+  }
+  if (day === undefined) {
+    day = date.getDay();
+  }
 
   if (hours === undefined) {
     hours = date.getHours();
@@ -133,4 +181,5 @@ module.exports = {
   getDb,
   closeDb,
   storeSensorData,
+  getMeasurements,
 };

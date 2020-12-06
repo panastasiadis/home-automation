@@ -1,5 +1,5 @@
-var express = require("express");
-var bodyParser = require("body-parser");
+const express = require("express");
+const bodyParser = require("body-parser");
 var app = express();
 
 const AedesBroker = require("./aedes_broker").MqttBroker;
@@ -33,7 +33,9 @@ db.connectDb(() => {
     });
 
     app.get("/measurements", function (req, res) {
-      res.send("hello world!");
+      db.getMeasurements((results) => {
+        res.send(results);
+      });
       console.log("ho");
     });
 
@@ -44,9 +46,6 @@ db.connectDb(() => {
     });
   });
 });
-
-
-
 
 process.on("SIGINT", () => {
   console.log("Closing...");
