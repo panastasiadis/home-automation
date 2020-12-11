@@ -2,8 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 var app = express();
 
-const AedesBroker = require("./aedes_broker").MqttBroker;
-const db = require("./db");
+const aedesBroker = require("./aedes_broker");
+const db = require("./api/models/db");
+const routesApi = require("./api/routes/index");
+
+app.use("/api", routesApi);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -13,42 +16,24 @@ db.connectDb(() => {
   const server = app.listen(3000, function () {
     console.log("App: Running on port ", server.address().port);
 
-    const broker = new AedesBroker();
-    //access the mqtt broker
-    broker.connect();
+    //connect to the mqtt broker
+    aedesBroker.connect();
 
     app.get("/", function (req, res) {
       res.send("hello world!");
       console.log("Homepage is displayed");
     });
-    
 
     app.post("/command", (req, res) => {
       console.log(req.body.topic, req.body.message);
       const topic = req.body.topic;
       const msg = req.body.message;
-    
-      broker.publishMessage(topic, msg);
+
+      aedesBroker.publishMessage(topic, msg);
       res.status(200).send("Message sent to mqtt");
     });
 
-    app.get("/measurements", function (req, res) {
-      db.getMeasurements((results) => {
-        res.send(results);
-      });
-      console.log("ho");
-    });
-
-    app.get("/devices", function (req, res) {
-      // res.send("hello world!");
-      res.status(200).send(broker.activeSensors);
-      console.log("ho");
-    });
   });
 });
 
-process.on("SIGINT", () => {
-  console.log("Closing...");
-  db.closeDb();
-  process.exit();
-});
+

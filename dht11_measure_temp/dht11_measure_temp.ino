@@ -18,14 +18,14 @@ const char *mqtt_server = "192.168.1.66";
 // const char *topicTemperature =
 // 	"livingroom/lr-NodeMCU/temperature"; // Topic temperature
 // const char *topicHumidity = "livingroom/lr-NodeMCU/humidity"; // Topic humidity
-const char *topicTemperHumid = "livingroom/lr-NodeMCU/temperature-humidity";
-const char *topicLightBulb = "livingroom/lr-NodeMCU/lightbulb";
-const char *topicLightBulbState = "livingroom/lr-NodeMCU/lightbulb/state";
+const char *topicTemperHumid = "livingroom/lr-NodeMCU/temperature-humidity/dht11";
+const char *topicLightBulb = "livingroom/lr-NodeMCU/relay/lightbulb";
+const char *topicLightBulbState = "livingroom/lr-NodeMCU/relay-state/lightbulb";
 
 const char *clientID =
 	"lr-NodeMCU"; // The client id identifies the NodeMCU device.
 
-const char *willTopic = "devices/livingroom/lr-NodeMCU"; // Topic Status
+const char *willTopic = "livingroom/lr-NodeMCU/device"; // Topic Status
 const char *willMessage = "offline"; // 0 - Disconnecetd
 char buffer[256];
 
@@ -141,12 +141,20 @@ void setup(void)
 	delay(2000); // Delay to allow first connection with MQTT Broker
 
 	StaticJsonDocument<256> doc;
+	JsonArray sensors = doc.createNestedArray("sensors");
+	JsonObject tempHumSensor = sensors.createNestedObject();
+	tempHumSensor["type"] = "temperature-humidity";
+	tempHumSensor["name"] = "dht11";
 
-	JsonArray pub_protocols = doc.createNestedArray("pub_protocols");
+	JsonObject relaySensor = sensors.createNestedObject();
+	relaySensor["type"] = "relay";
+	relaySensor["name"] = "lightbulb";
 
-	// pub_protocols.add(topicTemperature);
-	pub_protocols.add(topicTemperHumid);
-	pub_protocols.add(topicLightBulbState);
+	// JsonArray pub_protocols = doc.createNestedArray("pub_protocols");
+
+	// // pub_protocols.add(topicTemperature);
+	// pub_protocols.add(topicTemperHumid);
+	// pub_protocols.add(topicLightBulbState);
 
 	serializeJson(doc, buffer);
 
@@ -184,7 +192,7 @@ void loop()
 
 		char temp[16];
 		dtostrf(t, 3, 2, temp); // To convert float into char
-		
+
 		char humi[16];
 		dtostrf(h, 3, 2, humi); // To convert float into char
 
