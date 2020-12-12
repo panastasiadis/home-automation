@@ -33,6 +33,10 @@ db.connectDb(() => {
       res.status(200).send("Message sent to mqtt");
     });
 
+    app.get("/active-sensors", (req, res) => {
+      res.send(aedesBroker.activeSensors);
+    });
+
   });
 });
 

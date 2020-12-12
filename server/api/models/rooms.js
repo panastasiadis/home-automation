@@ -52,8 +52,8 @@ const measurementSchema = new mongoose.Schema(
 
 const deviceSchema = new mongoose.Schema({
   _id: String, //device's name
-  status: { type: String, enum: ["connected", "disconnected"], required: true },
-  timeOfDisconnection: { type: Date },
+  // status: { type: String, enum: ["connected", "disconnected"], required: true },
+  // timeOfDisconnection: { type: Date },
   sensors: [sensorSchema],
 });
 

@@ -1,134 +1,161 @@
-const storeSensorData = (sensorObj) => {
-    let update;
-    let query;
-    // if (sensorObj.type === "temperature-humidity") {
-    //   const startTime = getFixedDate(0, 0);
-    //   const endTime = getFixedDate(59, 59);
-    //   const nowDate = getFixedDate();
-  
-    //   const splittedStr = sensorObj.payload.split("-");
-    //   const temperature = parseFloat(splittedStr[0]);
-    //   const humidity = parseFloat(splittedStr[1]);
-  
-    //   query = {
-    //     deviceId: sensorObj.deviceId,
-    //     room: sensorObj.room,
-    //     startTime: startTime,
-    //     endTime: endTime,
-    //   };
-  
-    //   update = {
-    //     $push: {
-    //       measurements: {
-    //         temperature: temperature,
-    //         humidity: humidity,
-    //         timestamp: nowDate,
-    //       },
-    //     },
-    //     $inc: {
-    //       measurement_counter: 1,
-    //       temperatures_sum: temperature,
-    //       humidities_sum: humidity,
-    //     },
-    //   };
-  
-    //   getDb()
-    //     .collection("measurements")
-    //     .updateOne(query, update, { upsert: true });
-    // if (sensorObj.type === "lightbulb") {
-      // query = {
-      //   deviceId: sensorObj.deviceId,
-      //   room: sensorObj.room,
-      //   type: "lightbulb",
-      // };
-      // update = {
-      //   $set: {
-      //     commands: { openCommand: "ON", closeCommand: "OFF" },
-      //     current_state: "OFF",
-      //     commandTopic: sensorObj.topic,
-      //   },
-      // };
-  
-      // getDb().collection("relays").updateOne(query, update, {
-      //   upsert: true,
-      // });
-  
-    //   const newRelay = new Relay({
-    //     sensorType: "relay",
-    //     publishTopic: sensorObj.topic,
-    //   });
-  
-    //   newRelay.save().then(info => console.log(info));
-    // }
-    // } else if (sensorObj.type === "lightbulb/state") {
-    //   query = {
-    //     deviceId: sensorObj.deviceId,
-    //     room: sensorObj.room,
-    //     type: "lightbulb",
-    //   };
-  
-    //   update = {
-    //     $set: {
-    //       current_state: sensorObj.payload,
-    //     },
-    //   };
-  
-    //   getDb().collection("relays").updateOne(query, update, { upsert: true });
-    // }
-  };
+const Room = require("../models/rooms").Room;
+const SensorModel = require("../models/rooms").Sensor;
+const Measurement = require("../models/rooms").Measurement;
 
-  const getMeasurements = (callbackFunc) => {
-    // date = getFixedDate(0,0,3,4,12,2020);
-    // console.log(date);
-    getDb()
-      .collection("measurements")
-      .find({})
-      .toArray()
-      .then((results) => {
-        console.log(results);
-        callbackFunc(results);
-      })
-      .catch((error) => {
-        console.error();
+const handleDisconnectedDevice = async (roomName, deviceId) => {
+  const roomDoc = await Room.findById(roomName);
+  const device = roomDoc.devices.id(deviceId);
+
+  // device.status = "disconnected";
+  // device.timeOfDisconnection = getFixedDate();
+
+  const topicsToUnsub = [];
+  device.sensors.forEach((sensor) => {
+    if (sensor.subTopic) {
+      topicsToUnsub.push(sensor.subTopic);
+      // aedes.unsubscribe(sensor.subTopic, deliverFunc);
+    }
+  });
+
+  await roomDoc.save();
+  return topicsToUnsub;
+};
+
+const storeDevice = async (roomName, deviceId, sensors) => {
+  //find if room exists
+  let roomDoc = await Room.findById(roomName);
+
+  //if not, create a new room entry in database
+  if (!roomDoc) {
+    roomDoc = new Room({
+      _id: roomName,
+    });
+  }
+
+  //add new device to room document
+  //if exists nothing will be added(addToSet feature)
+  roomDoc.devices.addToSet({ _id: deviceId });
+
+  //access the device
+  const device = roomDoc.devices.id(deviceId);
+  // device.status = "connected";
+
+  //construct the prefix for the sensor topics based on room-name and device-id
+  const topicPrefix = roomName + "/" + deviceId + "/";
+
+  //save the document
+  storeDeviceSensors(device, sensors, topicPrefix);
+
+  await roomDoc.save();
+};
+
+const storeDeviceSensors = (deviceSubDoc, sensors, topicPrefix) => {
+
+  let sensorToStore;
+  deviceSubDoc.sensors = [];
+  for (const sensor of sensors) {
+    if (sensor.type === "relay") {
+      topicToSub = topicPrefix + sensor.type + "-state" + "/" + sensor.name;
+      sensorToStore = new SensorModel.relay({
+        commandTopic: topicPrefix + sensor.type + "/" + sensor.name,
+        _id: sensor.name,
+        subTopic: topicToSub,
       });
-  };
+    } else if (sensor.type === "temperature-humidity") {
+      topicToSub = topicPrefix + sensor.type + "/" + sensor.name;
 
-  //get current hour of today but specify minutes and seconds
+      sensorToStore = new SensorModel.temperatureHumidity({
+        _id: sensor.name,
+        subTopic: topicToSub,
+      });
+    }
+
+    deviceSubDoc.sensors.push(sensorToStore);
+
+  }
+};
+
+const storeSensorData = async (roomName, deviceId, sensorId, payload) => {
+  const roomDoc = await Room.findById(roomName);
+  const device = roomDoc.devices.id(deviceId);
+
+  sensor = device.sensors.find((sensor) => sensorId === sensor._id);
+
+  if (sensor.sensorType === "Temperature-Humidity") {
+    const splitStr = payload.split("-");
+    currentMeasurement = {
+      temperature: splitStr[0],
+      humidity: splitStr[1],
+      timestamp: getFixedDate(),
+    };
+
+    sensor.currentMeasurement = currentMeasurement;
+    const query = {
+      sensorId: sensor._id,
+      startTime: getFixedDate(0, 0),
+      endTime: getFixedDate(59, 59),
+    };
+
+    const update = {
+      $push: {
+        measurements: currentMeasurement,
+      },
+      $inc: {
+        measurementsCounter: 1,
+        temperaturesSum: splitStr[0],
+        humiditiesSum: splitStr[1],
+      },
+    };
+    await roomDoc.save();
+
+    await Measurement.findOneAndUpdate(query, update, {
+      upsert: true,
+      new: true,
+    });
+  } else if (sensor.sensorType === "Relay") {
+    sensor.currentState = payload;
+    await roomDoc.save();
+  }
+};
+
+
+//helper function to get a timestamp with your local GMT offset
 const getFixedDate = (seconds, minutes, hours, day, month, year) => {
-    const date = new Date();
-    if (year === undefined) {
-      year = date.getFullYear();
-    }
-    if (month === undefined) {
-      month = date.getMonth();
-    }
-    if (day === undefined) {
-      day = date.getDay();
-    }
-  
-    if (hours === undefined) {
-      hours = date.getHours();
-    }
-  
-    if (minutes === undefined) {
-      minutes = date.getMinutes();
-    }
-  
-    if (seconds === undefined) {
-      seconds = date.getSeconds();
-    }
-  
-    const localDate = new Date(
-      Date.UTC(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        hours,
-        minutes,
-        seconds
-      )
-    );
-  
-    return localDate;
-  };
-  
+  const date = new Date();
+  if (year === undefined) {
+    year = date.getFullYear();
+  }
+  if (month === undefined) {
+    month = date.getMonth();
+  }
+  if (day === undefined) {
+    day = date.getDay();
+  }
+
+  if (hours === undefined) {
+    hours = date.getHours();
+  }
+
+  if (minutes === undefined) {
+    minutes = date.getMinutes();
+  }
+
+  if (seconds === undefined) {
+    seconds = date.getSeconds();
+  }
+
+  const localDate = new Date(
+    Date.UTC(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      hours,
+      minutes,
+      seconds
+    )
+  );
+
+  return localDate;
+};
+
+module.exports = {storeDevice, storeSensorData, handleDisconnectedDevice};

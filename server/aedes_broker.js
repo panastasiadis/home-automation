@@ -2,16 +2,17 @@ const { query } = require("express");
 
 const aedes = require("aedes")();
 const server = require("net").createServer(aedes.handle);
-const Room = require("./api/models/rooms").Room;
-const SensorModel = require("./api/models/rooms").Sensor;
-const Measurement = require("./api/models/rooms").Measurement;
+const mqtt = require("./api/controllers/mqtt");
 const port = 1883;
 
 activeSensors = [];
 
 const connect = () => {
   server.listen(port, function () {
-    console.log("Broker: mqtt server started and listening on port ", port);
+    console.log(
+      "Broker: Aedes MQTT Server started and listening on port ",
+      port
+    );
   });
 
   aedes.on("clientReady", function (client) {
@@ -76,16 +77,42 @@ const connect = () => {
       const payloadObject = JSON.parse(msg);
       payloadObject.deviceId = nodeInfo.deviceId;
       payloadObject.room = nodeInfo.room;
-      payloadObject.last_time_active = "now";
-      console.log(payloadObject);
+      //payloadObject.status = "connected";
+      payloadObject.subTopics = [];
       activeSensors.push(payloadObject);
 
-      storeDevice(nodeInfo.room, nodeInfo.deviceId, payloadObject.sensors);
+      mqtt
+        .storeDevice(nodeInfo.room, nodeInfo.deviceId, payloadObject.sensors)
+        .then(() => {
+          const topicPrefix = nodeInfo.room + "/" + nodeInfo.deviceId + "/";
 
-      cb();
+          for (const sensor of payloadObject.sensors) {
+            if (sensor.type === "relay") {
+              topicToSub =
+                topicPrefix + sensor.type + "-state" + "/" + sensor.name;
+            } else {
+              topicToSub = topicPrefix + sensor.type + "/" + sensor.name;
+            }
+            aedes.subscribe(topicToSub, deliverFunc);
+            payloadObject.subTopics.push(topicToSub);
+          }
+        });
     } else {
-      handleDisconnectedDevice(nodeInfo.room, nodeInfo.deviceId);
+      const inactiveSensorIdx = activeSensors.findIndex((item) => {
+        item.deviceId = nodeInfo.deviceId;
+      });
+
+      activeSensors.splice(inactiveSensorIdx, 1);
+      mqtt
+        .handleDisconnectedDevice(nodeInfo.room, nodeInfo.deviceId)
+        .then((topicsToUnsub) => {
+          for (const topic of topicsToUnsub) {
+            console.log(`topic to unsub from: ${topic}`);
+            aedes.unsubscribe(topic, deliverFunc);
+          }
+        });
     }
+    cb();
   });
 };
 
@@ -102,8 +129,7 @@ const publishMessage = (topic, message) => {
 const deliverFunc = (packet, cb) => {
   const info = convertTopicToInfo(packet.topic.toString());
   console.log(packet.payload.toString(), packet.topic.toString());
-
-  storeSensorData(
+  mqtt.storeSensorData(
     info.room,
     info.deviceId,
     info.sensorName,
@@ -111,158 +137,6 @@ const deliverFunc = (packet, cb) => {
   );
 
   cb();
-};
-
-const handleDisconnectedDevice = async (room, deviceId) => {
-  const roomDoc = await Room.findById(room);
-  const device = roomDoc.devices.id(deviceId);
-
-  device.status = "disconnected";
-  device.timeOfDisconnection = getFixedDate();
-
-  device.sensors.forEach((sensor) => {
-    if (sensor.subTopic) {
-      console.log("topic to unsub from: " + sensor.subTopic);
-      aedes.unsubscribe(sensor.subTopic, deliverFunc);
-    }
-  });
-
-  await roomDoc.save();
-};
-
-const storeSensorData = async (room, deviceId, sensorName, payload) => {
-  const roomDoc = await Room.findById(room);
-  const device = roomDoc.devices.id(deviceId);
-
-  sensor = device.sensors.find((sensor) => sensorName === sensor._id);
-
-  if (sensor.sensorType === "Temperature-Humidity") {
-    const splitStr = payload.split("-");
-    currentMeasurement = {
-      temperature: splitStr[0],
-      humidity: splitStr[1],
-      timestamp: getFixedDate(),
-    };
-
-    sensor.currentMeasurement = currentMeasurement;
-    const query = {
-      sensorId: sensor._id,
-      startTime: getFixedDate(0, 0),
-      endTime: getFixedDate(59, 59),
-    };
-
-    const update = {
-      $push: {
-        measurements: currentMeasurement,
-      },
-      $inc: {
-        measurementsCounter: 1,
-        temperaturesSum: splitStr[0],
-        humiditiesSum: splitStr[1],
-      },
-    };
-    await roomDoc.save();
-
-    await Measurement.findOneAndUpdate(query, update, {
-      upsert: true,
-      new: true,
-    });
-  } else if (sensor.sensorType === "Relay") {
-    sensor.currentState = payload;
-    await roomDoc.save();
-  }
-};
-
-//get current hour of today but specify minutes and seconds
-const getFixedDate = (seconds, minutes, hours, day, month, year) => {
-  const date = new Date();
-  if (year === undefined) {
-    year = date.getFullYear();
-  }
-  if (month === undefined) {
-    month = date.getMonth();
-  }
-  if (day === undefined) {
-    day = date.getDay();
-  }
-
-  if (hours === undefined) {
-    hours = date.getHours();
-  }
-
-  if (minutes === undefined) {
-    minutes = date.getMinutes();
-  }
-
-  if (seconds === undefined) {
-    seconds = date.getSeconds();
-  }
-
-  const localDate = new Date(
-    Date.UTC(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      hours,
-      minutes,
-      seconds
-    )
-  );
-
-  return localDate;
-};
-
-const storeDevice = async (roomName, deviceId, sensors) => {
-  //find if room exists
-  let roomDoc = await Room.findById(roomName);
-
-  //if not create a new entry in database
-  if (!roomDoc) {
-    roomDoc = new Room({
-      _id: roomName,
-    });
-  }
-
-  //add new device to room document
-  //if exists nothing will be added(addToSet feature)
-  console.log(roomDoc.devices.addToSet({ _id: deviceId }));
-
-  const device = roomDoc.devices.id(deviceId);
-  device.status = "connected";
-
-  topicPrefix = roomName + "/" + deviceId + "/";
-
-  //save the document
-  storeDeviceSensors(sensors, topicPrefix, device);
-
-  await roomDoc.save();
-};
-
-const storeDeviceSensors = (sensors, topicPrefix, deviceSubDoc) => {
-  console.log(sensors);
-  let sensorToStore;
-  deviceSubDoc.sensors = [];
-  for (const sensor of sensors) {
-    if (sensor.type === "relay") {
-      topicToSub = topicPrefix + sensor.type + "-state" + "/" + sensor.name;
-      sensorToStore = new SensorModel.relay({
-        commandTopic: topicPrefix + sensor.type + "/" + sensor.name,
-        _id: sensor.name,
-        subTopic: topicToSub,
-      });
-    } else if (sensor.type === "temperature-humidity") {
-      topicToSub = topicPrefix + sensor.type + "/" + sensor.name;
-
-      sensorToStore = new SensorModel.temperatureHumidity({
-        _id: sensor.name,
-        subTopic: topicToSub,
-      });
-    }
-
-    deviceSubDoc.sensors.push(sensorToStore);
-
-    aedes.subscribe(topicToSub, deliverFunc);
-  }
 };
 
 const convertTopicToInfo = (mqttTopic) => {
@@ -278,4 +152,4 @@ const convertTopicToInfo = (mqttTopic) => {
   };
 };
 
-module.exports = { publishMessage, connect };
+module.exports = { publishMessage, connect, activeSensors };
