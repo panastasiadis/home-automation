@@ -14,9 +14,24 @@ const connectDb = (callbackFunc) => {
   //Get the default connection
   const db = mongoose.connection;
 
-  db.on("connected", () => {
-    console.log("MongoDB: Connected to Database");
+  db.once("open", () => {
+
+    //-- code to listen for updates in rooms collection on real time
+    
+    // const roomsCollection = db.collection('rooms');
+    // const changeStream = roomsCollection.watch();
+    // changeStream.on('change', (change) => {
+    //   if(change.operationType === 'update') {
+    //     const updatedFields = change.updateDescription.updatedFields;
+    //     console.log(updatedFields);
+    //   }
+    // });
     callbackFunc();
+
+  });
+
+  db.on("connected", () => {
+    console.log("MongoDB: Connected to Database");  
   });
 
   db.on("disconnected", () => {
