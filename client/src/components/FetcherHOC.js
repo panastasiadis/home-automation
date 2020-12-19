@@ -1,69 +1,91 @@
-import React, { Component } from "react";
 import axios from "axios";
 import TemperatureHumidityCard from "./TemperatureHumidityCard";
 import RelayCard from "./RelayCard";
 import Grid from "@material-ui/core/Grid";
+import mqttService from "./MQTT";
+import React, { useEffect, useState, useRef } from "react";
 
-const ROOMS_URL = "http://localhost:5000/api/rooms";
+const URL = "http://localhost:5000/active-sensors";
+let i = 0;
+const client = mqttService.getClient(() => {});
 
-class Fetcher extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isFetching: false,
-      rooms: [],
-    };
-  }
+const FetcherHooks = () => {
+  const [data, setData] = useState({ sensors: [], isFetching: false });
+  const dataRef = useRef(data);
 
-  componentDidMount = () => {
-    this.fetchRoomsAsync();
-  };
+  const messageHandler = (topic, payload) => {
+    const newData = {
+      sensors: dataRef.current.sensors.map((sensorItem) => {
+        console.log("SensorItem", sensorItem);
 
-  render = () => {
-    return gridItemsChooser(this.state.rooms);
-  };
+        if (sensorItem.pubTopic === topic) {
+          if (sensorItem.type === "temperature-humidity") {
+            const splitStr = payload.toString().split("-");
 
-  async fetchRoomsAsync() {
-    try {
-      this.setState({ ...this.state, isFetching: true });
-      const response = await axios.get(ROOMS_URL);
-      this.setState({ rooms: response.data, isFetching: false });
-    } catch (e) {
-      console.log(e);
-      this.setState({ ...this.state, isFetching: false });
-    }
-  }
-}
-
-const gridItemsChooser = (rooms) => {
-  let gridItems = null;
-  for (const room of rooms) {
-    const roomName = room._id;
-    for (const device of room.devices) {
-      const deviceName = device._id;
-      gridItems = device.sensors.map((sensor) => {
-        if (sensor.sensorType === "Temperature-Humidity") {
-          return (
-            <Grid item xs={12} md={6} lg={4} key={sensor._id}>
-              <TemperatureHumidityCard
-                roomName={roomName}
-                device={deviceName}
-                temperature={sensor.currentMeasurement.temperature}
-                humidity={sensor.currentMeasurement.humidity}
-              />
-            </Grid>
-          );
-        } else if (sensor.sensorType === "Relay") {
-          return <Grid item xs={12} md={6} lg={4} key={sensor._id}>
-            <RelayCard>
-
-            </RelayCard>
-          </Grid>;
+            sensorItem.currentMeasurement = {
+              temperature: splitStr[0],
+              humidity: splitStr[1],
+              // timestamp: getFixedDate(),
+            };
+          }
         }
-      });
+        return sensorItem;
+      }),
+      isFetching: false,
     }
-  }
-  return gridItems;
+    dataRef.current = newData;
+    setData(newData)
+  };
+
+  useEffect(() => {
+    const fetchDevices = async () => {
+      try {
+        setData({ sensors: data.sensors, isFetching: true });
+        const response = await axios.get(URL);
+        setData({ sensors: response.data, isFetching: false });
+        dataRef.current = { sensors: response.data, isFetching: false };
+        console.log(data, (i += 1));
+
+        for (const sensor of response.data) {
+          mqttService.subscribe(client, sensor.pubTopic);
+        }
+      } catch (error) {
+        console.log(error);
+        setData({ sensors: data.sensors, isFetching: false });
+      }
+    };
+    mqttService.onMessage(client, (topic, payload) =>
+      messageHandler(topic, payload)
+    );
+
+    fetchDevices();
+  }, []);
+
+  console.log(data, (i += 1));
+
+  return data.sensors.map((sensor) => {
+    if (sensor.type === "temperature-humidity") {
+      return (
+        <Grid item xs={12} md={6} lg={4} key={sensor.name}>
+          <TemperatureHumidityCard
+            roomName={sensor.room}
+            device={sensor.deviceId}
+            temperature={
+              sensor.currentMeasurement
+                ? sensor.currentMeasurement.temperature
+                : "-"
+            }
+            humidity={
+              sensor.currentMeasurement
+                ? sensor.currentMeasurement.humidity
+                : "-"
+            }
+          />
+        </Grid>
+      );
+    }
+    return null;
+  });
 };
 
-export default Fetcher;
+export default FetcherHooks;

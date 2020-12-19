@@ -2,20 +2,38 @@ const { query } = require("express");
 
 const aedes = require("aedes")();
 const server = require("net").createServer(aedes.handle);
+
+const httpServer = require("http").createServer();
+const WebSocket = require("ws");
+
+const wss = new WebSocket.Server({ server: httpServer });
 const mqtt = require("./api/controllers/mqtt");
 const port = 1883;
+const wsport = 8883;
 
-activeSensors = [];
+let activeSensors = [];
 
+const  getActiveSensors = () =>  {
+  return [...activeSensors]
+}
 const connect = () => {
-  server.listen(port, function () {
+  wss.on("connection", (ws) => {
+    const duplex = WebSocket.createWebSocketStream(ws);
+    aedes.handle(duplex);
+  });
+
+  server.listen(port, () => {
     console.log(
       "Broker: Aedes MQTT Server started and listening on port ",
-      port
+      wsport
     );
   });
 
-  aedes.on("clientReady", function (client) {
+  httpServer.listen(wsport, () => {
+    console.log("WS: Start listening on port ", wsport);
+  });
+
+  aedes.on("clientReady", (client) => {
     console.log(
       "Broker: Client Connected: \x1b[33m" +
         (client ? client.id : client) +
@@ -23,8 +41,16 @@ const connect = () => {
     );
   });
 
+  aedes.on("clientError", (client, err) => {
+    console.log("client error", client.id, err.message, err.stack);
+  });
+
+  aedes.on("connectionError", (client, err) => {
+    console.log("client error", client, err.message, err.stack);
+  });
+
   //triggered when a client is disconnected from the broker
-  aedes.on("clientDisconnect", function (client) {
+  aedes.on("clientDisconnect", (client) => {
     //log to console which client was disconnected
     console.log(
       "Broker: Client Disconnected: \x1b[31m" +
@@ -39,14 +65,14 @@ const connect = () => {
     const subs = subscriptions.map((s) => s.topic);
 
     //find client in active sensors array
-    const device = activeSensors.find((element) => {
-      if (element.client_id === client.id) {
+    const sensor = activeSensors.find((element) => {
+      if (element.deviceId === client.id) {
         return element;
       }
     });
 
-    if (device) {
-      device.sub_protocols = subs;
+    if (sensor) {
+      sensor.sub_protocols = subs;
     }
 
     //log to console the client subscriptions
@@ -58,7 +84,7 @@ const connect = () => {
     );
   });
 
-  aedes.on("unsubscribe", function (subscriptions, client) {
+  aedes.on("unsubscribe", (subscriptions, client) => {
     console.log(
       "Broker: MQTT client \x1b[32m" +
         (client ? client.id : client) +
@@ -75,34 +101,42 @@ const connect = () => {
     if (msg !== "offline") {
       //get and parse the device info that is included in the message
       const payloadObject = JSON.parse(msg);
-      payloadObject.deviceId = nodeInfo.deviceId;
-      payloadObject.room = nodeInfo.room;
-      //payloadObject.status = "connected";
-      payloadObject.subTopics = [];
-      activeSensors.push(payloadObject);
+      const topicPrefix = nodeInfo.room + "/" + nodeInfo.deviceId + "/";
+
+      const sensors = payloadObject.sensors.map((sensorEl) => {
+        sensorEl.deviceId = nodeInfo.deviceId;
+        sensorEl.room = nodeInfo.room;
+        if (sensorEl.type === "relay") {
+          sensorEl.pubTopic =
+            topicPrefix + sensorEl.type + "-state" + "/" + sensorEl.name;
+        } else {
+          sensorEl.pubTopic =
+            topicPrefix + sensorEl.type + "/" + sensorEl.name;
+        }
+        activeSensors.push(sensorEl);
+        return sensorEl;
+      });
+      // console.log(sensors);
+      // console.log(activeSensors);
 
       mqtt
         .storeDevice(nodeInfo.room, nodeInfo.deviceId, payloadObject.sensors)
         .then(() => {
-          const topicPrefix = nodeInfo.room + "/" + nodeInfo.deviceId + "/";
-
-          for (const sensor of payloadObject.sensors) {
-            if (sensor.type === "relay") {
-              topicToSub =
-                topicPrefix + sensor.type + "-state" + "/" + sensor.name;
-            } else {
-              topicToSub = topicPrefix + sensor.type + "/" + sensor.name;
-            }
-            aedes.subscribe(topicToSub, deliverFunc);
-            payloadObject.subTopics.push(topicToSub);
+          for (const sensor of sensors) {
+            aedes.subscribe(sensor.pubTopic, deliverFunc);
           }
         });
     } else {
-      const inactiveSensorIdx = activeSensors.findIndex((item) => {
-        item.deviceId = nodeInfo.deviceId;
-      });
+      // const inactiveSensorIdx = activeSensors.findIndex((item) => {
+      //   item.deviceId = nodeInfo.deviceId;
+      // });
 
-      activeSensors.splice(inactiveSensorIdx, 1);
+      activeSensors = activeSensors.filter(
+        (sensor) => sensor.deviceId !== nodeInfo.deviceId
+      );
+      console.log(activeSensors);
+
+      // activeSensors.splice(inactiveSensorIdx, 1);
       mqtt
         .handleDisconnectedDevice(nodeInfo.room, nodeInfo.deviceId)
         .then((topicsToUnsub) => {
@@ -152,4 +186,4 @@ const convertTopicToInfo = (mqttTopic) => {
   };
 };
 
-module.exports = { publishMessage, connect, activeSensors };
+module.exports = { publishMessage, connect, getActiveSensors };

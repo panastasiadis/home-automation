@@ -43,7 +43,7 @@ db.connectDb(() => {
     });
 
     app.get("/active-sensors", (req, res) => {
-      res.send(aedesBroker.activeSensors);
+      res.send(aedesBroker.getActiveSensors());
     });
 
   });

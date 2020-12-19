@@ -4,7 +4,7 @@ class MqttHandler {
   constructor() {
     this.mqttClient = null;
     // this.host = "mqtt://broker.mqttdashboard.com";
-    this.host = "mqtt://172.24.14.116";
+    this.host = "172.22.113.66";
     this.username = "YOUR_USER"; // mqtt credentials if these are needed to connect
     this.password = "YOUR_PASSWORD";
     this.clientId = "test-client";
@@ -13,8 +13,9 @@ class MqttHandler {
   connect() {
     // Connect mqtt with credentials (in case of needed, otherwise we can omit 2nd param)
     this.mqttClient = mqtt.connect(
-      { streamBuilder: this.host, clientId: this.clientId }
+      // {port: 8883, streamBuilder: this.host, clientId: this.clientId }
       //  { username: this.username, password: this.password }
+      { port: 1883, host: this.host }
     );
 
     // Mqtt error calback
@@ -34,7 +35,7 @@ class MqttHandler {
     // When a message arrives, console.log it
     this.mqttClient.on("message", (topic, message) => {
       console.log(message.toString());
-    }    );
+    });
 
     this.mqttClient.on("close", () => {
       console.log(`MQTT.js: mqtt client disconnected`);
