@@ -13,9 +13,10 @@ const wsport = 8883;
 
 let activeSensors = [];
 
-const  getActiveSensors = () =>  {
-  return [...activeSensors]
-}
+const getActiveSensors = () => {
+  return [...activeSensors];
+};
+
 const connect = () => {
   wss.on("connection", (ws) => {
     const duplex = WebSocket.createWebSocketStream(ws);
@@ -65,15 +66,15 @@ const connect = () => {
     const subs = subscriptions.map((s) => s.topic);
 
     //find client in active sensors array
-    const sensor = activeSensors.find((element) => {
-      if (element.deviceId === client.id) {
-        return element;
-      }
-    });
+    // const sensor = activeSensors.find((element) => {
+    //   if (element.deviceId === client.id) {
+    //     return element;
+    //   }
+    // });
 
-    if (sensor) {
-      sensor.sub_protocols = subs;
-    }
+    // if (sensor) {
+    //   sensor.sub_protocols = subs;
+    // }
 
     //log to console the client subscriptions
     console.log(
@@ -109,9 +110,10 @@ const connect = () => {
         if (sensorEl.type === "relay") {
           sensorEl.pubTopic =
             topicPrefix + sensorEl.type + "-state" + "/" + sensorEl.name;
+            sensorEl.commandTopic = topicPrefix + sensorEl.type + "/" + sensorEl.name;
+
         } else {
-          sensorEl.pubTopic =
-            topicPrefix + sensorEl.type + "/" + sensorEl.name;
+          sensorEl.pubTopic = topicPrefix + sensorEl.type + "/" + sensorEl.name;
         }
         activeSensors.push(sensorEl);
         return sensorEl;
@@ -127,16 +129,11 @@ const connect = () => {
           }
         });
     } else {
-      // const inactiveSensorIdx = activeSensors.findIndex((item) => {
-      //   item.deviceId = nodeInfo.deviceId;
-      // });
-
       activeSensors = activeSensors.filter(
         (sensor) => sensor.deviceId !== nodeInfo.deviceId
       );
       console.log(activeSensors);
 
-      // activeSensors.splice(inactiveSensorIdx, 1);
       mqtt
         .handleDisconnectedDevice(nodeInfo.room, nodeInfo.deviceId)
         .then((topicsToUnsub) => {
@@ -163,6 +160,19 @@ const publishMessage = (topic, message) => {
 const deliverFunc = (packet, cb) => {
   const info = convertTopicToInfo(packet.topic.toString());
   console.log(packet.payload.toString(), packet.topic.toString());
+  sensor =
+    activeSensors[activeSensors.findIndex((el) => el.name === info.sensorName)];
+
+  if (sensor.type === "temperature-humidity") {
+    const splitStr = packet.payload.toString().split("-");
+
+    sensor.currentMeasurement = {
+      temperature: splitStr[0],
+      humidity: splitStr[1],
+      // timestamp: getFixedDate(),
+    };
+  }
+
   mqtt.storeSensorData(
     info.room,
     info.deviceId,

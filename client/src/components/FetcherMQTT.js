@@ -1,22 +1,26 @@
 import axios from "axios";
-import TemperatureHumidityCard from "./TemperatureHumidityCard";
-import RelayCard from "./RelayCard";
-import Grid from "@material-ui/core/Grid";
 import mqttService from "./MQTT";
 import React, { useEffect, useState, useRef } from "react";
+import Sensor from "./Sensor";
 
 const URL = "http://localhost:5000/active-sensors";
-let i = 0;
 const client = mqttService.getClient(() => {});
+mqttService.subscribe(client, "+/+/device");
+let i = 0;
+let messageHandler;
+mqttService.onMessage(client, (topic, payload) =>
+messageHandler(topic, payload)
+);
 
-const FetcherHooks = () => {
+const FetcherΜQTT = () => {
   const [data, setData] = useState({ sensors: [], isFetching: false });
   const dataRef = useRef(data);
 
-  const messageHandler = (topic, payload) => {
+  messageHandler = (topic, payload) => {
+
     const newData = {
       sensors: dataRef.current.sensors.map((sensorItem) => {
-        console.log("SensorItem", sensorItem);
+        // console.log("SensorItem", sensorItem);
 
         if (sensorItem.pubTopic === topic) {
           if (sensorItem.type === "temperature-humidity") {
@@ -32,9 +36,9 @@ const FetcherHooks = () => {
         return sensorItem;
       }),
       isFetching: false,
-    }
+    };
     dataRef.current = newData;
-    setData(newData)
+    setData(newData);
   };
 
   useEffect(() => {
@@ -54,38 +58,13 @@ const FetcherHooks = () => {
         setData({ sensors: data.sensors, isFetching: false });
       }
     };
-    mqttService.onMessage(client, (topic, payload) =>
-      messageHandler(topic, payload)
-    );
 
     fetchDevices();
   }, []);
 
-  console.log(data, (i += 1));
-
   return data.sensors.map((sensor) => {
-    if (sensor.type === "temperature-humidity") {
-      return (
-        <Grid item xs={12} md={6} lg={4} key={sensor.name}>
-          <TemperatureHumidityCard
-            roomName={sensor.room}
-            device={sensor.deviceId}
-            temperature={
-              sensor.currentMeasurement
-                ? sensor.currentMeasurement.temperature
-                : "-"
-            }
-            humidity={
-              sensor.currentMeasurement
-                ? sensor.currentMeasurement.humidity
-                : "-"
-            }
-          />
-        </Grid>
-      );
-    }
-    return null;
+    return <Sensor sensor={sensor} mqttClient={client} key={sensor.name} />;
   });
 };
 
-export default FetcherHooks;
+export default FetcherΜQTT;

@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import CardMedia from "@material-ui/core/CardMedia";
 import LightBulbIcon from "../assets/lightbulb.png";
 import Switch from "@material-ui/core/Switch";
+import mqttService from "./MQTT";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,35 +33,31 @@ const useStyles = makeStyles((theme) => ({
 export default function OutlinedCard(props) {
   const classes = useStyles();
 
-  const content = {
-    roomName: "roomName",
-    device: "deviceId",
-    ...props.content,
+  const onChangeHandler = (ev) => {
+    console.log(props.mqttClient, props.commandTopic);
+
+    if (ev.target.checked) {
+      mqttService.publishMessage(props.mqttClient, props.command, "ON");
+    } else {
+      mqttService.publishMessage(props.mqttClient, props.command, "OFF");
+    }
   };
-  const roomsUrl = "http://localhost:5000/api/rooms/";
+
   return (
     <Card className={classes.root} variant="outlined">
       {/* <CardHeader title="Sensor" /> */}
 
       <CardContent>
         <Typography className={classes.title} color="secondary" gutterBottom>
-          {content.roomName}
+          {props.roomName}
         </Typography>
         <Typography variant="h5" component="h2">
-          Lightbulb
+          {props.name}
         </Typography>
         <Typography className={classes.pos} color="secondary">
-          {content.device}
+          {props.device}
         </Typography>
-        <Switch
-          onChange={() => {
-            fetch(roomsUrl)
-              .then((res) => res.json())
-              .then((result) => {
-                console.log(result);
-              });
-          }}
-        />
+        <Switch onChange={onChangeHandler} />
       </CardContent>
       <CardMedia
         className={classes.media}

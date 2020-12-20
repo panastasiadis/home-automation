@@ -6,9 +6,6 @@ const handleDisconnectedDevice = async (roomName, deviceId) => {
   const roomDoc = await Room.findById(roomName);
   const device = roomDoc.devices.id(deviceId);
 
-  // device.status = "disconnected";
-  // device.timeOfDisconnection = getFixedDate();
-
   const topicsToUnsub = [];
   device.sensors.forEach((sensor) => {
     if (sensor.subTopic) {

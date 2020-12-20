@@ -39,15 +39,6 @@ const getClient = (errorHandler) => {
   return client;
 };
 
-const subscribe = (client, topic) => {
-  const callBack = (err, granted) => {
-    if (err) {
-      console.log("Subscription request failed");
-    }
-  };
-  return client.subscribe(topic, callBack);
-};
-
 const onMessage = (client, callBack) => {
   client.on("message", (topic, message, packet) => {
     console.log(topic);
@@ -55,6 +46,19 @@ const onMessage = (client, callBack) => {
 
     callBack(topic, message);
   });
+};
+
+const publishMessage = (client, topic, message) => {
+  client.publish(topic, message);
+}
+
+const subscribe = (client, topic) => {
+  const callBack = (err, granted) => {
+    if (err) {
+      console.log("Subscription request failed");
+    }
+  };
+  return client.subscribe(topic, callBack);
 };
 
 const unsubscribe = (client, topic) => {
@@ -67,6 +71,7 @@ const closeConnection = (client) => {
 
 const mqttService = {
   getClient,
+  publishMessage,
   subscribe,
   onMessage,
   unsubscribe,

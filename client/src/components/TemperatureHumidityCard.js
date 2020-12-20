@@ -32,14 +32,6 @@ export default function OutlinedCard(props) {
   const classes = useStyles();
   
   
-  const content = {
-    roomName: 'roomName',
-    device: 'deviceId',
-    temperature: "-" ,
-    humidity: "-",
-    ...props.content
-  };
-
   return (
     <Card className={classes.root} variant="outlined">
       {/* <CardHeader title="Sensor" /> */}

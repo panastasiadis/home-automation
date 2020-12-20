@@ -2,9 +2,9 @@ import React from "react";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
-import TempHumCard from "./TemperatureHumidityCard";
-import RelayCard from "./RelayCard";
-import FetcherHoc from "./FetcherHOC";
+
+import FetcherHoc from "./FetcherMQTT";
+import AlertMessage from "./AlertMessage";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -19,16 +19,16 @@ export default function MainPanel(props) {
   return (
     <main>
       <div className={classes.appBarSpacer} />
-
+      {/* <AlertMessage/> */}
       <Container maxWidth="lg" className={classes.container}>
         <Grid container spacing={3}>
           <FetcherHoc />
-          <Grid item xs={12} md={6} lg={4}>
+          {/* <Grid item xs={12} md={6} lg={4}>
             <TempHumCard />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
             <RelayCard />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </main>
