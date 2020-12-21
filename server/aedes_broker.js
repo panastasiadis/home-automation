@@ -118,6 +118,13 @@ const connect = () => {
         activeSensors.push(sensorEl);
         return sensorEl;
       });
+
+      infoForBrowserJSON = {
+        newSensors: sensors,
+        action: "connected"
+      }
+
+      publishMessage("browser", JSON.stringify(infoForBrowserJSON));
       // console.log(sensors);
       // console.log(activeSensors);
 

@@ -2,7 +2,6 @@ import React from "react";
 
 import HorizontalNav2 from "../components/HorizontalNav2";
 import Main from "../components/Main";
-import Logo from "../assets/smart-house.svg"
 
 export default function Index() {
   return (

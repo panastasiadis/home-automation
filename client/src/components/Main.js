@@ -3,7 +3,7 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 
-import FetcherHoc from "./FetcherMQTT";
+import FetcherMQTT from "./FetcherMQTT";
 import AlertMessage from "./AlertMessage";
 
 const useStyles = makeStyles((theme) => ({
@@ -22,7 +22,7 @@ export default function MainPanel(props) {
       <AlertMessage/>
       <Container maxWidth="lg" className={classes.container}>
         <Grid container spacing={3}>
-          <FetcherHoc />
+          <FetcherMQTT />
           {/* <Grid item xs={12} md={6} lg={4}>
             <TempHumCard />
           </Grid>

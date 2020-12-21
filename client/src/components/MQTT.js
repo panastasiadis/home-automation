@@ -1,6 +1,6 @@
 import mqtt from "mqtt";
 
-const websocketUrl = "ws://localhost:8883";
+const websocketUrl = "ws://192.168.1.66:8883";
 const clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
 let client;
 
@@ -49,7 +49,7 @@ const onMessage = (client, callBack) => {
     console.log(topic);
     console.log(message.toString());
     
-    callBack(topic, message);
+    callBack(client, topic, message);
   });
 };
 
@@ -74,6 +74,19 @@ const closeConnection = (client) => {
   client.end();
 };
 
+const extractMqttTopicInfo = (mqttTopic) => {
+  const splitStr = mqttTopic.split("/");
+
+  const [room, deviceId, type, sensorName] = splitStr;
+
+  return {
+    room,
+    deviceId,
+    type,
+    sensorName,
+  };
+};
+
 const mqttService = {
   getClient,
   publishMessage,
@@ -81,6 +94,7 @@ const mqttService = {
   onMessage,
   unsubscribe,
   closeConnection,
+  extractMqttTopicInfo
 };
 
 export default mqttService;

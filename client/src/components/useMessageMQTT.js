@@ -1,9 +1,18 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
+import mqttService from "./MQTT";
 
 const useMessageMQTT = () => {
-    useEffect(() => {
-        
-    }, []);
-}
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    const client = mqttService.getClient();
+
+    const messageHandler = (client, topic, payload) => {};
+
+    mqttService.onMessage(client, (topic, payload) =>
+      messageHandler(client, topic, payload)
+    );
+  }, []);
+};
 
 export default useMessageMQTT;

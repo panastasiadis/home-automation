@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
   degrees: {
     textAlign: 'center',
+    marginLeft: 12,
   }
 }));
 
