@@ -2,6 +2,7 @@ import mqtt from "mqtt";
 
 const websocketUrl = "ws://localhost:8883";
 const clientId = "mqttjs_" + Math.random().toString(16).substr(2, 8);
+let client;
 
 var options = {
   keepalive: 30,
@@ -20,16 +21,13 @@ var options = {
   rejectUnauthorized: false,
 };
 
-const getClient = (errorHandler) => {
-  const client = mqtt.connect(websocketUrl, options);
+const initClient = (errorHandler) => {
+  client = mqtt.connect(websocketUrl, options);
+
+  client.subscribe("browser");
 
   client.on("error", (err) => {
-    console.log(`Connection to ${websocketUrl} failed`);
-    client.end();
-  });
-
-  client.on("error", (err) => {
-    console.log(err);
+    console.log(`Connection to ${websocketUrl} failed`, err);
     client.end();
   });
 
@@ -39,11 +37,18 @@ const getClient = (errorHandler) => {
   return client;
 };
 
+const getClient = () => {
+  if (!client) {
+    initClient();
+  }
+  return client;
+}
+
 const onMessage = (client, callBack) => {
   client.on("message", (topic, message, packet) => {
     console.log(topic);
     console.log(message.toString());
-
+    
     callBack(topic, message);
   });
 };

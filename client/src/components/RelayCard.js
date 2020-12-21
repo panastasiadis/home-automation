@@ -34,12 +34,14 @@ export default function OutlinedCard(props) {
   const classes = useStyles();
 
   const onChangeHandler = (ev) => {
-    console.log(props.mqttClient, props.commandTopic);
+
+    const client = mqttService.getClient();
+    console.log(client, props.command);
 
     if (ev.target.checked) {
-      mqttService.publishMessage(props.mqttClient, props.command, "ON");
+      mqttService.publishMessage(client, props.command, "ON");
     } else {
-      mqttService.publishMessage(props.mqttClient, props.command, "OFF");
+      mqttService.publishMessage(client, props.command, "OFF");
     }
   };
 

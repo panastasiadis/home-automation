@@ -134,6 +134,13 @@ const connect = () => {
       );
       console.log(activeSensors);
 
+      infoForBrowserJSON = {
+        deviceId: nodeInfo.deviceId,
+        action: "disconnected"
+      }
+
+      publishMessage("browser", JSON.stringify(infoForBrowserJSON));
+
       mqtt
         .handleDisconnectedDevice(nodeInfo.room, nodeInfo.deviceId)
         .then((topicsToUnsub) => {

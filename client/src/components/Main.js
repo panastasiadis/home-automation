@@ -19,7 +19,7 @@ export default function MainPanel(props) {
   return (
     <main>
       <div className={classes.appBarSpacer} />
-      {/* <AlertMessage/> */}
+      <AlertMessage/>
       <Container maxWidth="lg" className={classes.container}>
         <Grid container spacing={3}>
           <FetcherHoc />
