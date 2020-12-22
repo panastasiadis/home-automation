@@ -1,12 +1,27 @@
 import axios from "axios";
 import mqttService from "./MQTT";
 import React, { useEffect, useState, useRef } from "react";
-import Sensor from "./Sensor";
+import Sensors from "./Sensors";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import { Switch, Route } from "react-router-dom";
+import AlertMessage from "./AlertMessage";
+
+// import { Typography } from "@material-ui/core";
 
 const URL = "http://192.168.1.66:5000/active-sensors";
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+  },
+  appBarSpacer: theme.mixins.toolbar,
+}));
 
 const FetcherΜQTT = () => {
+  const classes = useStyles();
+
   const [data, setData] = useState({ sensors: [] });
   const dataRef = useRef(data);
 
@@ -17,7 +32,6 @@ const FetcherΜQTT = () => {
         const response = await axios.get(URL);
         setData({ sensors: response.data });
         dataRef.current = { sensors: response.data };
-        // console.log(data, (i += 1));
 
         for (const sensor of response.data) {
           mqttService.subscribe(client, sensor.pubTopic);
@@ -41,6 +55,11 @@ const FetcherΜQTT = () => {
               }
               return sensor.deviceId !== infoObj.deviceId;
             }),
+            alertMessage: {
+              // show: true,
+              device: infoObj.deviceId,
+              reason: infoObj.action,
+            },
           };
           dataRef.current = newData;
           setData(newData);
@@ -54,6 +73,11 @@ const FetcherΜQTT = () => {
           } else {
             const newData = {
               sensors: dataRef.current.sensors.concat(infoObj.newSensors),
+              alertMessage: {
+                // show: true,
+                device: infoObj.newSensors[0].deviceId,
+                reason: infoObj.action,
+              },
             };
             for (const sensor of infoObj.newSensors) {
               mqttService.subscribe(client, sensor.pubTopic);
@@ -95,9 +119,22 @@ const FetcherΜQTT = () => {
     );
   }, []);
 
-  return data.sensors.map((sensor) => {
-    return <Sensor sensor={sensor} key={sensor.name} />;
-  });
+  return (
+    <main>
+      <div className={classes.appBarSpacer} />
+      <AlertMessage alertMessage={data.alertMessage} />
+      <Switch>
+        <Route exact path="/">
+          <Container maxWidth="lg" className={classes.container}>
+            <Sensors sensors={data.sensors} />;
+          </Container>
+        </Route>
+        <Route exact path="/rooms">
+          <h2>Here are displayed the rooms of the house.</h2>;
+        </Route>
+      </Switch>
+    </main>
+  );
 };
 
 export default FetcherΜQTT;

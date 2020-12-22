@@ -156,3 +156,4 @@ const getFixedDate = (seconds, minutes, hours, day, month, year) => {
 };
 
 module.exports = {storeDevice, storeSensorData, handleDisconnectedDevice};
+
