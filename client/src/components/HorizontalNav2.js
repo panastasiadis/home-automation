@@ -14,9 +14,6 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-
-import LayersIcon from "@material-ui/icons/Layers";
-import FilterHdrIcon from "@material-ui/icons/FilterHdr";
 import DirectionsBusIcon from "@material-ui/icons/DirectionsBus";
 import NotificationImportantIcon from "@material-ui/icons/NotificationImportant";
 import { Link as RouterLink } from "react-router-dom";
@@ -67,8 +64,6 @@ export default function Navigation(props) {
 
   const content = {
     brand: { image: { Logo }, width: 110 },
-    link1: "Section One",
-    link2: "Section Two",
     link3: "Section Three",
     link4: "Section Four",
     "primary-action": "Action",
@@ -101,9 +96,6 @@ export default function Navigation(props) {
   return (
     <AppBar position="static" color="inherit">
       <Toolbar className={classes.toolbar}>
-        {/* <Button component={RouterLink} to="/rooms">
-          Rooms1
-        </Button> */}
         <Link
           href="/"
           component={RouterLink}
@@ -114,24 +106,6 @@ export default function Navigation(props) {
           className={classes.brand}
         >
           {brand}
-        </Link>
-        <Link
-          href="#"
-          color="textPrimary"
-          variant="body2"
-          className={classes.link}
-        >
-          {content["link1"]}
-        </Link>
-        <Link
-          href="/rooms"
-          component={RouterLink}
-          to="/rooms"
-          color="textPrimary"
-          variant="body2"
-          className={classes.link}
-        >
-          {content["link2"]}
         </Link>
         <Link
           href="#"
@@ -189,18 +163,6 @@ export default function Navigation(props) {
             </Link>
           </Box>
           <List>
-            <ListItem button key={content["link1"]}>
-              <ListItemIcon className={classes.iconWrapper}>
-                <LayersIcon className={classes.icon} />
-              </ListItemIcon>
-              <ListItemText primary={content["link1"]} />
-            </ListItem>
-            <ListItem button key={content["link2"]}>
-              <ListItemIcon className={classes.iconWrapper}>
-                <FilterHdrIcon className={classes.icon} />
-              </ListItemIcon>
-              <ListItemText primary={content["link2"]} />
-            </ListItem>
             <ListItem button key={content["link3"]}>
               <ListItemIcon className={classes.iconWrapper}>
                 <DirectionsBusIcon className={classes.icon} />

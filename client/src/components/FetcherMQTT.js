@@ -1,12 +1,11 @@
 import axios from "axios";
 import mqttService from "./MQTT";
 import React, { useEffect, useState, useRef } from "react";
-import Sensors from "./Sensors";
 import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
 import { Switch, Route } from "react-router-dom";
 import AlertMessage from "./AlertMessage";
-
+import HorizontalNav2 from "./HorizontalNav2";
+import MiddleBar from "./MiddleBar";
 // import { Typography } from "@material-ui/core";
 
 const URL = "http://192.168.1.66:5000/active-sensors";
@@ -31,6 +30,12 @@ const FetcherΜQTT = () => {
         // setData({ sensors: data.sensors, isFetching: true });
         const response = await axios.get(URL);
         setData({ sensors: response.data });
+        for (const sensor of response.data) {
+          // console.log(sensor)
+          if (sensor.type === "temperature-humidity") {
+            sensor.room = "kitchen";
+          }
+        }
         dataRef.current = { sensors: response.data };
 
         for (const sensor of response.data) {
@@ -97,7 +102,6 @@ const FetcherΜQTT = () => {
           if (sensorItem.pubTopic === topic) {
             if (sensorItem.type === "temperature-humidity") {
               const splitStr = message.split("-");
-
               sensorItem.currentMeasurement = {
                 temperature: splitStr[0],
                 humidity: splitStr[1],
@@ -119,18 +123,28 @@ const FetcherΜQTT = () => {
     );
   }, []);
 
+  // const rooms = [...new Set(data.sensors.map((sensor) => sensor.room))];
   return (
     <main>
-      <div className={classes.appBarSpacer} />
+      <HorizontalNav2
+        content={{
+          brand: {
+            text: "Home Automation",
+            // image: {Logo},
+            image:
+              "https://www.flaticon.com/svg/static/icons/svg/3063/3063654.svg",
+            width: "110",
+          },
+          link3: "Actions",
+          link4: "User",
+          "primary-action": "Log Out",
+        }}
+      />
+      {/* <div className={classes.appBarSpacer} /> */}
       <AlertMessage alertMessage={data.alertMessage} />
       <Switch>
         <Route exact path="/">
-          <Container maxWidth="lg" className={classes.container}>
-            <Sensors sensors={data.sensors} />;
-          </Container>
-        </Route>
-        <Route exact path="/rooms">
-          <h2>Here are displayed the rooms of the house.</h2>;
+          <MiddleBar sensors={data.sensors} />
         </Route>
       </Switch>
     </main>
