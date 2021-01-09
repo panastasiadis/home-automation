@@ -7,10 +7,7 @@ import Button from "@material-ui/core/Button";
 import Sensors from "./Sensors";
 import Container from "@material-ui/core/Container";
 import FilterByButton from "./FilterByButton";
-
-// const capitalize = (s) => {
-//   return s && s[0].toUpperCase() + s.slice(1);
-// };
+import Dialog from "./DialogFilterBy";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,27 +38,40 @@ export default function ButtonAppBar(props) {
 
   const handleAllButton = () => {
     selectItem({
-    selected: "All",
-    type: "all",
-  });
+      selected: "All",
+      type: "all",
+    });
   };
 
   let currentlyDisplayedItem = "All";
   if (selectedItem.type === "room") {
-    currentlyDisplayedItem = "Room: " + selectedItem.selected
-  }
-  else if (selectedItem.type === "sensor-type") {
-    currentlyDisplayedItem = "Sensor type: " + selectedItem.selected
+    currentlyDisplayedItem = "Room: " + selectedItem.selected;
+  } else if (selectedItem.type === "sensor-type") {
+    currentlyDisplayedItem = "Sensor type: " + selectedItem.selected;
   }
 
   return (
     <div className={classes.root}>
       <AppBar position="static" color="secondary">
         <Toolbar variant="dense">
-          <Typography className={classes.title}>{currentlyDisplayedItem}</Typography>
+          <Typography className={classes.title}>
+            {currentlyDisplayedItem}
+          </Typography>
           <Button color="inherit" onClick={handleAllButton}>
             All
           </Button>
+          <Dialog
+            contents={rooms}
+            selectItem={selectItem}
+            name="Rooms"
+            type="room"
+          />
+          <Dialog
+            contents={categories}
+            selectItem={selectItem}
+            name="Types"
+            type="sensor-type"
+          />
           <FilterByButton
             contents={rooms}
             selectItem={selectItem}
@@ -82,7 +92,6 @@ export default function ButtonAppBar(props) {
           filtered={selectedItem.type}
           selected={selectedItem.selected}
         />
-        ;
       </Container>
     </div>
   );

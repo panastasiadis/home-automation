@@ -17,6 +17,9 @@ import ListItemText from "@material-ui/core/ListItemText";
 import DirectionsBusIcon from "@material-ui/icons/DirectionsBus";
 import NotificationImportantIcon from "@material-ui/icons/NotificationImportant";
 import { Link as RouterLink } from "react-router-dom";
+import {withRouter} from 'react-router-dom';
+
+import { getUser, removeUserSession } from '../utils/Common';
 
 import Logo from "../assets/smart-house.svg";
 const useStyles = makeStyles((theme) => ({
@@ -59,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Navigation(props) {
+function Navigation(props) {
   const classes = useStyles();
 
   const content = {
@@ -92,6 +95,16 @@ export default function Navigation(props) {
 
     setState({ ...state, open });
   };
+
+  // Logout 
+  const user = getUser();
+ 
+  // handle click event of logout button
+  const handleLogout = () => {
+    removeUserSession();
+    props.history.push('/login');
+  }
+
 
   return (
     <AppBar position="static" color="inherit">
@@ -127,6 +140,7 @@ export default function Navigation(props) {
           variant="contained"
           color="secondary"
           className={classes.primaryAction}
+          onClick={handleLogout}
         >
           {content["primary-action"]}
         </Button>
@@ -186,7 +200,7 @@ export default function Navigation(props) {
             borderRight={0}
             borderColor="background.emphasis"
           >
-            <Button variant="contained" color="secondary" fullWidth>
+            <Button onClick={handleLogout} variant="contained" color="secondary" fullWidth>
               {content["primary-action"]}
             </Button>
           </Box>
@@ -195,3 +209,5 @@ export default function Navigation(props) {
     </AppBar>
   );
 }
+
+export default withRouter(Navigation);

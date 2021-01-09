@@ -7,7 +7,7 @@
 #define DHTTYPE DHT11 // DHT 11
 #define DHT_DPIN D1
 #define BULB_DPIN D3
-#define PUBLISH_TIME_PERIOD 30000
+#define PUBLISH_TIME_PERIOD 5000
 
 // Update these with values suitable for your network.
 
