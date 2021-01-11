@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -31,9 +31,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OutlinedCard(props) {
   const classes = useStyles();
+  const [relayState, setRelayState] = useState("OFF");
+  // const [switchState, setSwitchState] = React.useState(false);
+
+  // const handleSwitchChange = (event) => {
+  //   setSwitchState(event.target.checked);
+  // };
 
   const onChangeHandler = (ev) => {
-
     const client = mqttService.getClient();
     console.log(client, props.command);
 
@@ -44,6 +49,23 @@ export default function OutlinedCard(props) {
     }
   };
 
+  useEffect(() => {
+    const client = mqttService.getClient();
+
+    const messageHandler = (topic, payload, packet) => {
+      console.log(payload.toString(), topic);
+      if (topic === props.topic) {
+        setRelayState(payload.toString());
+      }
+    };
+
+    client.on("message", messageHandler);
+
+    return () => {
+      console.log("unmounting relay");
+      client.off("message", messageHandler);
+    };
+  }, [props.topic]);
   return (
     <Card className={classes.root} variant="outlined">
       {/* <CardHeader title="Sensor" /> */}
@@ -54,6 +76,10 @@ export default function OutlinedCard(props) {
         </Typography>
         <Typography variant="h5" component="h2">
           {props.name}
+        </Typography>
+        <Typography variant="h5" component="h2">
+          {"Current State: "}
+          {relayState}
         </Typography>
         <Typography className={classes.pos} color="secondary">
           {props.device}

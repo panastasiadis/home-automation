@@ -1,9 +1,9 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemText from "@material-ui/core/ListItemText";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -11,7 +11,8 @@ import Dialog from "@material-ui/core/Dialog";
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
 import DeviceHubIcon from "@material-ui/icons/DeviceHub";
 import Typography from "@material-ui/core/Typography";
-
+import RoomIcon from "@material-ui/icons/Room";
+import CategoryIcon from "@material-ui/icons/Category";
 const capitalize = (s) => {
   return s && s[0].toUpperCase() + s.slice(1);
 };
@@ -104,13 +105,18 @@ export default function SimpleDialogDemo(props) {
       props.selectItem({ selected: value, type: props.type });
     }
   };
-  console.log(selectedValue);
 
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+      {/* <Button variant="outlined" color="primary" onClick={handleClickOpen}>
         {props.name}
-      </Button>
+      </Button> */}
+      <ListItem button onClick={handleClickOpen}>
+        <ListItemIcon>
+          {props.type === "room" ? <RoomIcon /> : <CategoryIcon />}
+        </ListItemIcon>
+        <ListItemText primary={props.name} />
+      </ListItem>
       <SimpleDialog
         name={props.name}
         type={props.type}

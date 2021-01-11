@@ -6,20 +6,11 @@ import RelayCard from "./RelayCard";
 export default function SensorGridItem(props) {
   if (props.sensor.type === "temperature-humidity") {
     return (
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid item xs={12} md={6} lg={5}>
         <TemperatureHumidityCard
+          topic={props.sensor.pubTopic}
           roomName={props.sensor.room}
           device={props.sensor.deviceId}
-          temperature={
-            props.sensor.currentMeasurement
-              ? props.sensor.currentMeasurement.temperature
-              : "-"
-          }
-          humidity={
-            props.sensor.currentMeasurement
-              ? props.sensor.currentMeasurement.humidity
-              : "-"
-          }
         />
       </Grid>
     );
@@ -30,8 +21,8 @@ export default function SensorGridItem(props) {
           roomName={props.sensor.room}
           device={props.sensor.deviceId}
           name={props.sensor.name}
-          command = {props.sensor.commandTopic}
-          mqttClient = {props.mqttClient}
+          command={props.sensor.commandTopic}
+          topic={props.sensor.pubTopic}
         />
       </Grid>
     );

@@ -34,7 +34,6 @@ export default function ButtonAppBar(props) {
 
   const rooms = [...new Set(props.sensors.map((sensor) => sensor.room))];
   const categories = [...new Set(props.sensors.map((sensor) => sensor.type))];
-  console.log("rooms: ", rooms);
 
   const handleAllButton = () => {
     selectItem({

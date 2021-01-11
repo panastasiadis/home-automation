@@ -6,9 +6,11 @@ import { Switch, Route } from "react-router-dom";
 import Login from "./components/Login";
 import PrivateRoute from "./utils/PrivateRoute";
 import PublicRoute from "./utils/PublicRoute";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/DashboardExample";
 import { getToken, removeUserSession, setUserSession } from "./utils/Common";
 import axios from 'axios';
+import FetcherMQTT from "./components/FetcherMQTTExample";
+
 function App() {
   const [authLoading, setAuthLoading] = useState(true);
 
@@ -38,7 +40,7 @@ function App() {
       <Switch>
         {/* <Route exact path="/" component={Home} /> */}
 
-        <PrivateRoute path="/dashboard" component={Dashboard} />
+        <PrivateRoute path="/dashboard" component={FetcherMQTT} />
         <PublicRoute path="/" component={Login} />
       </Switch>
     </Router>

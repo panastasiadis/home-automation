@@ -1,23 +1,12 @@
 import axios from "axios";
 import mqttService from "./MQTT";
 import React, { useEffect, useState, useRef } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import AlertMessage from "./AlertMessage";
-import MiddleBar from "./MiddleBar";
+import Dashboard from "./DashboardExample";
 
 const URL = "http://localhost:5000/active-sensors";
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-  appBarSpacer: theme.mixins.toolbar,
-}));
-
 const FetcherΜQTT = () => {
-  const classes = useStyles();
-
   const [data, setData] = useState({ sensors: [] });
   const dataRef = useRef(data);
 
@@ -28,6 +17,7 @@ const FetcherΜQTT = () => {
         const response = await axios.get(URL);
         setData({ sensors: response.data });
         for (const sensor of response.data) {
+          console.log(sensor);
           if (sensor.type === "temperature-humidity") {
             sensor.room = "kitchen";
           }
@@ -89,42 +79,25 @@ const FetcherΜQTT = () => {
         }
         return;
       }
-      const message = payload.toString();
-
-      const newData = {
-        sensors: dataRef.current.sensors.map((sensorItem) => {
-          // console.log("SensorItem", sensorItem);
-
-          if (sensorItem.pubTopic === topic) {
-            if (sensorItem.type === "temperature-humidity") {
-              const splitStr = message.split("-");
-              sensorItem.currentMeasurement = {
-                temperature: splitStr[0],
-                humidity: splitStr[1],
-                // timestamp: getFixedDate(),
-              };
-            }
-          }
-          return sensorItem;
-        }),
-      };
-      dataRef.current = newData;
-      setData(newData);
     };
 
     const client = mqttService.getClient(() => {});
+    console.log(client);
 
     mqttService.onMessage(client, (client, topic, payload) =>
       messageHandler(client, topic, payload)
     );
+
+    return () => {
+      console.log("Dashboard was unmounted!");
+    } 
   }, []);
 
-  // const rooms = [...new Set(data.sensors.map((sensor) => sensor.room))];
   return (
-    <main>
+    <div>
       <AlertMessage alertMessage={data.alertMessage} />
-      <MiddleBar sensors={data.sensors} />
-    </main>
+      <Dashboard sensors={data.sensors} />
+    </div>
   );
 };
 

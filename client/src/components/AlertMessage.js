@@ -27,7 +27,7 @@ export default function AlertMessage(props) {
     }
     setOpen(false);
   };
-  console.log(props.alertMessage);
+  // console.log(props.alertMessage);
 
 
   useEffect(() => {

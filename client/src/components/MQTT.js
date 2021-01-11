@@ -46,8 +46,7 @@ const getClient = () => {
 
 const onMessage = (client, callBack) => {
   client.on("message", (topic, message, packet) => {
-    console.log(topic);
-    console.log(message.toString());
+    console.log(message.toString(), topic);
     
     callBack(client, topic, message);
   });
@@ -72,6 +71,7 @@ const unsubscribe = (client, topic) => {
 
 const closeConnection = (client) => {
   client.end();
+  client = undefined;
 };
 
 const extractMqttTopicInfo = (mqttTopic) => {
