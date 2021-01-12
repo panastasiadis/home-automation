@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { setUserSession } from "../utils/Common";
-import SideImg from "../assets/bg.jpg"
+import SideImg from "../assets/home-automation3.svg";
 
 function Copyright() {
   return (
@@ -71,7 +71,7 @@ export default function SignInSide(props) {
     setLoading(true);
 
     axios
-      .post("http://localhost:5000/api/users/signin", {
+      .post("http://192.168.1.66:5000/api/users/signin", {
         username: username.value,
         password: password.value,
       })
@@ -81,10 +81,13 @@ export default function SignInSide(props) {
         props.history.push("/dashboard");
       })
       .catch((error) => {
+        console.log(error);
         setLoading(false);
-        if (error.response.status === 401 || error.response.status === 400)
-          setError(error.response.data.message);
-        else setError("Something went wrong. Please try again later.");
+        if (error.response) {
+          if (error.response.status === 401 || error.response.status === 400) {
+            setError(error.response.data.message);
+          }
+        } else setError("Something went wrong. Please try again later.");
       });
   };
 

@@ -23,13 +23,17 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Dialog from "./DialogFilterBy";
-import mqttService from "./MQTT";
-
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
 import { withRouter } from "react-router-dom";
-
+import { Link as RouterLink } from "react-router-dom";
+import Logo from "../assets/home-automation.svg";
+import Link from "@material-ui/core/Link";
+import Actions from "./Actions";
+import backgroundImage from "../assets/home-automation4.svg";
 function Copyright() {
   return (
-    <Typography variant="body2" color="textSecondary" align="center">
+    <Typography variant="body2" color="textPrimary" align="center">
       {"Copyright © "}
       {"Home Automation "}
       {new Date().getFullYear()}
@@ -38,7 +42,7 @@ function Copyright() {
   );
 }
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    paddingTop: 5,
   },
   drawerPaper: {
     position: "relative",
@@ -95,12 +100,13 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     width: theme.spacing(7),
-    [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9),
+    [theme.breakpoints.down("sm")]: {
+      width: theme.spacing(0),
     },
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
+    // backgroundColor: "#fcf4e3",
     flexGrow: 1,
     height: "100vh",
     overflow: "auto",
@@ -111,34 +117,47 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2),
+    width: "100vh",
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
   },
   fixedHeight: {
-    height: 240,
+    height: "100vh",
   },
   primaryAction: {
     [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
-  brand: {
-    // lineHeight: 1,
-    paddingTop: theme.spacing(1),
-    paddingLeft: theme.spacing(3),
-    paddingBottom: theme.spacing(1),
-    marginRight: 12,
+  drawerLogout: {
+    position: "fixed",
+    bottom: 0,
+    textAlign: "center",
+    paddingBottom: 10,
+  },
+  block: {
+    padding: theme.spacing(2),
+  },
+  behindBackground: {
+    backgroundImage: `url(${backgroundImage})`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+    width: "100vw",
+    height: "100vh",
   },
 }));
 
 function Dashboard(props) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const [selectedItem, selectItem] = React.useState({
     selected: "All",
     type: "all",
   });
+
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   // handle click event of logout button
   const handleLogout = () => {
@@ -162,11 +181,21 @@ function Dashboard(props) {
     });
   };
 
-  let currentlyDisplayedItem = "All";
+  const showActions = () => {
+    selectItem("Actions");
+  };
+
+  let currentlyDisplayedItem = {
+    tab: "All",
+    content: null,
+  };
+
   if (selectedItem.type === "room") {
-    currentlyDisplayedItem = "Room: " + selectedItem.selected;
+    currentlyDisplayedItem.tab = "Room";
+    currentlyDisplayedItem.content = selectedItem.selected;
   } else if (selectedItem.type === "sensor-type") {
-    currentlyDisplayedItem = "Sensor type: " + selectedItem.selected;
+    currentlyDisplayedItem.tab = "Sensor Type";
+    currentlyDisplayedItem.content = selectedItem.selected;
   }
 
   const rooms = [...new Set(props.sensors.map((sensor) => sensor.room))];
@@ -192,45 +221,34 @@ function Dashboard(props) {
           >
             <MenuIcon />
           </IconButton>
-          {/* <Link
-            href="/"
-            component={RouterLink}
-            to="/"
-            color="primary"
-            underline="none"
-            variant="h5"
-            className={classes.brand}
-          >
-            {<img src={Logo} alt="" height={50} />}
-          </Link> */}
-          <Typography
-            component="h1"
-            variant="h6"
-            color="inherit"
-            noWrap
-            className={classes.title}
-          >
-            Dashboard
-          </Typography>
-          <Typography
-            component="h6"
-            variant="h6"
-            color="inherit"
-            noWrap
-            className={classes.title}
-          >
-            {currentlyDisplayedItem}
+          <div className={classes.title}>
+            <Link
+              href="/"
+              component={RouterLink}
+              to="/"
+              color="primary"
+              underline="none"
+              variant="h5"
+            >
+              {<img src={Logo} alt="" height={50} />}
+            </Link>
+          </div>
+
+          <Typography variant="body1" className={classes.block}>
+            {"Hi, "}
+            {user.name}
           </Typography>
           <Button
             variant="contained"
-            color="secondary"
             className={classes.primaryAction}
             onClick={handleLogout}
+            color="primary"
           >
             Log Out
           </Button>
         </Toolbar>
       </AppBar>
+
       <Drawer
         variant="permanent"
         classes={{
@@ -260,18 +278,19 @@ function Dashboard(props) {
           <Dialog
             contents={categories}
             selectItem={selectItem}
-            name="Types"
+            name="Sensor Types"
             type="sensor-type"
           />
         </List>
         <Divider />
         <List>
-          <ListItem button>
+          <ListItem button onClick={showActions}>
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>
             <ListItemText primary="Actions" />
           </ListItem>
+
           <ListItem button onClick={handleLogout}>
             <ListItemIcon>
               <ExitToAppIcon />
@@ -280,19 +299,41 @@ function Dashboard(props) {
           </ListItem>
         </List>
       </Drawer>
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          <Sensors
-            sensors={props.sensors}
-            filtered={selectedItem.type}
-            selected={selectedItem.selected}
-          />
-          <Box pt={4}>
-            <Copyright />
-          </Box>
-        </Container>
-      </main>
+      <div className={classes.behindBackground}>
+        <main className={classes.content}>
+          <div className={classes.appBarSpacer} />
+          <div className={classes.block}>
+            <Typography variant="h6" gutterBottom>
+              Dashboard
+            </Typography>
+            <Typography variant="body1">
+              {currentlyDisplayedItem.tab}
+              {currentlyDisplayedItem.tab === "All" ? null : " | "}
+              {currentlyDisplayedItem.content}
+            </Typography>
+          </div>
+          <Container maxWidth="lg" className={classes.container}>
+            {selectedItem === "Actions" ? (
+              <Grid container spacing={3} justify={"center"}>
+                <Grid item xs={12} md={6} lg={4}>
+                  <Paper className={fixedHeightPaper} elevation={10}>
+                    <Actions />
+                  </Paper>
+                </Grid>
+              </Grid>
+            ) : (
+              <Sensors
+                sensors={props.sensors}
+                filtered={selectedItem.type}
+                selected={selectedItem.selected}
+              />
+            )}
+            <Box pt={4}>
+              <Copyright />
+            </Box>
+          </Container>
+        </main>
+      </div>
     </div>
   );
 }

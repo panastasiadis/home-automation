@@ -23,11 +23,10 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   dialogPaper: {
-    minWidth: "80vh",
+    minWidth: "30vh",
   },
   emptyContentLabel: {
-    marginLeft: 36,
-    marginBottom: 12,
+    margin:36,
   },
 }));
 
@@ -78,7 +77,7 @@ function SimpleDialog(props) {
         <Typography
           variant="body1"
           color="secondary"
-          align="left"
+          align="center"
           className={classes.emptyContentLabel}
         >
           {"No "}

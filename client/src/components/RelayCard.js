@@ -6,7 +6,7 @@ import Typography from "@material-ui/core/Typography";
 import CardMedia from "@material-ui/core/CardMedia";
 import LightBulbIcon from "../assets/lightbulb.png";
 import Switch from "@material-ui/core/Switch";
-import mqttService from "./MQTT";
+import mqttService from "../utils/MQTT";
 
 const useStyles = makeStyles((theme) => ({
   root: {

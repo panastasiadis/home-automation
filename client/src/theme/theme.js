@@ -10,48 +10,48 @@ const theme = createMuiTheme({
         },
         "text": {
             "primary": "#615f5d",
-            "secondary": "#5C6BC0",
-            "hint": "#9FA8DA"
+            "secondary": "#999693",
+            "hint": "#ccc8c4"
         },
         "primary": {
-            "main": "#304FFE",
-            "light": "#536DFE",
-            "dark": "#1A237E"
+            "main": "#2ca6d7",
+            "light": "#31b6eb",
+            "dark": "#288eb7"
         },
         "secondary": {
-            "main": "#9C6137",
-            "light": "#ffd740",
-            "dark": "#ff8f00"
+            "main": "#b09058",
+            "light": "#deb66f",
+            "dark": "#9c7f4e"
         },
         "contrastThreshold": 1.8
     },
-    "shadows": [
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none",
-        "none"
-    ]
+    // "shadows": [
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none",
+    //     "none"
+    // ]
 });
 
 export default theme;

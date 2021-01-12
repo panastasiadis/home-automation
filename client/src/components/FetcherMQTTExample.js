@@ -1,5 +1,5 @@
 import axios from "axios";
-import mqttService from "./MQTT";
+import mqttService from "../utils/MQTT";
 import React, { useEffect, useState, useRef } from "react";
 import AlertMessage from "./AlertMessage";
 import Dashboard from "./DashboardExample";
@@ -35,7 +35,12 @@ const FetcherΜQTT = () => {
 
     fetchDevices();
 
-    const messageHandler = (client, topic, payload) => {
+    const client = mqttService.getClient();
+    console.log(client);
+
+    const messageHandler = (topic, payload, packet) => {
+      console.log(payload.toString(), topic);
+
       if (topic === "browser") {
         const infoObj = JSON.parse(payload.toString());
         if (infoObj.action === "disconnected") {
@@ -81,22 +86,18 @@ const FetcherΜQTT = () => {
       }
     };
 
-    const client = mqttService.getClient(() => {});
-    console.log(client);
-
-    mqttService.onMessage(client, (client, topic, payload) =>
-      messageHandler(client, topic, payload)
-    );
+    client.on("message", messageHandler);
 
     return () => {
       console.log("Dashboard was unmounted!");
+      client.off("message", messageHandler);
     } 
   }, []);
 
   return (
     <div>
       <AlertMessage alertMessage={data.alertMessage} />
-      <Dashboard sensors={data.sensors} />
+      <Dashboard sensors={data.sensors} alertMessage={data.alertMessage}/>
     </div>
   );
 };

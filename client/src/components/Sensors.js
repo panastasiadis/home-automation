@@ -12,6 +12,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
+    backgroundColor: theme.palette.secondary.main
   },
   fixedHeight: {
     height: 240,
@@ -32,9 +33,9 @@ export default function Sensors(props) {
 
   if (sensors.length === 0) {
     return (
-      <Grid container spacing={3}>
+      <Grid container spacing={3} justify={"center"}>
         <Grid item xs={12} md={6} lg={4}>
-          <Paper className={fixedHeightPaper}>
+          <Paper  className={fixedHeightPaper} elevation={10}>
             {<Typography>{"No devices found."}</Typography>}
           </Paper>
         </Grid>
@@ -43,7 +44,7 @@ export default function Sensors(props) {
   }
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} justify={"center"}>
       {sensors.map((sensor) => {
         return <Sensor sensor={sensor} key={sensor.name} />;
       })}

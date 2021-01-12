@@ -50,7 +50,7 @@ export default function AlertMessage(props) {
 
   return (
     <div className={classes.root}>
-      <Snackbar open={open} onClose={handleClose} autoHideDuration={3000}>
+      <Snackbar open={open} onClose={handleClose} autoHideDuration={3000} anchorOrigin={{vertical: "bottom", horizontal: "right"}}>
         <Alert severity={severity} onClose={handleClose}>
           {device} was {reason}
         </Alert>

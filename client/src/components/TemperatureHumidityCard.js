@@ -6,7 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import CardMedia from "@material-ui/core/CardMedia";
 import icon from "../assets/thermometer.png";
-import mqttService from "./MQTT";
+import mqttService from "../utils/MQTT";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,11 +74,11 @@ export default function OutlinedCard(props) {
       </CardContent>
       <CardMedia className={classes.media} image={icon} title="Temperature" />
       <CardContent>
-        <Typography variant="h5" className={classes.degrees}>
+        <Typography variant="h6" className={classes.degrees}>
           {currTempHum.temperature} &#8451;
           <br />
         </Typography>
-        <Typography variant="h5" className={classes.degrees}>
+        <Typography variant="h6" className={classes.degrees}>
           {currTempHum.humidity} %
           <br />
         </Typography>
