@@ -4,7 +4,7 @@ const ctrlDevices = require("../controllers/devices");
 const ctrlSensors = require("../controllers/sensors");
 const ctrlRooms = require('../controllers/rooms');
 const ctrlAuth = require('../controllers/auth');
-
+const ctrlActions = require("../controllers/actions")
 // routes
 router.get("/rooms", ctrlRooms.roomsList);
 router.get("/rooms/:roomname", ctrlRooms.roomReadOne);
@@ -13,6 +13,8 @@ router.get("/devices/:roomname", ctrlDevices.devicesByRoom);
 router.get("/sensors", ctrlSensors.sensorsList);
 router.get("/sensors/:roomname", ctrlSensors.sensorsByRoom);
 router.get("/sensors/:devicename", ctrlSensors.sensorsByDevice);
+
+router.post("/actions", ctrlActions.addAction);
 
 router.post("/users/signin",ctrlAuth.userSignIn);
 router.get("/verifyToken", ctrlAuth.verifyToken)

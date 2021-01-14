@@ -31,6 +31,7 @@ import Logo from "../assets/home-automation.svg";
 import Link from "@material-ui/core/Link";
 import Actions from "./Actions";
 import backgroundImage from "../assets/home-automation4.svg";
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textPrimary" align="center">
@@ -117,13 +118,14 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2),
-    width: "100vh",
+    // width: "100vh",
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
+    backgroundColor: theme.palette.secondary.main,
   },
   fixedHeight: {
-    height: "100vh",
+    // height: "100vh",
   },
   primaryAction: {
     [theme.breakpoints.down("sm")]: {
@@ -136,7 +138,7 @@ const useStyles = makeStyles((theme) => ({
     textAlign: "center",
     paddingBottom: 10,
   },
-  block: {
+  currentTab: {
     padding: theme.spacing(2),
   },
   behindBackground: {
@@ -146,6 +148,11 @@ const useStyles = makeStyles((theme) => ({
     backgroundRepeat: "no-repeat",
     width: "100vw",
     height: "100vh",
+  },
+  fab: {
+    position: "fixed",
+    bottom: theme.spacing(2),
+    right: theme.spacing(4),
   },
 }));
 
@@ -182,7 +189,10 @@ function Dashboard(props) {
   };
 
   const showActions = () => {
-    selectItem("Actions");
+    selectItem({
+      selected: "Actions",
+      type: "actions",
+    });
   };
 
   let currentlyDisplayedItem = {
@@ -190,12 +200,31 @@ function Dashboard(props) {
     content: null,
   };
 
-  if (selectedItem.type === "room") {
-    currentlyDisplayedItem.tab = "Room";
-    currentlyDisplayedItem.content = selectedItem.selected;
-  } else if (selectedItem.type === "sensor-type") {
-    currentlyDisplayedItem.tab = "Sensor Type";
-    currentlyDisplayedItem.content = selectedItem.selected;
+  // if (selectedItem.type === "room") {
+  //   currentlyDisplayedItem.tab = "Room";
+  //   currentlyDisplayedItem.content = selectedItem.selected;
+  // } else if (selectedItem.type === "sensor-type") {
+  //   currentlyDisplayedItem.tab = "Sensor Type";
+  //   currentlyDisplayedItem.content = selectedItem.selected;
+  // }
+
+  switch (selectedItem.type) {
+    case "room":
+      currentlyDisplayedItem.tab = "Room";
+      currentlyDisplayedItem.content = selectedItem.selected;
+      break;
+    case "sensor-type":
+      currentlyDisplayedItem.tab = "Sensor Type";
+      currentlyDisplayedItem.content = selectedItem.selected;
+      break;
+    case "actions":
+      currentlyDisplayedItem.tab = "Actions";
+      currentlyDisplayedItem.content = null;
+      break;
+    default:
+      currentlyDisplayedItem.tab = "All";
+      currentlyDisplayedItem.content = null;
+      break;
   }
 
   const rooms = [...new Set(props.sensors.map((sensor) => sensor.room))];
@@ -234,7 +263,7 @@ function Dashboard(props) {
             </Link>
           </div>
 
-          <Typography variant="body1" className={classes.block}>
+          <Typography variant="body2" className={classes.currentTab}>
             {"Hi, "}
             {user.name}
           </Typography>
@@ -265,7 +294,7 @@ function Dashboard(props) {
         <List>
           <ListItem button onClick={handleAllButton}>
             <ListItemIcon>
-              <DashboardIcon />
+              <DashboardIcon color="primary" />
             </ListItemIcon>
             <ListItemText primary="All" />
           </ListItem>
@@ -286,14 +315,14 @@ function Dashboard(props) {
         <List>
           <ListItem button onClick={showActions}>
             <ListItemIcon>
-              <AssignmentIcon />
+              <AssignmentIcon color="primary" />
             </ListItemIcon>
             <ListItemText primary="Actions" />
           </ListItem>
 
           <ListItem button onClick={handleLogout}>
             <ListItemIcon>
-              <ExitToAppIcon />
+              <ExitToAppIcon color="primary" />
             </ListItemIcon>
             <ListItemText primary="Log Out" />
           </ListItem>
@@ -302,25 +331,27 @@ function Dashboard(props) {
       <div className={classes.behindBackground}>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
-          <div className={classes.block}>
+          <div className={classes.currentTab}>
             <Typography variant="h6" gutterBottom>
               Dashboard
             </Typography>
             <Typography variant="body1">
               {currentlyDisplayedItem.tab}
-              {currentlyDisplayedItem.tab === "All" ? null : " | "}
+              {currentlyDisplayedItem.tab === "All" || currentlyDisplayedItem.tab === "Actions" ? null : " | "}
               {currentlyDisplayedItem.content}
             </Typography>
           </div>
           <Container maxWidth="lg" className={classes.container}>
-            {selectedItem === "Actions" ? (
-              <Grid container spacing={3} justify={"center"}>
-                <Grid item xs={12} md={6} lg={4}>
-                  <Paper className={fixedHeightPaper} elevation={10}>
-                    <Actions />
-                  </Paper>
+            {selectedItem.selected === "Actions" ? (
+              <div>
+                <Grid container spacing={3} justify={"center"}>
+                  <Grid item xs={12} md={6} lg={12}>
+                    <Paper className={fixedHeightPaper} elevation={10}>
+                      <Actions sensors={props.sensors}/>
+                    </Paper>
+                  </Grid>
                 </Grid>
-              </Grid>
+              </div>
             ) : (
               <Sensors
                 sensors={props.sensors}

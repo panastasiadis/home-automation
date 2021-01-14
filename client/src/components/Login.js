@@ -105,7 +105,7 @@ export default function SignInSide(props) {
           </Typography>
           <form className={classes.form} noValidate>
             <TextField
-              variant="outlined"
+              variant="filled"
               color="secondary"
               margin="normal"
               required
@@ -118,7 +118,7 @@ export default function SignInSide(props) {
               onChange={username.onChange}
             />
             <TextField
-              variant="outlined"
+              variant="filled"
               color="secondary"
               margin="normal"
               required
@@ -140,7 +140,7 @@ export default function SignInSide(props) {
               type="button"
               fullWidth
               variant="contained"
-              color="secondary"
+              color="primary"
               className={classes.submit}
               onClick={handleLogin}
             >

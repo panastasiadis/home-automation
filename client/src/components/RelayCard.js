@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import CardMedia from "@material-ui/core/CardMedia";
-import LightBulbIcon from "../assets/lightbulb.png";
 import Switch from "@material-ui/core/Switch";
 import mqttService from "../utils/MQTT";
+import CircularProgress from "@material-ui/core/CircularProgress";
+
+import lightBulbOpen from "../assets/lightbulb-open2.svg";
+import lightBulbClosed from "../assets/lightbulb-closed2.svg";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,18 +23,31 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 12,
   },
   media: {
-    marginLeft: 12,
+    // marginLeft: theme.spacing(2),
     width: 122,
     height: 122,
+    margin: theme.spacing(2)
   },
   degrees: {
     textAlign: "center",
+  },
+  circularProgress: {
+    display: "inline",
+    "& > * + *": {
+      marginLeft: theme.spacing(2),
+    },
   },
 }));
 
 export default function OutlinedCard(props) {
   const classes = useStyles();
   const [relayState, setRelayState] = useState("OFF");
+  const switchValue = relayState === "ON" ? true : false;
+  const [spinnerState, setSpinnerState] = useState({
+    spinner: false,
+    disabled: false,
+  });
+
   // const [switchState, setSwitchState] = React.useState(false);
 
   // const handleSwitchChange = (event) => {
@@ -41,12 +57,13 @@ export default function OutlinedCard(props) {
   const onChangeHandler = (ev) => {
     const client = mqttService.getClient();
     console.log(client, props.command);
-
     if (ev.target.checked) {
       mqttService.publishMessage(client, props.command, "ON");
     } else {
       mqttService.publishMessage(client, props.command, "OFF");
     }
+
+    setSpinnerState({ spinner: true, disabled: true });
   };
 
   useEffect(() => {
@@ -56,6 +73,7 @@ export default function OutlinedCard(props) {
       console.log(payload.toString(), topic);
       if (topic === props.topic) {
         setRelayState(payload.toString());
+        setSpinnerState({ spinner: false, disabled: false });
       }
     };
 
@@ -84,11 +102,20 @@ export default function OutlinedCard(props) {
         <Typography className={classes.pos} color="secondary">
           {props.device}
         </Typography>
-        <Switch onChange={onChangeHandler} />
+        <Switch
+          onChange={onChangeHandler}
+          checked={switchValue}
+          disabled={spinnerState.disabled}
+        />
+        {spinnerState.spinner === true ? (
+          <div className={classes.circularProgress}>
+            <CircularProgress />
+          </div>
+        ) : null}
       </CardContent>
       <CardMedia
         className={classes.media}
-        image={LightBulbIcon}
+        image={relayState === "OFF" ? lightBulbClosed : lightBulbOpen}
         title="Lightbulb"
       />
     </Card>

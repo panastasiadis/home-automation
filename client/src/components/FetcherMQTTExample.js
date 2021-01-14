@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import AlertMessage from "./AlertMessage";
 import Dashboard from "./DashboardExample";
 
-const URL = "http://localhost:5000/active-sensors";
+const URL = "http://192.168.1.66:5000/active-sensors";
 
 const FetcherΜQTT = () => {
   const [data, setData] = useState({ sensors: [] });

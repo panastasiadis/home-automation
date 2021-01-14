@@ -26,7 +26,7 @@ export default function SensorGridItem(props) {
 
   if (props.sensor.type === "temperature-humidity") {
     return (
-      <Grid item xs={12} md={6} lg={5}>
+      <Grid item xs={12} md={6} lg={4}>
         <Paper className={fixedHeightPaper} elevation={6}>
           <TemperatureHumidityCard
             topic={props.sensor.pubTopic}
@@ -38,7 +38,7 @@ export default function SensorGridItem(props) {
     );
   } else if (props.sensor.type === "relay") {
     return (
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={fixedHeightPaper} elevation={6}>
           <RelayCard
             roomName={props.sensor.room}

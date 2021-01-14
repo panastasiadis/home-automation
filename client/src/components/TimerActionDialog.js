@@ -1,0 +1,184 @@
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DateFnsUtils from "@date-io/date-fns";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+import Button from "@material-ui/core/Button";
+import Fab from "@material-ui/core/Fab";
+import SelectSensorMenu from "./SelectSensorMenu";
+import SelectCommandMenu from "./SelectCommandMenu";
+import AddIcon from "@material-ui/icons/Add";
+import Grid from "@material-ui/core/Grid";
+import axios from "axios";
+import CircularProgress from "@material-ui/core/CircularProgress";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    "& > *": {
+      margin: theme.spacing(1),
+    },
+  },
+  extendedIcon: {
+    marginRight: theme.spacing(1),
+  },
+  fab: {
+    position: "fixed",
+    bottom: theme.spacing(2),
+    right: theme.spacing(4),
+  },
+  picker: {
+    padding: theme.spacing(1),
+    // alignItems: "center",
+    // justifyContent: "center",
+    // display: "flex"
+  },
+  cancelButton: {
+      marginRight: theme.spacing(1)
+  }
+}));
+export default function TimerActionDialog(props) {
+  const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [selectedSensor, setSelectedSensor] = React.useState("");
+  const [selectedCommand, setSelectedCommand] = React.useState("");
+
+  const [status, setStatus] = React.useState({ message: null, color: null });
+  const [loading, setLoading] = React.useState(false);
+  console.log(selectedDate, selectedSensor);
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setStatus({ message: null, color: null });
+    setSelectedSensor("");
+    setSelectedCommand("");
+
+    setSelectedDate(new Date());
+  };
+
+  const addAction = () => {
+    setStatus({ message: null, color: null });
+    setLoading(true);
+    axios
+      .post("http://192.168.1.66:5000/api/actions", {
+        sensorName: selectedSensor.name,
+        deviceId: selectedSensor.deviceId,
+        roomName: selectedSensor.room,
+        command: selectedCommand,
+        commandTopic: selectedSensor.commandTopic,
+        timestamp: selectedDate,
+      })
+      .then((response) => {
+        setLoading(false);
+        setStatus({ message: "Action added successfully", color: "green" });
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.log(error.response.data.message);
+          setStatus({ message: error.response.data.message, color: "red" });
+        }
+        setLoading(false);
+      });
+  };
+
+  return (
+    <div className={classes.root}>
+      <Fab
+        color="primary"
+        aria-label="add"
+        onClick={handleClickOpen}
+        className={classes.fab}
+      >
+        <AddIcon />
+      </Fab>
+      <Dialog
+        disableBackdropClick
+        disableEscapeKeyDown
+        open={open}
+        onClose={handleClose}
+      >
+        <DialogTitle>Schedule an action</DialogTitle>
+        <DialogContent dividers>
+          <div className={classes.picker}>
+            <SelectSensorMenu
+              sensors={props.sensors}
+              selectSensor={setSelectedSensor}
+            />
+          </div>
+          {selectedSensor === "" ? null : (
+            <div className={classes.picker}>
+              <SelectCommandMenu
+                type={selectedSensor.type}
+                selectCommand={setSelectedCommand}
+              />
+            </div>
+          )}
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            {/* <Grid container justify="space-around"> */}
+            <div className={classes.picker}>
+              <KeyboardDatePicker
+                margin="normal"
+                id="date-picker-dialog"
+                label="Date picker dialog"
+                format="MM/dd/yyyy"
+                value={selectedDate}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  "aria-label": "change date",
+                }}
+              />
+            </div>
+            <div className={classes.picker}>
+              <KeyboardTimePicker
+                margin="normal"
+                id="time-picker"
+                label="Time picker"
+                value={selectedDate}
+                onChange={handleDateChange}
+                KeyboardButtonProps={{
+                  "aria-label": "change time",
+                }}
+              />
+            </div>
+            {/* </Grid> */}
+          </MuiPickersUtilsProvider>
+          {status.message && (
+            <>
+              <small style={{ color: status.color }}>{status.message}</small>
+              <br />
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          {loading === true ? (
+            <CircularProgress />
+          ) : (
+            <div>
+              <Button className={classes.cancelButton} variant="contained" onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button variant="contained" onClick={addAction} color="primary">
+                Add Action
+              </Button>
+            </div>
+          )}
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}

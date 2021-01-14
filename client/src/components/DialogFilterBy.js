@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   dialogPaper: {
-    minWidth: "30vh",
+    // minWidth: "30vh",
   },
   emptyContentLabel: {
     margin:36,
@@ -107,12 +107,9 @@ export default function SimpleDialogDemo(props) {
 
   return (
     <div>
-      {/* <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        {props.name}
-      </Button> */}
       <ListItem button onClick={handleClickOpen}>
         <ListItemIcon>
-          {props.type === "room" ? <RoomIcon /> : <CategoryIcon />}
+          {props.type === "room" ? <RoomIcon color="primary"/> : <CategoryIcon color="primary"/>}
         </ListItemIcon>
         <ListItemText primary={props.name} />
       </ListItem>

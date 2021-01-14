@@ -1,5 +1,26 @@
 const mongoose = require("mongoose");
 
+const timerActionSchema = new mongoose.Schema({
+  timestamp: { type: Date, required: true },
+});
+
+const actionSchema = new mongoose.Schema(
+  {
+    sensorName: { type: String, required: true },
+    deviceId: { type: String, required: true },
+    roomName: { type: String, required: true },
+    command: { type: String, required: true },
+    commandTopic: { type: String, required: true },
+  },
+  { discriminatorKey: "actionCategory" }
+);
+
+const Action = mongoose.model("Action", actionSchema);
+module.exports.TimerAction = Action.discriminator(
+  "TimerAction",
+  timerActionSchema
+);
+
 const sensorSchema = new mongoose.Schema(
   {
     _id: { type: String },
@@ -33,7 +54,7 @@ const tempsHumsSchema = new mongoose.Schema(
 
 const measurementSchema = new mongoose.Schema(
   {
-    sensorId: {type: String, required: true},
+    sensorId: { type: String, required: true },
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
     measurementsCounter: { type: Number, default: 0, required: true },

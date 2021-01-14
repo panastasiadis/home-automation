@@ -4,8 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-
-var app = express();
+const scheduled = require("./api/controllers/actions")
+const app = express();
 
 const aedesBroker = require("./aedes_broker");
 const db = require("./api/models/db");
