@@ -68,11 +68,6 @@ function Row(props) {
         <TableCell align="center">{row.price}</TableCell>
         <TableCell align="center">
           <IconButton edge="start" color="primary" aria-label="open drawer">
-            <EditIcon />
-          </IconButton>
-        </TableCell>
-        <TableCell align="center">
-          <IconButton edge="start" color="primary" aria-label="open drawer">
             <DeleteIcon />
           </IconButton>
         </TableCell>
@@ -82,7 +77,7 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Typography variant="h6" gutterBottom component="div">
-                Timer
+                Scheduled Action
               </Typography>
 
               <Table size="small" aria-label="purchases">
@@ -135,7 +130,6 @@ Row.propTypes = {
 
 const rows = [
   createData("Scheduled", "Turn on","Lightbulb", "livingroom" , "lr-NodeMCU", "Online"),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3, 4.99),
 ];
 
 export default function CollapsibleTable() {
@@ -151,7 +145,6 @@ export default function CollapsibleTable() {
             <TableCell align="center">Room</TableCell>
             <TableCell align="center">Device</TableCell>
             <TableCell align="center">Status</TableCell>
-            <TableCell align="center">Edit</TableCell>
             <TableCell align="center">Delete</TableCell>
           </TableRow>
         </TableHead>

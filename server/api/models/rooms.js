@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
 const timerActionSchema = new mongoose.Schema({
-  timestamp: { type: Date, required: true },
+  startTime: { type: Date, required: true },
+  recurrenceNumber: { type: Number },
+  recurrenceTimeUnit: { type: String },
 });
 
 const actionSchema = new mongoose.Schema(

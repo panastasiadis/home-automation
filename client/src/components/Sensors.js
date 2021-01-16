@@ -44,7 +44,7 @@ export default function Sensors(props) {
   }
 
   return (
-    <Grid container spacing={3} justify={"center"}>
+    <Grid container spacing={3} justify="center">
       {sensors.map((sensor) => {
         return <Sensor sensor={sensor} key={sensor.name} />;
       })}

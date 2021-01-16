@@ -199,15 +199,6 @@ function Dashboard(props) {
     tab: "All",
     content: null,
   };
-
-  // if (selectedItem.type === "room") {
-  //   currentlyDisplayedItem.tab = "Room";
-  //   currentlyDisplayedItem.content = selectedItem.selected;
-  // } else if (selectedItem.type === "sensor-type") {
-  //   currentlyDisplayedItem.tab = "Sensor Type";
-  //   currentlyDisplayedItem.content = selectedItem.selected;
-  // }
-
   switch (selectedItem.type) {
     case "room":
       currentlyDisplayedItem.tab = "Room";

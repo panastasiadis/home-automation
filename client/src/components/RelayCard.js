@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     // marginLeft: theme.spacing(2),
     width: 122,
     height: 122,
-    margin: theme.spacing(2)
+    margin: theme.spacing(2),
   },
   degrees: {
     textAlign: "center",
@@ -41,18 +41,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OutlinedCard(props) {
   const classes = useStyles();
-  const [relayState, setRelayState] = useState("OFF");
+  const [relayState, setRelayState] = useState("Loading State...");
   const switchValue = relayState === "ON" ? true : false;
   const [spinnerState, setSpinnerState] = useState({
     spinner: false,
-    disabled: false,
+    disabled: true,
   });
-
-  // const [switchState, setSwitchState] = React.useState(false);
-
-  // const handleSwitchChange = (event) => {
-  //   setSwitchState(event.target.checked);
-  // };
 
   const onChangeHandler = (ev) => {
     const client = mqttService.getClient();
@@ -115,7 +109,7 @@ export default function OutlinedCard(props) {
       </CardContent>
       <CardMedia
         className={classes.media}
-        image={relayState === "OFF" ? lightBulbClosed : lightBulbOpen}
+        image={relayState === "ON" ? lightBulbOpen : lightBulbClosed}
         title="Lightbulb"
       />
     </Card>

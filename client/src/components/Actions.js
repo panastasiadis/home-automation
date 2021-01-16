@@ -2,6 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import CollapsibleTable from "./CollapsibleTable";
 import TimerActionDialog from "./TimerActionDialog";
+import ActionCard from "./ActionCard";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > *": {
@@ -15,7 +16,8 @@ export default function MaterialUIPickers(props) {
 
   return (
     <div className={classes.root}>
-      <CollapsibleTable />
+      <ActionCard />
+      {/* <CollapsibleTable /> */}
       <TimerActionDialog sensors={props.sensors} />
     </div>
   );

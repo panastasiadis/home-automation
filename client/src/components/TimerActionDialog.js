@@ -14,6 +14,7 @@ import Button from "@material-ui/core/Button";
 import Fab from "@material-ui/core/Fab";
 import SelectSensorMenu from "./SelectSensorMenu";
 import SelectCommandMenu from "./SelectCommandMenu";
+import SelectRepeatMenu from "./SelectRepeatMenu";
 import AddIcon from "@material-ui/icons/Add";
 import Grid from "@material-ui/core/Grid";
 import axios from "axios";
@@ -40,8 +41,8 @@ const useStyles = makeStyles((theme) => ({
     // display: "flex"
   },
   cancelButton: {
-      marginRight: theme.spacing(1)
-  }
+    marginRight: theme.spacing(1),
+  },
 }));
 export default function TimerActionDialog(props) {
   const classes = useStyles();
@@ -49,10 +50,13 @@ export default function TimerActionDialog(props) {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [selectedSensor, setSelectedSensor] = React.useState("");
   const [selectedCommand, setSelectedCommand] = React.useState("");
+  const [selectedRecurrence, setSelectedRecurrence] = React.useState("");
+  const [selectedTimeUnits, setSelectedTimeUnits] = React.useState("");
+
 
   const [status, setStatus] = React.useState({ message: null, color: null });
   const [loading, setLoading] = React.useState(false);
-  console.log(selectedDate, selectedSensor);
+  console.log(selectedDate, selectedSensor, selectedRecurrence);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -67,7 +71,8 @@ export default function TimerActionDialog(props) {
     setStatus({ message: null, color: null });
     setSelectedSensor("");
     setSelectedCommand("");
-
+    setSelectedRecurrence("");
+    setSelectedTimeUnits("");
     setSelectedDate(new Date());
   };
 
@@ -82,6 +87,9 @@ export default function TimerActionDialog(props) {
         command: selectedCommand,
         commandTopic: selectedSensor.commandTopic,
         timestamp: selectedDate,
+        recurrenceTimeUnit: selectedTimeUnits,
+        recurrenceNumber: selectedRecurrence,
+
       })
       .then((response) => {
         setLoading(false);
@@ -134,7 +142,7 @@ export default function TimerActionDialog(props) {
               <KeyboardDatePicker
                 margin="normal"
                 id="date-picker-dialog"
-                label="Date picker dialog"
+                label="Starting Date Picker"
                 format="MM/dd/yyyy"
                 value={selectedDate}
                 onChange={handleDateChange}
@@ -147,7 +155,7 @@ export default function TimerActionDialog(props) {
               <KeyboardTimePicker
                 margin="normal"
                 id="time-picker"
-                label="Time picker"
+                label="Starting Time Picker"
                 value={selectedDate}
                 onChange={handleDateChange}
                 KeyboardButtonProps={{
@@ -157,6 +165,7 @@ export default function TimerActionDialog(props) {
             </div>
             {/* </Grid> */}
           </MuiPickersUtilsProvider>
+          <SelectRepeatMenu selectRecurrence={setSelectedRecurrence} selectTimeUnits={setSelectedTimeUnits}/>
           {status.message && (
             <>
               <small style={{ color: status.color }}>{status.message}</small>
@@ -169,7 +178,12 @@ export default function TimerActionDialog(props) {
             <CircularProgress />
           ) : (
             <div>
-              <Button className={classes.cancelButton} variant="contained" onClick={handleClose} color="primary">
+              <Button
+                className={classes.cancelButton}
+                variant="contained"
+                onClick={handleClose}
+                color="primary"
+              >
                 Cancel
               </Button>
               <Button variant="contained" onClick={addAction} color="primary">
