@@ -15,7 +15,9 @@ router.get("/sensors/:roomname", ctrlSensors.sensorsByRoom);
 router.get("/sensors/:devicename", ctrlSensors.sensorsByDevice);
 
 router.post("/actions", ctrlActions.addAction);
+router.get("/actions", ctrlActions.actionsList);
+router.delete('/actions/:actionid', ctrlActions.deleteAction);
 
 router.post("/users/signin",ctrlAuth.userSignIn);
-router.get("/verifyToken", ctrlAuth.verifyToken)
+router.get("/verifyToken", ctrlAuth.verifyToken);
 module.exports = router;

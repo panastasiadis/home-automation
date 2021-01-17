@@ -18,8 +18,10 @@ const actionSchema = new mongoose.Schema(
 );
 
 const Action = mongoose.model("Action", actionSchema);
+module.exports.Action = Action;
+
 module.exports.TimerAction = Action.discriminator(
-  "TimerAction",
+  "Timer Action",
   timerActionSchema
 );
 

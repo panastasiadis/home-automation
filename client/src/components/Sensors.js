@@ -1,10 +1,9 @@
 import React from "react";
 import Sensor from "./Sensor";
-import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
+import NoContentPage from "./NoContentPage";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -12,17 +11,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
-    backgroundColor: theme.palette.secondary.main
-  },
-  fixedHeight: {
-    height: 240,
+    backgroundColor: theme.palette.secondary.main,
   },
 }));
 
 export default function Sensors(props) {
   const classes = useStyles();
-
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   let sensors = props.sensors;
   if (props.filtered === "room") {
@@ -33,13 +27,9 @@ export default function Sensors(props) {
 
   if (sensors.length === 0) {
     return (
-      <Grid container spacing={3} justify={"center"}>
-        <Grid item xs={12} md={6} lg={4}>
-          <Paper  className={fixedHeightPaper} elevation={10}>
-            {<Typography>{"No devices found."}</Typography>}
-          </Paper>
-        </Grid>
-      </Grid>
+      <Paper className={classes.paper} elevation={10}>
+        <NoContentPage displayItem={"Devices"} />
+      </Paper>
     );
   }
 

@@ -52,7 +52,6 @@ const FetcherΜQTT = () => {
               return sensor.deviceId !== infoObj.deviceId;
             }),
             alertMessage: {
-              // show: true,
               device: infoObj.deviceId,
               reason: infoObj.action,
             },
@@ -81,6 +80,20 @@ const FetcherΜQTT = () => {
             dataRef.current = newData;
             setData(newData);
           }
+        } else if (infoObj.action === "action") {
+          console.log(infoObj);
+          const newData = {
+            sensors: dataRef.current.sensors,
+            alertMessage: {
+              reason: infoObj.action,
+              actionCategory: infoObj.actionInfo.actionCategory,
+              command: infoObj.actionInfo.command,
+              roomName: infoObj.actionInfo.roomName,
+              sensorName: infoObj.actionInfo.sensorName,
+            },
+          };
+          dataRef.current = newData;
+          setData(newData);
         }
         return;
       }
@@ -91,13 +104,13 @@ const FetcherΜQTT = () => {
     return () => {
       console.log("Dashboard was unmounted!");
       client.off("message", messageHandler);
-    } 
+    };
   }, []);
 
   return (
     <div>
       <AlertMessage alertMessage={data.alertMessage} />
-      <Dashboard sensors={data.sensors} alertMessage={data.alertMessage}/>
+      <Dashboard sensors={data.sensors} alertMessage={data.alertMessage} />
     </div>
   );
 };

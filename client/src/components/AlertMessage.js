@@ -29,7 +29,6 @@ export default function AlertMessage(props) {
   };
   // console.log(props.alertMessage);
 
-
   useEffect(() => {
     setOpen(props.alertMessage ? true : false);
   }, [props]);
@@ -46,13 +45,22 @@ export default function AlertMessage(props) {
     severity = "success";
   } else if (reason === "disconnected") {
     severity = "error";
+  } else if (reason === "action") {
+    severity = "info";
   }
 
   return (
     <div className={classes.root}>
-      <Snackbar open={open} onClose={handleClose} autoHideDuration={3000} anchorOrigin={{vertical: "bottom", horizontal: "right"}}>
+      <Snackbar
+        open={open}
+        onClose={handleClose}
+        autoHideDuration={6000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
         <Alert severity={severity} onClose={handleClose}>
-          {device} was {reason}
+          {reason === "action"
+            ? `${props.alertMessage.actionCategory} triggered! Sending command [${props.alertMessage.command}] on ${props.alertMessage.sensorName} | ${props.alertMessage.roomName}`
+            : `${device} was ${reason}`}
         </Alert>
       </Snackbar>
     </div>

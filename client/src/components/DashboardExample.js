@@ -24,7 +24,6 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import Dialog from "./DialogFilterBy";
 import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
 import { withRouter } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import Logo from "../assets/home-automation.svg";
@@ -118,14 +117,10 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(2),
-    // width: "100vh",
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
     backgroundColor: theme.palette.secondary.main,
-  },
-  fixedHeight: {
-    // height: "100vh",
   },
   primaryAction: {
     [theme.breakpoints.down("sm")]: {
@@ -139,7 +134,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 10,
   },
   currentTab: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
   },
   behindBackground: {
     backgroundImage: `url(${backgroundImage})`,
@@ -163,8 +158,6 @@ function Dashboard(props) {
     selected: "All",
     type: "all",
   });
-
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   // handle click event of logout button
   const handleLogout = () => {
@@ -328,20 +321,19 @@ function Dashboard(props) {
             </Typography>
             <Typography variant="body1">
               {currentlyDisplayedItem.tab}
-              {currentlyDisplayedItem.tab === "All" || currentlyDisplayedItem.tab === "Actions" ? null : " | "}
+              {currentlyDisplayedItem.tab === "All" ||
+              currentlyDisplayedItem.tab === "Actions"
+                ? null
+                : " | "}
               {currentlyDisplayedItem.content}
             </Typography>
           </div>
           <Container maxWidth="lg" className={classes.container}>
             {selectedItem.selected === "Actions" ? (
               <div>
-                <Grid container spacing={3} justify={"center"}>
-                  <Grid item xs={12} md={6} lg={12}>
-                    <Paper className={fixedHeightPaper} elevation={10}>
-                      <Actions sensors={props.sensors}/>
-                    </Paper>
-                  </Grid>
-                </Grid>
+                <Paper className={classes.paper} elevation={10}>
+                  <Actions sensors={props.sensors} />
+                </Paper>
               </div>
             ) : (
               <Sensors

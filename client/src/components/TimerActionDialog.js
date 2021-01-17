@@ -16,7 +16,6 @@ import SelectSensorMenu from "./SelectSensorMenu";
 import SelectCommandMenu from "./SelectCommandMenu";
 import SelectRepeatMenu from "./SelectRepeatMenu";
 import AddIcon from "@material-ui/icons/Add";
-import Grid from "@material-ui/core/Grid";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
@@ -56,7 +55,7 @@ export default function TimerActionDialog(props) {
 
   const [status, setStatus] = React.useState({ message: null, color: null });
   const [loading, setLoading] = React.useState(false);
-  console.log(selectedDate, selectedSensor, selectedRecurrence);
+  // console.log(selectedDate, selectedSensor, selectedRecurrence);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -92,7 +91,9 @@ export default function TimerActionDialog(props) {
 
       })
       .then((response) => {
-        setLoading(false);
+        // console.log(response.data)
+        props.updateActions(response.data._id);
+        setLoading();
         setStatus({ message: "Action added successfully", color: "green" });
       })
       .catch((error) => {
@@ -137,7 +138,6 @@ export default function TimerActionDialog(props) {
             </div>
           )}
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            {/* <Grid container justify="space-around"> */}
             <div className={classes.picker}>
               <KeyboardDatePicker
                 margin="normal"

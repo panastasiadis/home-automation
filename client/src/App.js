@@ -2,11 +2,10 @@ import "./App.css";
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 
-import { Switch, Route } from "react-router-dom";
+import { Switch } from "react-router-dom";
 import Login from "./components/Login";
 import PrivateRoute from "./utils/PrivateRoute";
 import PublicRoute from "./utils/PublicRoute";
-import Dashboard from "./components/DashboardExample";
 import { getToken, removeUserSession, setUserSession } from "./utils/Common";
 import axios from 'axios';
 import FetcherMQTT from "./components/FetcherMQTTExample";

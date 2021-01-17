@@ -8,10 +8,6 @@ import RouterIcon from "@material-ui/icons/Router";
 import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 
-import Typography from '@material-ui/core/Typography';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-
-
 const useStyles = makeStyles((theme) => ({
   button: {
     display: "block",

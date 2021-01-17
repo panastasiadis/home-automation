@@ -1,13 +1,42 @@
 const schedule = require("node-schedule");
 const aedesBroker = require("../../aedes_broker");
 
+const Action = require("../models/rooms").Action;
 const TimerAction = require("../models/rooms").TimerAction;
+
+let scheduledCronActions = [];
 
 const sendJsonResponse = (res, status, content) => {
   res.status(status);
   res.json(content);
 };
 
+const sendNotification = (actionInfo) => {
+  infoForBrowserJSON = {
+    actionInfo: actionInfo,
+    action: "action",
+  };
+
+  aedesBroker.publishMessage("browser", JSON.stringify(infoForBrowserJSON));
+};
+
+const takeTimerAction = (topic, command, date, rule, actionInfo) => {};
+
+module.exports.actionsList = (req, res) => {
+  Action.find({})
+    .sort({ startTime: "desc" })
+    .exec((err, actionDocs) => {
+      // console.log(actionDocs);
+      if (actionDocs.length === 0) {
+        sendJsonResponse(res, 404, { message: "No actions found" });
+        return;
+      } else if (err) {
+        sendJsonResponse(res, 404, err);
+        return;
+      }
+      sendJsonResponse(res, 200, actionDocs);
+    });
+};
 module.exports.addAction = (req, res) => {
   console.log(req.body);
 
@@ -73,21 +102,76 @@ module.exports.addAction = (req, res) => {
       sendJsonResponse(res, 400, err);
     } else {
       sendJsonResponse(res, 201, action);
+      let scheduledAction;
 
       if (requestedRule) {
-        const scheduledAction = schedule.scheduleJob(
+        scheduledAction = schedule.scheduleJob(
           { start: date, rule: requestedRule },
           () => {
             aedesBroker.publishMessage(req.body.commandTopic, req.body.command);
             console.log("Action Triggered!");
+            sendNotification(action);
           }
         );
       } else {
-        const scheduledAction = schedule.scheduleJob(date, () => {
+        scheduledAction = schedule.scheduleJob(date, () => {
           aedesBroker.publishMessage(req.body.commandTopic, req.body.command);
           console.log("Action Triggered!");
+          sendNotification(action);
         });
       }
+      scheduledCronActions.push({
+        actionId: action._id.toString(),
+        cronJob: scheduledAction,
+      });
     }
   });
+};
+
+module.exports.deleteAction = (req, res) => {
+  const actionId = req.params.actionid;
+  // console.log(actionId);
+
+  if (actionId) {
+    Action.findByIdAndRemove(actionId).exec((err, action) => {
+      if (err) {
+        sendJsonResponse(res, 404, {
+          message: "Something Went Wrong. Action not found on database",
+        });
+        return;
+      }
+      sendJsonResponse(res, 204, null);
+      console.log(scheduledCronActions);
+      console.log(action._id);
+      // const cronJob = scheduledCronActions[0].cronJob.cancel();
+      cronActionIdx = scheduledCronActions.findIndex((el) => {
+        console.log(el)
+        return (el.actionId === action._id.toString());
+      }
+      );
+      console.log(cronActionIdx);
+      // scheduledCronActions[cronActionIdx].cronJob.cancel();
+      // scheduledCronActions.splice(cronActionIdx, 1);
+      scheduledCronActions = scheduledCronActions.filter((cronAction) => {
+        if (cronAction.actionId === action._id.toString()) {
+          console.log(cronAction.cronJob);
+          cronAction.cronJob.cancel();
+        }
+        return cronAction.actionId !== action._id.toString();
+      });
+      console.log(scheduledCronActions);
+
+      // scheduledCronActions = scheduledCronActions.filter((cronAction) => {
+      //   if (cronAction.actionId === action._id) {
+      //     console.log(cronAction);
+      //     cronAction.cronJob.cancel();
+      //   }
+      //   return cronAction.actionId !== action._id;
+      // });
+    });
+  } else {
+    sendJsonResponse(res, 404, {
+      message: "No action specified",
+    });
+  }
 };
