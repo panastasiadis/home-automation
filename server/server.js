@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const scheduled = require("./api/controllers/actions")
+const scheduleStoredActions = require("./api/controllers/actions").scheduleStoredActions;
 const app = express();
 
 const aedesBroker = require("./aedes_broker");
@@ -83,5 +83,8 @@ db.connectDb(() => {
     app.get("/active-sensors", (req, res) => {
       res.send(aedesBroker.getActiveSensors());
     });
+
+    scheduleStoredActions();
+    
   });
 });

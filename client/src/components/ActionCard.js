@@ -116,6 +116,7 @@ export default function ActionCard(props) {
   }
 
   const date = new Date(props.action.startTime);
+  const registrationDate = new Date(props.action.registrationDate);
   return (
     <div className={classes.root}>
       <Accordion
@@ -163,7 +164,7 @@ export default function ActionCard(props) {
             </div>
             <Typography className={classes.secondaryHeading}>
               {"Registered on: "}
-              {date.toLocaleString()}
+              {registrationDate.toLocaleString()}
             </Typography>
           </div>
         </AccordionSummary>

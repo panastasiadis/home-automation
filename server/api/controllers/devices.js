@@ -1,6 +1,6 @@
-const Room = require("../models/rooms").Room;
-const SensorModel = require("../models/rooms").Sensor;
-const Measurement = require("../models/rooms").Measurement;
+const Room = require("../models/models").Room;
+const SensorModel = require("../models/models").Sensor;
+const Measurement = require("../models/models").Measurement;
 
 const sendJsonResponse = (res, status, content) => {
   res.status(status);

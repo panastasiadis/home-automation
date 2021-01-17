@@ -1,4 +1,4 @@
-const Room = require("../models/rooms").Room;
+const Room = require("../models/models").Room;
 
 const sendJsonResponse = (res, status, content) => {
   res.status(status);

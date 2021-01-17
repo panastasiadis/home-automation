@@ -1,8 +1,8 @@
 const schedule = require("node-schedule");
 const aedesBroker = require("../../aedes_broker");
 
-const Action = require("../models/rooms").Action;
-const TimerAction = require("../models/rooms").TimerAction;
+const Action = require("../models/models").Action;
+const TimerAction = require("../models/models").TimerAction;
 
 let scheduledCronActions = [];
 
@@ -20,7 +20,93 @@ const sendNotification = (actionInfo) => {
   aedesBroker.publishMessage("browser", JSON.stringify(infoForBrowserJSON));
 };
 
-const takeTimerAction = (topic, command, date, rule, actionInfo) => {};
+const createCronRule = (date, timeUnit, recurrenceNumber) => {
+  let requestedRule;
+
+  switch (timeUnit) {
+    case "Minutes":
+      console.log(`0 */${recurrenceNumber} * * * *`);
+      requestedRule = `0 */${recurrenceNumber} * * * *`;
+      break;
+    case "Hours":
+      console.log(`0 ${date.getMinutes() + 1} */${recurrenceNumber} * * *`);
+      requestedRule = `0 ${date.getMinutes() + 1} */${recurrenceNumber} * * *`;
+      break;
+    case "Days":
+      console.log(
+        `0 ${
+          date.getMinutes() + 1
+        } ${date.getHours()} */${recurrenceNumber} * *`
+      );
+      requestedRule = `0 ${
+        date.getMinutes() + 1
+      } ${date.getHours()} */${recurrenceNumber} * *`;
+      break;
+    default:
+      break;
+  }
+
+  return requestedRule;
+};
+
+module.exports.scheduleStoredActions = () => {
+  TimerAction.find({}).exec((err, timerActions) => {
+    if (err) {
+      console.log(err);
+    }
+
+    if (timerActions.length !== 0) {
+      for (const action of timerActions) {
+        const date = new Date(action.startTime);
+        let requestedRule;
+        let scheduledAction;
+
+        if (action.recurrenceTimeUnit) {
+          requestedRule = createCronRule(
+            action.startTime,
+            action.recurrenceTimeUnit,
+            action.recurrenceNumber
+          );
+
+          scheduledAction = schedule.scheduleJob(
+            { start: date, rule: requestedRule },
+            () => {
+              aedesBroker.publishMessage(action.commandTopic, action.command);
+              console.log("Action Triggered!");
+              sendNotification(action);
+            }
+          );
+
+          scheduledCronActions.push({
+            actionId: action._id.toString(),
+            cronJob: scheduledAction,
+          });
+        } else {
+          currentDate = new Date();
+          if (currentDate > date) {
+            TimerAction.deleteOne({ _id: action._id }).exec((err, action) => {
+              if (err) {
+                console.log(err);
+              }
+              console.log("Old unused action was deleted");
+            });
+          } else {
+            scheduledAction = schedule.scheduleJob(date, () => {
+              aedesBroker.publishMessage(action.commandTopic, action.command);
+              console.log("Action Triggered!");
+              sendNotification(action);
+            });
+
+            scheduledCronActions.push({
+              actionId: action._id.toString(),
+              cronJob: scheduledAction,
+            });
+          }
+        }
+      }
+    }
+  });
+};
 
 module.exports.actionsList = (req, res) => {
   Action.find({})
@@ -60,6 +146,7 @@ module.exports.addAction = (req, res) => {
     command: req.body.command,
     commandTopic: req.body.commandTopic,
     startTime: req.body.timestamp,
+    registrationDate: req.body.registrationDate,
   };
 
   const date = new Date(action.startTime);
@@ -68,33 +155,9 @@ module.exports.addAction = (req, res) => {
   console.log(date);
 
   if (recurrenceNumber && timeUnit && recurrenceNumber > 0) {
+    requestedRule = createCronRule(date, timeUnit, recurrenceNumber);
     action.recurrenceNumber = recurrenceNumber;
     action.recurrenceTimeUnit = timeUnit;
-
-    switch (timeUnit) {
-      case "Minutes":
-        console.log(`0 */${recurrenceNumber} * * * *`);
-        requestedRule = `0 */${recurrenceNumber} * * * *`;
-        break;
-      case "Hours":
-        console.log(`0 ${date.getMinutes() + 1} */${recurrenceNumber} * * *`);
-        requestedRule = `0 ${
-          date.getMinutes() + 1
-        } */${recurrenceNumber} * * *`;
-        break;
-      case "Days":
-        console.log(
-          `0 ${
-            date.getMinutes() + 1
-          } ${date.getHours()} */${recurrenceNumber} * *`
-        );
-        requestedRule = `0 ${
-          date.getMinutes() + 1
-        } ${date.getHours()} */${recurrenceNumber} * *`;
-        break;
-      default:
-        break;
-    }
   }
 
   TimerAction.create(action, (err, action) => {
@@ -143,15 +206,12 @@ module.exports.deleteAction = (req, res) => {
       sendJsonResponse(res, 204, null);
       console.log(scheduledCronActions);
       console.log(action._id);
-      // const cronJob = scheduledCronActions[0].cronJob.cancel();
       cronActionIdx = scheduledCronActions.findIndex((el) => {
-        console.log(el)
-        return (el.actionId === action._id.toString());
-      }
-      );
+        console.log(el);
+        return el.actionId === action._id.toString();
+      });
       console.log(cronActionIdx);
-      // scheduledCronActions[cronActionIdx].cronJob.cancel();
-      // scheduledCronActions.splice(cronActionIdx, 1);
+
       scheduledCronActions = scheduledCronActions.filter((cronAction) => {
         if (cronAction.actionId === action._id.toString()) {
           console.log(cronAction.cronJob);
@@ -160,14 +220,6 @@ module.exports.deleteAction = (req, res) => {
         return cronAction.actionId !== action._id.toString();
       });
       console.log(scheduledCronActions);
-
-      // scheduledCronActions = scheduledCronActions.filter((cronAction) => {
-      //   if (cronAction.actionId === action._id) {
-      //     console.log(cronAction);
-      //     cronAction.cronJob.cancel();
-      //   }
-      //   return cronAction.actionId !== action._id;
-      // });
     });
   } else {
     sendJsonResponse(res, 404, {

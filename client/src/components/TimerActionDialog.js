@@ -85,9 +85,11 @@ export default function TimerActionDialog(props) {
         roomName: selectedSensor.room,
         command: selectedCommand,
         commandTopic: selectedSensor.commandTopic,
+        registrationDate: Date.now(),
         timestamp: selectedDate,
         recurrenceTimeUnit: selectedTimeUnits,
         recurrenceNumber: selectedRecurrence,
+      
 
       })
       .then((response) => {

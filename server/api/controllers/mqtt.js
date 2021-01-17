@@ -1,6 +1,6 @@
-const Room = require("../models/rooms").Room;
-const SensorModel = require("../models/rooms").Sensor;
-const Measurement = require("../models/rooms").Measurement;
+const Room = require("../models/models").Room;
+const SensorModel = require("../models/models").Sensor;
+const Measurement = require("../models/models").Measurement;
 
 const handleDisconnectedDevice = async (roomName, deviceId) => {
   const roomDoc = await Room.findById(roomName);

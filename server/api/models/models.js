@@ -13,6 +13,7 @@ const actionSchema = new mongoose.Schema(
     roomName: { type: String, required: true },
     command: { type: String, required: true },
     commandTopic: { type: String, required: true },
+    registrationDate: { type: Date, required: true },
   },
   { discriminatorKey: "actionCategory" }
 );
