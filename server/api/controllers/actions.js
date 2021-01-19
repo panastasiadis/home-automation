@@ -197,7 +197,7 @@ module.exports.deleteAction = (req, res) => {
 
   if (actionId) {
     Action.findByIdAndRemove(actionId).exec((err, action) => {
-      if (err) {
+      if (err || !action) {
         sendJsonResponse(res, 404, {
           message: "Something Went Wrong. Action not found on database",
         });

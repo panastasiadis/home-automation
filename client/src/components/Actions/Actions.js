@@ -3,8 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import TimerActionDialog from "./TimerActionDialog";
 import ActionCard from "./ActionCard";
 import axios from "axios";
-import NoContentPage from "./NoContentPage";
-
+import NoContentPage from "../NoContentPage";
+import ActionsSpeedDial from "./ActionsSpeedDial";
 const URL = "http://192.168.1.66:5000/api/actions";
 
 const useStyles = makeStyles((theme) => ({
@@ -61,10 +61,14 @@ export default function MaterialUIPickers(props) {
       ) : (
         <NoContentPage displayItem="Actions" />
       )}
-      <TimerActionDialog
+      <ActionsSpeedDial
         sensors={props.sensors}
         updateActions={rerenderOnActionChange}
       />
+      {/* <TimerActionDialog
+        sensors={props.sensors}
+        updateActions={rerenderOnActionChange}
+      /> */}
     </div>
   );
 }

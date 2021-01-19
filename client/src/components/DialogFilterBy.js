@@ -23,14 +23,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   dialogPaper: {
-    // minWidth: "30vh",
+    // minWidth: "50vh",
   },
   emptyContentLabel: {
     margin:36,
   },
 }));
 
-function SimpleDialog(props) {
+export function SimpleDialog(props) {
   const classes = useStyles();
   const { onClose, open } = props;
 

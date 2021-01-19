@@ -5,29 +5,103 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import CardMedia from "@material-ui/core/CardMedia";
-import icon from "../assets/thermometer.png";
+import temperature from "../assets/temperature/thermometer.svg";
+import humidity from "../assets/temperature/humidity.svg";
+import RouterIcon from "@material-ui/icons/Router";
+import RoomIcon from "@material-ui/icons/Room";
+import BlurCircularIcon from "@material-ui/icons/BlurCircular";
+
 import mqttService from "../utils/MQTT";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    minWidth: 122,
+    width: "100%",
+    backgroundColor: "white",
+    borderRadius: "10px",
     display: "flex",
-  },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
-  },
-  media: {
-    marginLeft: 12,
-    width: 122,
-    height: 122,
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
   },
   degrees: {
     textAlign: "center",
-    marginLeft: 12,
+    backgroundColor: theme.palette.secondary.main,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    color: "white",
+    borderRadius: "20px",
+    fontWeight: "bold",
   },
+  imageTemperature: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    backgroundImage: `url(${temperature})`,
+    backgroundPosition: "center",
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    width: 70,
+    height: 70,
+  },
+  imageHumidity: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    backgroundImage: `url(${humidity})`,
+    backgroundPosition: "center",
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    width: 70,
+    height: 70,
+  },
+  divContent: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    padding: theme.spacing(2),
+  },
+  info: {
+    display: "flex",
+    flexWrap: "wrap",
+    flexGrow: 1,
+    flexDirection: "column",
+    justifyContent: "space-around",
+    borderColor: theme.palette.secondary.main,
+    borderRadius: "10px",
+    margin: theme.spacing(1),
+  },
+  deviceInfoIndividual: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+    color: "white",
+    // borderStyle: "solid",
+    // borderColor: theme.palette.secondar.main,
+    borderRadius: "10px",
+  },
+  roomInfo: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.primary.main,
+    color: "white",
+    // borderStyle: "solid",
+    // borderColor: theme.palette.secondar.main,
+    borderRadius: "10px",
+  },
+  tempHum: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+  // boldTitle: {
+  //   borderBottom: "dashed"
+  // },
 }));
 
 export default function OutlinedCard(props) {
@@ -58,31 +132,57 @@ export default function OutlinedCard(props) {
   }, [props.topic]);
 
   return (
-    <Card className={classes.root} variant="outlined">
-      {/* <CardHeader title="Sensor" /> */}
-
-      <CardContent>
-        <Typography className={classes.title} color="secondary" gutterBottom>
-          {props.roomName}
-        </Typography>
-        <Typography variant="h5" component="h2">
-          Temperature & Humidity
-        </Typography>
-        <Typography className={classes.pos} color="secondary">
-          {props.device}
-        </Typography>
-      </CardContent>
-      <CardMedia className={classes.media} image={icon} title="Temperature" />
-      <CardContent>
-        <Typography variant="h6" className={classes.degrees}>
-          {currTempHum.temperature} &#8451;
-          <br />
-        </Typography>
-        <Typography variant="h6" className={classes.degrees}>
-          {currTempHum.humidity} %
-          <br />
-        </Typography>
-      </CardContent>
-    </Card>
+    <div className={classes.root}>
+      <div className={classes.tempHum}>
+        <div className={classes.divContent}>
+          <Typography variant="h6" component="h6">
+            Temperature
+          </Typography>
+          <div className={classes.imageTemperature} />
+          <Typography
+            variant="subtitle1"
+            component="subtitle1"
+            className={classes.degrees}
+          >
+            {currTempHum.temperature} &#8451;
+            <br />
+          </Typography>
+        </div>
+        <div className={classes.divContent}>
+          <Typography variant="h6" component="h6">
+            Humidity
+          </Typography>
+          <div className={classes.imageHumidity} />
+          <Typography
+            variant="subtitle1"
+            component="subtitle1"
+            className={classes.degrees}
+          >
+            {currTempHum.humidity} %
+            <br />
+          </Typography>
+        </div>
+      </div>
+      <div className={classes.info}>
+        <div className={classes.roomInfo}>
+          <RoomIcon />
+          <Typography variant="subtitle1" component="subtitle1">
+            {props.roomName}
+          </Typography>
+        </div>
+        <div className={classes.deviceInfoIndividual}>
+          <BlurCircularIcon />
+          <Typography variant="subtitle1" component="subtitle1">
+            {props.sensorName}
+          </Typography>
+        </div>
+        <div className={classes.deviceInfoIndividual}>
+          <RouterIcon />
+          <Typography variant="subtitle1" component="subtitle1">
+            {props.device}
+          </Typography>
+        </div>
+      </div>
+    </div>
   );
 }

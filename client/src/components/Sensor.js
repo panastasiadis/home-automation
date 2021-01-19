@@ -7,11 +7,13 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
     backgroundColor: theme.palette.secondary.main,
+    borderRadius: "10px",
+
   },
 
 }));
@@ -21,12 +23,13 @@ export default function SensorGridItem(props) {
 
   if (props.sensor.type === "temperature-humidity") {
     return (
-      <Grid item xs={12} md={6} lg={4}>
+      <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>
           <TemperatureHumidityCard
             topic={props.sensor.pubTopic}
             roomName={props.sensor.room}
             device={props.sensor.deviceId}
+            sensorName={props.sensor.name}
           />
         </Paper>
       </Grid>

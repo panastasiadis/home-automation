@@ -45,13 +45,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function TimerActionDialog(props) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [selectedSensor, setSelectedSensor] = React.useState("");
   const [selectedCommand, setSelectedCommand] = React.useState("");
   const [selectedRecurrence, setSelectedRecurrence] = React.useState("");
   const [selectedTimeUnits, setSelectedTimeUnits] = React.useState("");
-
 
   const [status, setStatus] = React.useState({ message: null, color: null });
   const [loading, setLoading] = React.useState(false);
@@ -66,6 +65,7 @@ export default function TimerActionDialog(props) {
   };
 
   const handleClose = () => {
+    props.closeDialog();
     setOpen(false);
     setStatus({ message: null, color: null });
     setSelectedSensor("");
@@ -89,8 +89,6 @@ export default function TimerActionDialog(props) {
         timestamp: selectedDate,
         recurrenceTimeUnit: selectedTimeUnits,
         recurrenceNumber: selectedRecurrence,
-      
-
       })
       .then((response) => {
         // console.log(response.data)
@@ -109,14 +107,14 @@ export default function TimerActionDialog(props) {
 
   return (
     <div className={classes.root}>
-      <Fab
+      {/* <Fab
         color="primary"
         aria-label="add"
         onClick={handleClickOpen}
         className={classes.fab}
       >
         <AddIcon />
-      </Fab>
+      </Fab> */}
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown
@@ -167,7 +165,10 @@ export default function TimerActionDialog(props) {
             </div>
             {/* </Grid> */}
           </MuiPickersUtilsProvider>
-          <SelectRepeatMenu selectRecurrence={setSelectedRecurrence} selectTimeUnits={setSelectedTimeUnits}/>
+          <SelectRepeatMenu
+            selectRecurrence={setSelectedRecurrence}
+            selectTimeUnits={setSelectedTimeUnits}
+          />
           {status.message && (
             <>
               <small style={{ color: status.color }}>{status.message}</small>

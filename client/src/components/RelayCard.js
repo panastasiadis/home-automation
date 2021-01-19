@@ -10,26 +10,98 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 
 import lightBulbOpen from "../assets/lightbulb-open2.svg";
 import lightBulbClosed from "../assets/lightbulb-closed2.svg";
+import RouterIcon from "@material-ui/icons/Router";
+import RoomIcon from "@material-ui/icons/Room";
+import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 
 const useStyles = makeStyles((theme) => ({
+  // root: {
+  //   minWidth: 122,
+  //   display: "flex",
+  // },
   root: {
-    minWidth: 122,
+    width: "100%",
+    backgroundColor: "white",
+    borderRadius: "10px",
     display: "flex",
+    flexWrap: "wrap",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  title: {
-    fontSize: 14,
+  info: {
+    display: "flex",
+    flexWrap: "wrap",
+    flexGrow: 1,
+    flexDirection: "column",
+    justifyContent: "space-around",
+    borderColor: theme.palette.secondary.main,
+    borderRadius: "10px",
+    margin: theme.spacing(1),
   },
-  pos: {
-    marginBottom: 12,
+  deviceInfoIndividual: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+    color: "white",
+    // borderStyle: "solid",
+    // borderColor: theme.palette.secondar.main,
+    borderRadius: "10px",
   },
-  media: {
-    // marginLeft: theme.spacing(2),
-    width: 122,
-    height: 122,
-    margin: theme.spacing(2),
+  divContent: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    padding: theme.spacing(2),
   },
-  degrees: {
-    textAlign: "center",
+  imageLightOpen: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    backgroundImage: `url(${lightBulbOpen})`,
+    backgroundPosition: "center",
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    width: 100,
+    height: 100,
+  },
+  imageLightClosed: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    backgroundImage: `url(${lightBulbClosed})`,
+    backgroundPosition: "center",
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    width: 100,
+    height: 100,
+  },
+  currentState: {
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(1),
+  },
+  onOff: {
+    marginLeft: theme.spacing(1),
+    padding: theme.spacing(1),
+    color: theme.palette.secondary.main,
+    borderStyle: "dashed",
+    borderColor: theme.palette.secondary.main,
+    borderRadius: "10px",
+  },
+  roomInfo: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.primary.main,
+    color: "white",
+    // borderStyle: "solid",
+    // borderColor: theme.palette.secondar.main,
+    borderRadius: "10px",
   },
   circularProgress: {
     display: "inline",
@@ -41,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function OutlinedCard(props) {
   const classes = useStyles();
-  const [relayState, setRelayState] = useState("Loading State...");
+  const [relayState, setRelayState] = useState("Loading...");
   const switchValue = relayState === "ON" ? true : false;
   const [spinnerState, setSpinnerState] = useState({
     spinner: false,
@@ -79,39 +151,51 @@ export default function OutlinedCard(props) {
     };
   }, [props.topic]);
   return (
-    <Card className={classes.root} variant="outlined">
-      {/* <CardHeader title="Sensor" /> */}
+    <div className={classes.root}>
+      <div className={classes.divContent}>
+        {relayState === "ON" ? (
+          <div className={classes.imageLightOpen} />
+        ) : (
+          <div className={classes.imageLightClosed} />
+        )}
+        <div className={classes.currentState}>
+          <Typography variant="h6">{"Current State "}</Typography>
+          <Typography className={classes.onOff} variant="subtitle2">
+            {relayState}
+          </Typography>
+        </div>
 
-      <CardContent>
-        <Typography className={classes.title} color="secondary" gutterBottom>
-          {props.roomName}
-        </Typography>
-        <Typography variant="h5" component="h2">
-          {props.name}
-        </Typography>
-        <Typography variant="h5" component="h2">
-          {"Current State: "}
-          {relayState}
-        </Typography>
-        <Typography className={classes.pos} color="secondary">
-          {props.device}
-        </Typography>
-        <Switch
-          onChange={onChangeHandler}
-          checked={switchValue}
-          disabled={spinnerState.disabled}
-        />
         {spinnerState.spinner === true ? (
           <div className={classes.circularProgress}>
             <CircularProgress />
           </div>
         ) : null}
-      </CardContent>
-      <CardMedia
-        className={classes.media}
-        image={relayState === "ON" ? lightBulbOpen : lightBulbClosed}
-        title="Lightbulb"
-      />
-    </Card>
+        <Switch
+          onChange={onChangeHandler}
+          checked={switchValue}
+          disabled={spinnerState.disabled}
+        />
+      </div>
+      <div className={classes.info}>
+        <div className={classes.roomInfo}>
+          <RoomIcon />
+          <Typography variant="subtitle1" component="subtitle1">
+            {props.roomName}
+          </Typography>
+        </div>
+        <div className={classes.deviceInfoIndividual}>
+          <BlurCircularIcon />
+          <Typography variant="subtitle1" component="subtitle1">
+            {props.name}
+          </Typography>
+        </div>
+        <div className={classes.deviceInfoIndividual}>
+          <RouterIcon />
+          <Typography variant="subtitle1" component="subtitle1">
+            {props.device}
+          </Typography>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -28,8 +28,9 @@ import { withRouter } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import Logo from "../assets/home-automation.svg";
 import Link from "@material-ui/core/Link";
-import Actions from "./Actions";
+import Actions from "./Actions/Actions";
 import backgroundImage from "../assets/home-automation4.svg";
+import MenuBar from "./MenuBar";
 
 function Copyright() {
   return (
@@ -127,14 +128,21 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     },
   },
-  drawerLogout: {
-    position: "fixed",
-    bottom: 0,
-    textAlign: "center",
-    paddingBottom: 10,
-  },
   currentTab: {
-    padding: theme.spacing(1),
+    textAlign: "center",
+    // borderRadius: "10px",
+    borderBottom: `solid ${theme.palette.secondary.main}`,
+    // borderColor: theme.palette.primary.main,
+    // borderStyle: "solid",
+    width: "30vh",
+    margin: "0 auto",
+    // backgroundColor: theme.palette.secondary.main,
+    // padding: theme.spacing(1),
+    marginTop: theme.spacing(2),
+    // marginLeft: theme.spacing(5)
+  },
+  hiMessage: {
+    marginRight: theme.spacing(2)
   },
   behindBackground: {
     backgroundImage: `url(${backgroundImage})`,
@@ -143,11 +151,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundRepeat: "no-repeat",
     width: "100vw",
     height: "100vh",
-  },
-  fab: {
-    position: "fixed",
-    bottom: theme.spacing(2),
-    right: theme.spacing(4),
   },
 }));
 
@@ -247,7 +250,7 @@ function Dashboard(props) {
             </Link>
           </div>
 
-          <Typography variant="body2" className={classes.currentTab}>
+          <Typography variant="body2" className={classes.hiMessage}>
             {"Hi, "}
             {user.name}
           </Typography>
@@ -263,11 +266,12 @@ function Dashboard(props) {
       </AppBar>
 
       <Drawer
-        variant="permanent"
+        variant="temporary"
         classes={{
           paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
         }}
         open={open}
+        onClose={handleDrawerClose}
       >
         <div className={classes.toolbarIcon}>
           <IconButton onClick={handleDrawerClose}>
@@ -315,11 +319,17 @@ function Dashboard(props) {
       <div className={classes.behindBackground}>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
+          <MenuBar
+            selectItem={selectItem}
+            rooms={rooms}
+            categories={categories}
+            showAllSensors={handleAllButton}
+          />
           <div className={classes.currentTab}>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom>
               Dashboard
             </Typography>
-            <Typography variant="body1">
+            <Typography variant="subtitle1">
               {currentlyDisplayedItem.tab}
               {currentlyDisplayedItem.tab === "All" ||
               currentlyDisplayedItem.tab === "Actions"
