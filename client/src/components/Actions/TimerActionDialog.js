@@ -11,11 +11,9 @@ import {
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 import Button from "@material-ui/core/Button";
-import Fab from "@material-ui/core/Fab";
 import SelectSensorMenu from "./SelectSensorMenu";
 import SelectCommandMenu from "./SelectCommandMenu";
 import SelectRepeatMenu from "./SelectRepeatMenu";
-import AddIcon from "@material-ui/icons/Add";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
@@ -35,9 +33,6 @@ const useStyles = makeStyles((theme) => ({
   },
   picker: {
     padding: theme.spacing(1),
-    // alignItems: "center",
-    // justifyContent: "center",
-    // display: "flex"
   },
   cancelButton: {
     marginRight: theme.spacing(1),
@@ -60,10 +55,6 @@ export default function TimerActionDialog(props) {
     setSelectedDate(date);
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     props.closeDialog();
     setOpen(false);
@@ -79,7 +70,7 @@ export default function TimerActionDialog(props) {
     setStatus({ message: null, color: null });
     setLoading(true);
     axios
-      .post("http://192.168.1.66:5000/api/actions", {
+      .post("http://192.168.1.66:5000/api/timerActions", {
         sensorName: selectedSensor.name,
         deviceId: selectedSensor.deviceId,
         roomName: selectedSensor.room,
@@ -107,14 +98,6 @@ export default function TimerActionDialog(props) {
 
   return (
     <div className={classes.root}>
-      {/* <Fab
-        color="primary"
-        aria-label="add"
-        onClick={handleClickOpen}
-        className={classes.fab}
-      >
-        <AddIcon />
-      </Fab> */}
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown
@@ -126,6 +109,7 @@ export default function TimerActionDialog(props) {
           <div className={classes.picker}>
             <SelectSensorMenu
               sensors={props.sensors}
+              isCommandSensor={true}
               selectSensor={setSelectedSensor}
             />
           </div>

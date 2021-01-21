@@ -2,7 +2,7 @@ import axios from "axios";
 import mqttService from "../utils/MQTT";
 import React, { useEffect, useState, useRef } from "react";
 import AlertMessage from "./AlertMessage";
-import Dashboard from "./DashboardExample";
+import Dashboard from "./Dashboard";
 
 const URL = "http://192.168.1.66:5000/active-sensors";
 

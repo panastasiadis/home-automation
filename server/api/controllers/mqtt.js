@@ -47,7 +47,6 @@ const storeDevice = async (roomName, deviceId, sensors) => {
 };
 
 const storeDeviceSensors = (deviceSubDoc, sensors, topicPrefix) => {
-
   let sensorToStore;
   deviceSubDoc.sensors = [];
   for (const sensor of sensors) {
@@ -68,7 +67,6 @@ const storeDeviceSensors = (deviceSubDoc, sensors, topicPrefix) => {
     }
 
     deviceSubDoc.sensors.push(sensorToStore);
-
   }
 };
 
@@ -78,19 +76,41 @@ const storeSensorData = async (roomName, deviceId, sensorId, payload) => {
 
   sensor = device.sensors.find((sensor) => sensorId === sensor._id);
 
+  const currentDate = new Date();
+  const startTime = new Date(currentDate);
+  const endTime =  new Date(currentDate);
+
+  if (currentDate.getMinutes() < 30) {
+    startTime.setMinutes(0);
+    startTime.setSeconds(0);
+    startTime.setMilliseconds(0);
+    endTime.setMinutes(29);
+    endTime.setSeconds(59);
+    endTime.setMilliseconds(999);
+  } else {
+    startTime.setMinutes(30);
+    startTime.setSeconds(0);
+    startTime.setMilliseconds(0);
+    endTime.setMinutes(59);
+    endTime.setSeconds(59);
+    endTime.setMilliseconds(999);
+  }
+
   if (sensor.sensorType === "Temperature-Humidity") {
     const splitStr = payload.split("-");
     currentMeasurement = {
       temperature: splitStr[0],
       humidity: splitStr[1],
-      timestamp: getFixedDate(),
+      timestamp: currentDate,
     };
 
     sensor.currentMeasurement = currentMeasurement;
     const query = {
       sensorId: sensor._id,
-      startTime: getFixedDate(0, 0),
-      endTime: getFixedDate(59, 59),
+      deviceId: deviceId,
+      roomName: roomName,
+      startTime: startTime,
+      endTime: endTime,
     };
 
     const update = {
@@ -114,7 +134,6 @@ const storeSensorData = async (roomName, deviceId, sensorId, payload) => {
     await roomDoc.save();
   }
 };
-
 
 //helper function to get a timestamp with your local GMT offset
 const getFixedDate = (seconds, minutes, hours, day, month, year) => {
@@ -155,5 +174,4 @@ const getFixedDate = (seconds, minutes, hours, day, month, year) => {
   return localDate;
 };
 
-module.exports = {storeDevice, storeSensorData, handleDisconnectedDevice};
-
+module.exports = { storeDevice, storeSensorData, handleDisconnectedDevice };

@@ -45,9 +45,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
     padding: theme.spacing(1),
     margin: theme.spacing(1),
-    // [theme.breakpoints.down("xs")]: {
-    //   display: "none",
-    // },
   },
   summary: {
     display: "flex",
@@ -62,10 +59,22 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.secondary.main,
     color: "white",
     // borderStyle: "solid",
     // borderColor: theme.palette.secondar.main,
+    borderRadius: "10px",
+  },
+  roomInfo: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.primary.main,
+    color: "white",
+
     borderRadius: "10px",
   },
   deviceInfo: {
@@ -143,16 +152,16 @@ export default function ActionCard(props) {
             </div>
 
             <div className={classes.deviceInfo}>
+              <div className={classes.roomInfo}>
+                <RoomIcon />
+                <Typography variant="subtitle1" component="subtitle1">
+                  {props.action.roomName}
+                </Typography>
+              </div>
               <div className={classes.deviceInfoIndividual}>
                 <BlurCircularIcon />
                 <Typography variant="subtitle1" component="subtitle1">
                   {props.action.sensorName}
-                </Typography>
-              </div>
-              <div className={classes.deviceInfoIndividual}>
-                <RoomIcon />
-                <Typography variant="subtitle1" component="subtitle1">
-                  {props.action.roomName}
                 </Typography>
               </div>
               <div className={classes.deviceInfoIndividual}>
@@ -172,13 +181,13 @@ export default function ActionCard(props) {
           <div className={classes.accordionContent}>
             <div className={classes.timeInfoIndividual}>
               <ScheduleIcon />
-              <Typography variant="subtitle1" component="subtitle1">
-                {date.toLocaleString()}
+              <Typography variant="subtitle1" >
+                {`Starts on ${date.toLocaleString()}`}
               </Typography>
             </div>
             <div className={classes.timeInfoIndividual}>
               <LoopIcon />
-              <Typography variant="subtitle1" component="subtitle1">
+              <Typography variant="subtitle1" >
                 {recurrenceMessage}
               </Typography>
             </div>
@@ -186,7 +195,10 @@ export default function ActionCard(props) {
         </AccordionDetails>
         <Divider />
         <div className={classes.deleteButton}>
-          <DeleteActionDialog action={props.action} updateActions={props.updateActions} />
+          <DeleteActionDialog
+            action={props.action}
+            updateActions={props.updateActions}
+          />
         </div>
       </Accordion>
     </div>

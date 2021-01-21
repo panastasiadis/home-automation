@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import CardMedia from "@material-ui/core/CardMedia";
 import Switch from "@material-ui/core/Switch";
 import mqttService from "../utils/MQTT";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -15,10 +12,6 @@ import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 
 const useStyles = makeStyles((theme) => ({
-  // root: {
-  //   minWidth: 122,
-  //   display: "flex",
-  // },
   root: {
     width: "100%",
     backgroundColor: "white",
@@ -64,8 +57,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
   },
   imageLightClosed: {
     margin: theme.spacing(1),
@@ -74,8 +67,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
   },
   currentState: {
     display: "flex",

@@ -8,7 +8,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import axios from "axios";
-const URL = "http://192.168.1.66:5000/api/actions/:actionid";
 
 export default function ResponsiveDialog(props) {
   const [open, setOpen] = React.useState(false);

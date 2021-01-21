@@ -3,6 +3,7 @@ const aedesBroker = require("../../aedes_broker");
 
 const Action = require("../models/models").Action;
 const TimerAction = require("../models/models").TimerAction;
+const SensorBasedAction = require("../models/models").SensorBasedAction;
 
 let scheduledCronActions = [];
 
@@ -123,7 +124,61 @@ module.exports.actionsList = (req, res) => {
       sendJsonResponse(res, 200, actionDocs);
     });
 };
-module.exports.addAction = (req, res) => {
+
+module.exports.addSensorBasedAction = (req, res) => {
+  console.log(req.body);
+
+  if (!req.body.sensorName) {
+    sendJsonResponse(res, 400, { message: "No sensor was specified" });
+    return;
+  } else if (!req.body.command) {
+    sendJsonResponse(res, 400, { message: "No command was specified" });
+    return;
+  } else if (!req.body.measurementSensorName) {
+    sendJsonResponse(res, 400, {
+      message: "No measurement sensor was specified",
+    });
+    return;
+  } else if (!req.body.comparisonType) {
+    sendJsonResponse(res, 400, {
+      message: "No comparison operator was specified",
+    });
+    return;
+  } else if (!req.body.measurementType) {
+    sendJsonResponse(res, 400, {
+      message: "No measurement type was specified",
+    });
+    return;
+  } else if (!req.body.quantity) {
+    sendJsonResponse(res, 400, { message: "No quantity was specified" });
+    return;
+  }
+
+  let action = {
+    sensorName: req.body.sensorName,
+    deviceId: req.body.deviceId,
+    roomName: req.body.roomName,
+    command: req.body.command,
+    commandTopic: req.body.commandTopic,
+    registrationDate: req.body.registrationDate,
+    measurementSensorName: req.body.measurementSensorName,
+    measurementDeviceId: req.body.measurementDeviceId,
+    measurementRoomName: req.body.measurementRoomName,
+    quantity: req.body.quantity,
+    comparisonType: req.body.comparisonType,
+    measurementType: req.body.measurementType,
+  };
+
+  SensorBasedAction.create(action, (err, action) => {
+    if (err) {
+      sendJsonResponse(res, 400, err);
+    } else {
+      sendJsonResponse(res, 201, action);
+    }
+  });
+};
+
+module.exports.addTimerAction = (req, res) => {
   console.log(req.body);
 
   const timeUnit = req.body.recurrenceTimeUnit;

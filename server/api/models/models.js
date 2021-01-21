@@ -6,6 +6,15 @@ const timerActionSchema = new mongoose.Schema({
   recurrenceTimeUnit: { type: String },
 });
 
+const sensorBasedActionSchema = new mongoose.Schema({
+  measurementSensorName: { type: String, required: true },
+  measurementDeviceId:  { type: String, required: true },
+  measurementRoomName: { type: String, required: true },
+  quantity: { type: Number, required: true },
+  comparisonType: { type: String, required: true },
+  measurementType: { type: String },
+});
+
 const actionSchema = new mongoose.Schema(
   {
     sensorName: { type: String, required: true },
@@ -20,6 +29,11 @@ const actionSchema = new mongoose.Schema(
 
 const Action = mongoose.model("Action", actionSchema);
 module.exports.Action = Action;
+
+module.exports.SensorBasedAction = Action.discriminator(
+  "Sensor-Based Action",
+  sensorBasedActionSchema
+);
 
 module.exports.TimerAction = Action.discriminator(
   "Timer Action",
@@ -60,6 +74,8 @@ const tempsHumsSchema = new mongoose.Schema(
 const measurementSchema = new mongoose.Schema(
   {
     sensorId: { type: String, required: true },
+    deviceId: { type: String, required: true },
+    roomName: { type: String, required: true },
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
     measurementsCounter: { type: Number, default: 0, required: true },
@@ -98,6 +114,7 @@ roomSchema
   .discriminator("Temperature-Humidity", tempsHumsSchema);
 
 module.exports.Measurement = mongoose.model("Measurement", measurementSchema);
+module.exports.measurementSchema = measurementSchema;
 module.exports.Room = mongoose.model("Room", roomSchema);
 module.exports.Sensor = {
   relay: mongoose.model("Relay", relaySchema),

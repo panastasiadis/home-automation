@@ -8,7 +8,7 @@ import PrivateRoute from "./utils/PrivateRoute";
 import PublicRoute from "./utils/PublicRoute";
 import { getToken, removeUserSession, setUserSession } from "./utils/Common";
 import axios from 'axios';
-import FetcherMQTT from "./components/FetcherMQTTExample";
+import FetcherMQTT from "./components/FetcherMQTT";
 
 function App() {
   const [authLoading, setAuthLoading] = useState(true);

@@ -7,6 +7,7 @@ import TimerIcon from "@material-ui/icons/Timer";
 import EditLocationIcon from "@material-ui/icons/EditLocation";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 import TimerActionDialog from "./TimerActionDialog";
+import SensorBasedActionDialog from "./SensorBasedActionDialog";
 import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,6 +39,10 @@ export default function OpenIconSpeedDial(props) {
     setSelectedAction("timerAction");
   };
 
+  const selectSensorBasedAction = () => {
+    setSelectedAction("sensorBasedAction");
+  };
+
   const closeDialog = () => {
     setSelectedAction(null);
   };
@@ -57,7 +62,15 @@ export default function OpenIconSpeedDial(props) {
         />
       );
       break;
-
+      case "sensorBasedAction":
+        dialog = (
+          <SensorBasedActionDialog
+            sensors={props.sensors}
+            updateActions={props.updateActions}
+            closeDialog={closeDialog}
+          />
+        );
+        break;
     default:
       break;
   }
@@ -77,7 +90,7 @@ export default function OpenIconSpeedDial(props) {
           icon={<BlurCircularIcon />}
           tooltipTitle={"Sensor Driven"}
           tooltipOpen
-          onClick={handleClose}
+          onClick={selectSensorBasedAction}
         />
         <SpeedDialAction
           className={classes.action}
@@ -93,20 +106,7 @@ export default function OpenIconSpeedDial(props) {
           tooltipOpen
           onClick={selectTimerAction}
         />
-        {/* <TimerActionDialog
-          sensors={props.sensors}
-          updateActions={props.updateActions}
-        /> */}
         {dialog}
-        {/* {actions.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            tooltipOpen
-            onClick={handleClose}
-          />
-        ))} */}
       </SpeedDial>
     </div>
   );

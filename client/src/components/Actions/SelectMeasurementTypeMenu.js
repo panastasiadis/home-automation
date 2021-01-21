@@ -4,12 +4,12 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import {commandsByType} from "../../utils/SensorSpecific";
+import {getMeasurementsByType} from "../../utils/SensorSpecific";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
     // margin: theme.spacing(1),
-    minWidth: 120,
+    minWidth: 130,
   },
   menuItem: {
     padding: theme.spacing(1),
@@ -18,14 +18,14 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function CommandMenu(props) {
+export default function MeasurementTypesMenu(props) {
   const classes = useStyles();
-  const [selectedCommand, setSelectedCommand] = React.useState("");
+  const [selectedType, setSelectedType] = React.useState("");
   const [open, setOpen] = React.useState(false);
 
   const handleChange = (event) => {
-    setSelectedCommand(event.target.value);
-    props.selectCommand(event.target.value);
+    setSelectedType(event.target.value);
+    props.selectMeasurementType(event.target.value);
   };
 
   const handleClose = () => {
@@ -36,25 +36,25 @@ export default function CommandMenu(props) {
     setOpen(true);
   };
 
-  const commandsArray = commandsByType(props.type);
+  const measurementTypes = getMeasurementsByType(props.type);
   return (
     <div>
       <FormControl required className={classes.formControl}>
-        <InputLabel id="demo-controlled-open-select-label">Command</InputLabel>
+        <InputLabel id="demo-controlled-open-select-label">Measurement</InputLabel>
         <Select
           labelId="demo-controlled-open-select-label"
           id="demo-controlled-open-select"
           open={open}
           onClose={handleClose}
           onOpen={handleOpen}
-          value={selectedCommand}
+          value={selectedType}
           onChange={handleChange}
         >
-          {commandsArray
-            ? commandsArray.map((el, index) => {
+          {measurementTypes
+            ? measurementTypes.map((el, index) => {
                 return (
-                  <MenuItem value={el.command} key={index}>
-                    {el.description}
+                  <MenuItem value={el} key={index}>
+                    {el}
                   </MenuItem>
                 );
               })

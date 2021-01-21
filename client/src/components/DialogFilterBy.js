@@ -18,6 +18,11 @@ const capitalize = (s) => {
 };
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    "& > *": {
+      margin: theme.spacing(1),
+    },
+  },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
@@ -43,6 +48,8 @@ export function SimpleDialog(props) {
   };
 
   return (
+    <div className={classes.root}>
+
     <Dialog
       classes={{ paper: classes.dialogPaper }}
       onClose={handleClose}
@@ -86,6 +93,7 @@ export function SimpleDialog(props) {
         </Typography>
       )}
     </Dialog>
+    </div>
   );
 }
 

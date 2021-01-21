@@ -14,12 +14,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   formControl: {
-    // margin: theme.spacing(1),
     minWidth: 120,
+    maxWidth: 250
   },
   menuItem: {
     padding: theme.spacing(1),
-    display: "flex"
+    display: "flex",
   },
 }));
 
@@ -41,11 +41,19 @@ export default function ControlledOpenSelect(props) {
     setOpen(true);
   };
 
-  let commandSensors = null;
+  let filteredSensors = null;
   if (props.sensors) {
-    commandSensors = props.sensors.filter((sensor) => {
-      return sensor.commandTopic;
-    });
+    if (props.isCommandSensor === undefined) {
+      filteredSensors = props.sensors;
+    } else if (props.isCommandSensor) {
+      filteredSensors = props.sensors.filter((sensor) => {
+        return sensor.commandTopic;
+      });
+    } else if (!props.isCommandSensor) {
+      filteredSensors = props.sensors.filter((sensor) => {
+        return !sensor.commandTopic;
+      });
+    }
   }
 
   // console.log(selectedSensor);
@@ -66,22 +74,10 @@ export default function ControlledOpenSelect(props) {
             <em>None</em>
           </MenuItem>
 
-          {commandSensors
-            ? commandSensors.map((sensor) => {
+          {filteredSensors
+            ? filteredSensors.map((sensor) => {
                 return (
                   <MenuItem value={sensor} key={sensor.name}>
-                    {/* <ListItemIcon>
-                      <BlurCircularIcon fontSize="small" />
-                    </ListItemIcon>
-                    <Typography variant="inherit">{sensor.name}</Typography>
-                    <ListItemIcon>
-                      <RoomIcon fontSize="small" />
-                    </ListItemIcon>
-                    <Typography variant="inherit">{sensor.room}</Typography>
-                    <ListItemIcon>
-                      <RouterIcon fontSize="small" />
-                    </ListItemIcon>
-                    <Typography variant="inherit">{sensor.deviceId}</Typography> */}
                     <BlurCircularIcon />
                     {"  "}
                     {sensor.name}

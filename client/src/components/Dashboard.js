@@ -117,32 +117,39 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: theme.spacing(4),
   },
   paper: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
+    borderRadius: "10px",
     backgroundColor: theme.palette.secondary.main,
   },
   primaryAction: {
+    borderRadius: "10px",
     [theme.breakpoints.down("sm")]: {
       display: "none",
     },
   },
+  dashBoardLabel: {
+    display: "inline",
+    paddingTop: 3,
+    paddingBottom: 3,
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    color: "white",
+    backgroundColor: theme.palette.primary.main,
+    borderRadius: "10px",
+  },
+
   currentTab: {
     textAlign: "center",
-    // borderRadius: "10px",
-    borderBottom: `solid ${theme.palette.secondary.main}`,
-    // borderColor: theme.palette.primary.main,
-    // borderStyle: "solid",
-    width: "30vh",
+    // borderBottom: `5pxsolid ${theme.palette.secondary.main}`,
+    // width: "60vh",
     margin: "0 auto",
-    // backgroundColor: theme.palette.secondary.main,
-    // padding: theme.spacing(1),
     marginTop: theme.spacing(2),
-    // marginLeft: theme.spacing(5)
   },
   hiMessage: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   behindBackground: {
     backgroundImage: `url(${backgroundImage})`,
@@ -326,7 +333,11 @@ function Dashboard(props) {
             showAllSensors={handleAllButton}
           />
           <div className={classes.currentTab}>
-            <Typography variant="h5" gutterBottom>
+            <Typography
+              variant="h5"
+              gutterBottom
+              className={classes.dashBoardLabel}
+            >
               Dashboard
             </Typography>
             <Typography variant="subtitle1">

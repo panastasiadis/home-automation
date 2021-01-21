@@ -1,27 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-// import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import CardMedia from "@material-ui/core/CardMedia";
 import temperature from "../assets/temperature/thermometer.svg";
 import humidity from "../assets/temperature/humidity.svg";
 import RouterIcon from "@material-ui/icons/Router";
 import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
+import axios from "axios";
 
 import mqttService from "../utils/MQTT";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    width: "45vh",
     backgroundColor: "white",
     borderRadius: "10px",
     display: "flex",
     flexWrap: "wrap",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-around",
   },
   degrees: {
     textAlign: "center",
@@ -39,8 +36,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
-    width: 70,
-    height: 70,
+    width: 50,
+    height: 50,
   },
   imageHumidity: {
     margin: theme.spacing(1),
@@ -49,14 +46,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
-    width: 70,
-    height: 70,
+    width: 50,
+    height: 50,
   },
   divContent: {
     display: "flex",
     alignItems: "center",
     flexDirection: "column",
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
   },
   info: {
     display: "flex",
@@ -77,8 +74,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
     color: "white",
-    // borderStyle: "solid",
-    // borderColor: theme.palette.secondar.main,
+
     borderRadius: "10px",
   },
   roomInfo: {
@@ -90,8 +86,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
     color: "white",
-    // borderStyle: "solid",
-    // borderColor: theme.palette.secondar.main,
+
     borderRadius: "10px",
   },
   tempHum: {
@@ -99,20 +94,58 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     justifyContent: "center",
   },
-  // boldTitle: {
-  //   borderBottom: "dashed"
-  // },
+  averageMeasurementsDiv: {
+    // flexGrow: 1,
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    // justifyContent: "space-around",
+    padding: theme.spacing(1),
+    // flexWrap: "wrap",
+  },
 }));
 
 export default function OutlinedCard(props) {
   const classes = useStyles();
+
+  const [averageData, setAverageData] = useState({
+    avgTemp: null,
+    avgHum: null,
+    isFetching: false,
+  });
 
   const [currTempHum, setCurrTempHum] = useState({
     temperature: "Loading...",
     humidity: "Loading...",
   });
 
+  let displayedAvg = "Few Samples";
+
+  if (averageData.avgTemp !== null) {
+    displayedAvg = `${Math.round(averageData.avgTemp)}\u00B0C /
+    ${Math.round(averageData.avgHum)}%`;
+  }
+
   useEffect(() => {
+    const fetchDevices = async () => {
+      try {
+        setAverageData({ avgTemp: null, avgHum: null, isFetching: true });
+        const response = await axios.get(
+          `http://192.168.1.66:5000/api/measurements/${props.sensorName}`
+        );
+        setAverageData({
+          avgTemp: response.data.avgTemp,
+          avgHum: response.data.avgHum,
+          isFetching: false,
+        });
+      } catch (error) {
+        console.log(error);
+        setAverageData({ avgTemp: null, avgHum: null, isFetching: false });
+      }
+    };
+
+    fetchDevices();
+
     const client = mqttService.getClient();
 
     const messageHandler = (topic, payload, packet) => {
@@ -129,39 +162,35 @@ export default function OutlinedCard(props) {
       console.log("unmounting temp-hum");
       client.off("message", messageHandler);
     };
-  }, [props.topic]);
+  }, [props.topic, props.sensorName]);
 
   return (
     <div className={classes.root}>
       <div className={classes.tempHum}>
         <div className={classes.divContent}>
-          <Typography variant="h6" component="h6">
+          <Typography variant="subtitle1" component="subtitle1">
             Temperature
           </Typography>
           <div className={classes.imageTemperature} />
-          <Typography
-            variant="subtitle1"
-            component="subtitle1"
-            className={classes.degrees}
-          >
-            {currTempHum.temperature} &#8451;
+          <Typography className={classes.degrees}>
+            {`${currTempHum.temperature} \u00B0C`}
             <br />
           </Typography>
         </div>
         <div className={classes.divContent}>
-          <Typography variant="h6" component="h6">
+          <Typography variant="subtitle1" component="subtitle1">
             Humidity
           </Typography>
           <div className={classes.imageHumidity} />
-          <Typography
-            variant="subtitle1"
-            component="subtitle1"
-            className={classes.degrees}
-          >
+          <Typography className={classes.degrees}>
             {currTempHum.humidity} %
             <br />
           </Typography>
         </div>
+      </div>
+      <div className={classes.averageMeasurementsDiv}>
+        <Typography variant="subtitle1">{"Average"}</Typography>
+        <Typography className={classes.degrees}>{displayedAvg}</Typography>
       </div>
       <div className={classes.info}>
         <div className={classes.roomInfo}>
