@@ -4,6 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import RelayCard from "./RelayCard";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -13,9 +14,24 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     backgroundColor: theme.palette.secondary.main,
     borderRadius: "10px",
-
   },
-
+  title: {
+    backgroundColor: theme.palette.secondary.main,
+    color: "white",
+    borderRadius: "10px",
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    textAlign: "center"
+  },
+  roomTitle: {
+    textAlign: "center",
+    backgroundColor: theme.palette.primary.main,
+    color: "white",
+    borderRadius: "10px",
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+    margin: theme.spacing(1),
+  },
 }));
 
 export default function SensorGridItem(props) {
@@ -25,6 +41,12 @@ export default function SensorGridItem(props) {
     return (
       <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>
+          <Typography variant="h6" className={classes.title}>
+            Temperature & Humidity
+          </Typography>
+          <Typography className={classes.roomTitle}>
+            {props.sensor.room}
+          </Typography>
           <TemperatureHumidityCard
             topic={props.sensor.pubTopic}
             roomName={props.sensor.room}
@@ -38,6 +60,10 @@ export default function SensorGridItem(props) {
     return (
       <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>
+          <Typography variant="h6" className={classes.title}>Lights</Typography>
+          <Typography className={classes.roomTitle}>
+            {props.sensor.room}
+          </Typography>
           <RelayCard
             roomName={props.sensor.room}
             device={props.sensor.deviceId}

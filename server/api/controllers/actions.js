@@ -5,6 +5,8 @@ const Action = require("../models/models").Action;
 const TimerAction = require("../models/models").TimerAction;
 const SensorBasedAction = require("../models/models").SensorBasedAction;
 
+const sensor_util = require("../../sensor_util");
+
 let scheduledCronActions = [];
 
 const sendJsonResponse = (res, status, content) => {
@@ -50,31 +52,110 @@ const createCronRule = (date, timeUnit, recurrenceNumber) => {
   return requestedRule;
 };
 
+const createSensorBasedRule = (action) => {
+  const measurement = sensor_util.retrieveSensorData(
+    action.measurementSensorName,
+    action.measurementType
+  );
+  console.log(action.measurementType, measurement);
+  console.log(action.comparisonType, action.quantity);
+
+  if (!measurement) {
+    return;
+  }
+
+  switch (action.comparisonType) {
+    case "Below":
+      if (action.quantity > measurement) {
+        aedesBroker.publishMessage(action.commandTopic, action.command);
+        sendNotification(action);
+        console.log("Sensor-Based Action Triggered!");
+      }
+      break;
+    case "Over":
+      if (action.quantity < measurement) {
+        aedesBroker.publishMessage(action.commandTopic, action.command);
+        sendNotification(action);
+        console.log("Sensor-Based Action Triggered!");
+      }
+      break;
+    case "Equal To":
+      if (action.quantity === measurement) {
+        aedesBroker.publishMessage(action.commandTopic, action.command);
+        sendNotification(action);
+        console.log("Sensor-Based Action Triggered!");
+      }
+      break;
+    default:
+      break;
+  }
+};
+
 module.exports.scheduleStoredActions = () => {
-  TimerAction.find({}).exec((err, timerActions) => {
+  Action.find({}).exec((err, actions) => {
     if (err) {
       console.log(err);
     }
 
-    if (timerActions.length !== 0) {
-      for (const action of timerActions) {
-        const date = new Date(action.startTime);
-        let requestedRule;
-        let scheduledAction;
+    if (actions.length !== 0) {
+      for (const action of actions) {
+        if (action.actionCategory === "Timer Action") {
+          const date = new Date(action.startTime);
+          let requestedRule;
+          let scheduledAction;
 
-        if (action.recurrenceTimeUnit) {
-          requestedRule = createCronRule(
-            action.startTime,
-            action.recurrenceTimeUnit,
-            action.recurrenceNumber
-          );
+          if (action.recurrenceTimeUnit) {
+            requestedRule = createCronRule(
+              action.startTime,
+              action.recurrenceTimeUnit,
+              action.recurrenceNumber
+            );
 
-          scheduledAction = schedule.scheduleJob(
-            { start: date, rule: requestedRule },
+            scheduledAction = schedule.scheduleJob(
+              { start: date, rule: requestedRule },
+              () => {
+                aedesBroker.publishMessage(action.commandTopic, action.command);
+                console.log("Action Triggered!");
+                sendNotification(action);
+              }
+            );
+
+            scheduledCronActions.push({
+              actionId: action._id.toString(),
+              cronJob: scheduledAction,
+            });
+          } else {
+            currentDate = new Date();
+            if (currentDate > date) {
+              TimerAction.deleteOne({ _id: action._id }).exec((err, action) => {
+                if (err) {
+                  console.log(err);
+                }
+                console.log("Old unused action was deleted");
+              });
+            } else {
+              scheduledAction = schedule.scheduleJob(date, () => {
+                aedesBroker.publishMessage(action.commandTopic, action.command);
+                console.log("Action Triggered!");
+                sendNotification(action);
+              });
+
+              scheduledCronActions.push({
+                actionId: action._id.toString(),
+                cronJob: scheduledAction,
+              });
+            }
+          }
+        } else if (action.actionCategory === "Sensor-Based Action") {
+          const currentDate = new Date();
+          const everyMinuteRule = createCronRule(currentDate, "Minutes", 1);
+
+          const scheduledAction = schedule.scheduleJob(
+            { start: currentDate, rule: everyMinuteRule },
             () => {
-              aedesBroker.publishMessage(action.commandTopic, action.command);
-              console.log("Action Triggered!");
-              sendNotification(action);
+              console.log("Trying sensor-based action...");
+
+              createSensorBasedRule(action);
             }
           );
 
@@ -82,27 +163,6 @@ module.exports.scheduleStoredActions = () => {
             actionId: action._id.toString(),
             cronJob: scheduledAction,
           });
-        } else {
-          currentDate = new Date();
-          if (currentDate > date) {
-            TimerAction.deleteOne({ _id: action._id }).exec((err, action) => {
-              if (err) {
-                console.log(err);
-              }
-              console.log("Old unused action was deleted");
-            });
-          } else {
-            scheduledAction = schedule.scheduleJob(date, () => {
-              aedesBroker.publishMessage(action.commandTopic, action.command);
-              console.log("Action Triggered!");
-              sendNotification(action);
-            });
-
-            scheduledCronActions.push({
-              actionId: action._id.toString(),
-              cronJob: scheduledAction,
-            });
-          }
         }
       }
     }
@@ -174,6 +234,22 @@ module.exports.addSensorBasedAction = (req, res) => {
       sendJsonResponse(res, 400, err);
     } else {
       sendJsonResponse(res, 201, action);
+      const currentDate = new Date();
+      const everyMinuteRule = createCronRule(currentDate, "Minutes", 1);
+
+      const scheduledAction = schedule.scheduleJob(
+        { start: currentDate, rule: everyMinuteRule },
+        () => {
+          console.log("Trying sensor-based action...");
+
+          createSensorBasedRule(action);
+        }
+      );
+
+      scheduledCronActions.push({
+        actionId: action._id.toString(),
+        cronJob: scheduledAction,
+      });
     }
   });
 };

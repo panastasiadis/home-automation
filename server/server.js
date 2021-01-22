@@ -10,6 +10,7 @@ const app = express();
 const aedesBroker = require("./aedes_broker");
 const db = require("./api/models/db");
 const routesApi = require("./api/routes/index");
+const {getActiveSensors } = require("./sensor_util");
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -81,7 +82,7 @@ db.connectDb(() => {
     });
 
     app.get("/active-sensors", (req, res) => {
-      res.send(aedesBroker.getActiveSensors());
+      res.send(getActiveSensors());
     });
 
     scheduleStoredActions();

@@ -6,16 +6,11 @@ const WebSocket = require("ws");
 
 const wss = new WebSocket.Server({ server: httpServer });
 const { measurementSchema } = require("./api/models/models");
+const sensor_util = require("./sensor_util");
 const mongoose = require("mongoose");
 
 const port = 1883;
 const wsport = 8883;
-
-let activeSensors = [];
-
-const getActiveSensors = () => {
-  return [...activeSensors];
-};
 
 const connect = () => {
   wss.on("connection", (ws) => {
@@ -86,27 +81,12 @@ const connect = () => {
   //subscribe to initial message in which all the clients should send with their info
   aedes.subscribe("+/+/device", (packet, cb) => {
     const msg = packet.payload.toString();
-    const nodeInfo = convertTopicToInfo(packet.topic.toString());
 
     if (msg !== "offline") {
-      //get and parse the device info that is included in the message
-      const payloadObject = JSON.parse(msg);
-      const topicPrefix = nodeInfo.room + "/" + nodeInfo.deviceId + "/";
-
-      const sensors = payloadObject.sensors.map((sensorEl) => {
-        sensorEl.deviceId = nodeInfo.deviceId;
-        sensorEl.room = nodeInfo.room;
-        if (sensorEl.type === "relay") {
-          sensorEl.pubTopic =
-            topicPrefix + sensorEl.type + "-state" + "/" + sensorEl.name;
-          sensorEl.commandTopic =
-            topicPrefix + sensorEl.type + "/" + sensorEl.name;
-        } else {
-          sensorEl.pubTopic = topicPrefix + sensorEl.type + "/" + sensorEl.name;
-        }
-        activeSensors.push(sensorEl);
-        return sensorEl;
-      });
+      const sensors = sensor_util.storeConnectedSensors(
+        packet.topic,
+        packet.payload
+      );
 
       infoForBrowserJSON = {
         newSensors: sensors,
@@ -118,24 +98,22 @@ const connect = () => {
       for (const sensor of sensors) {
         aedes.subscribe(sensor.pubTopic, deliverFunc);
       }
-
     } else {
-      activeSensors = activeSensors.filter((sensor) => {
-        if (sensor.deviceId === nodeInfo.deviceId) {
-          console.log(`topic to unsub from: ${sensor.pubTopic}`);
-          aedes.unsubscribe(sensor.pubTopic, deliverFunc);
-        }
-        return sensor.deviceId !== nodeInfo.deviceId;
-      });
-      console.log(activeSensors);
+      const { unusedTopics, deviceId } = sensor_util.removeDisconnectedSensors(
+        packet.topic,
+        packet.payload
+      );
+
+      for (const topic of unusedTopics) {
+        aedes.unsubscribe(topic, deliverFunc);
+      }
 
       infoForBrowserJSON = {
-        deviceId: nodeInfo.deviceId,
+        deviceId: deviceId,
         action: "disconnected",
       };
 
       publishMessage("browser", JSON.stringify(infoForBrowserJSON));
-
     }
     cb();
   });
@@ -152,90 +130,10 @@ const publishMessage = (topic, message) => {
 };
 
 const deliverFunc = (packet, cb) => {
-  const info = convertTopicToInfo(packet.topic.toString());
   console.log(packet.payload.toString(), packet.topic.toString());
-  sensor =
-    activeSensors[activeSensors.findIndex((el) => el.name === info.sensorName)];
-
-  if (sensor.type === "temperature-humidity") {
-    const splitStr = packet.payload.toString().split("-");
-
-    sensor.currentMeasurement = {
-      temperature: splitStr[0],
-      humidity: splitStr[1],
-      // timestamp: getFixedDate(),
-    };
-
-    ////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////
-    const currentDate = new Date();
-    const startTime = new Date(currentDate);
-    const endTime = new Date(currentDate);
-
-    if (currentDate.getMinutes() < 30) {
-      startTime.setMinutes(0);
-      startTime.setSeconds(0);
-      startTime.setMilliseconds(0);
-      endTime.setMinutes(29);
-      endTime.setSeconds(59);
-      endTime.setMilliseconds(999);
-    } else {
-      startTime.setMinutes(30);
-      startTime.setSeconds(0);
-      startTime.setMilliseconds(0);
-      endTime.setMinutes(59);
-      endTime.setSeconds(59);
-      endTime.setMilliseconds(999);
-    }
-
-    const query = {
-      sensorId: info.sensorName,
-      deviceId: info.deviceId,
-      roomName: info.room,
-      startTime: startTime,
-      endTime: endTime,
-    };
-
-    const update = {
-      $push: {
-        measurements: sensor.currentMeasurement,
-      },
-      $inc: {
-        measurementsCounter: 1,
-        temperaturesSum: splitStr[0],
-        humiditiesSum: splitStr[1],
-      },
-    };
-
-    mongoose
-      .model("Measurement", measurementSchema, info.sensorName)
-      .findOneAndUpdate(query, update, {
-        upsert: true,
-        new: true,
-      })
-      .exec((err, res) => {
-        if (err) {
-          console.log(err);
-        }
-      });
-    ////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////
-  }
+  sensor_util.storeSensorData(packet.topic, packet.payload);
 
   cb();
 };
 
-const convertTopicToInfo = (mqttTopic) => {
-  const splitStr = mqttTopic.split("/");
-
-  [room, deviceId, sensorType, sensorName] = splitStr;
-
-  return {
-    room,
-    deviceId,
-    sensorType,
-    sensorName,
-  };
-};
-
-module.exports = { publishMessage, connect, getActiveSensors };
+module.exports = { publishMessage, connect };

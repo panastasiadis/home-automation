@@ -12,7 +12,7 @@ import mqttService from "../utils/MQTT";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "45vh",
+    // flexGrow: 1,
     backgroundColor: "white",
     borderRadius: "10px",
     display: "flex",
@@ -133,9 +133,20 @@ export default function OutlinedCard(props) {
         const response = await axios.get(
           `http://192.168.1.66:5000/api/measurements/${props.sensorName}`
         );
+
+        let avgTemp = 0;
+        let avgHum = 0;
+        let total = 0;
+        for (const measurementBucket of response.data) {
+          avgTemp += measurementBucket.temperaturesSum;
+          avgHum += measurementBucket.humiditiesSum;
+          total += measurementBucket.measurementsCounter;
+        }
+        avgTemp = avgTemp / total;
+        avgHum = avgHum / total;
         setAverageData({
-          avgTemp: response.data.avgTemp,
-          avgHum: response.data.avgHum,
+          avgTemp: avgTemp,
+          avgHum: avgHum,
           isFetching: false,
         });
       } catch (error) {
@@ -166,11 +177,13 @@ export default function OutlinedCard(props) {
 
   return (
     <div className={classes.root}>
+      <div className={classes.averageMeasurementsDiv}>
+        <Typography variant="subtitle1">{"Average"}</Typography>
+        <Typography className={classes.degrees}>{displayedAvg}</Typography>
+      </div>
       <div className={classes.tempHum}>
         <div className={classes.divContent}>
-          <Typography variant="subtitle1" component="subtitle1">
-            Temperature
-          </Typography>
+          <Typography variant="subtitle1">Temperature</Typography>
           <div className={classes.imageTemperature} />
           <Typography className={classes.degrees}>
             {`${currTempHum.temperature} \u00B0C`}
@@ -178,9 +191,7 @@ export default function OutlinedCard(props) {
           </Typography>
         </div>
         <div className={classes.divContent}>
-          <Typography variant="subtitle1" component="subtitle1">
-            Humidity
-          </Typography>
+          <Typography variant="subtitle1">Humidity</Typography>
           <div className={classes.imageHumidity} />
           <Typography className={classes.degrees}>
             {currTempHum.humidity} %
@@ -188,28 +199,21 @@ export default function OutlinedCard(props) {
           </Typography>
         </div>
       </div>
-      <div className={classes.averageMeasurementsDiv}>
-        <Typography variant="subtitle1">{"Average"}</Typography>
-        <Typography className={classes.degrees}>{displayedAvg}</Typography>
-      </div>
+
       <div className={classes.info}>
-        <div className={classes.roomInfo}>
+        {/* <div className={classes.roomInfo}>
           <RoomIcon />
           <Typography variant="subtitle1" component="subtitle1">
             {props.roomName}
           </Typography>
-        </div>
+        </div> */}
         <div className={classes.deviceInfoIndividual}>
           <BlurCircularIcon />
-          <Typography variant="subtitle1" component="subtitle1">
-            {props.sensorName}
-          </Typography>
+          <Typography variant="subtitle1">{props.sensorName}</Typography>
         </div>
         <div className={classes.deviceInfoIndividual}>
           <RouterIcon />
-          <Typography variant="subtitle1" component="subtitle1">
-            {props.device}
-          </Typography>
+          <Typography variant="subtitle1">{props.device}</Typography>
         </div>
       </div>
     </div>

@@ -88,7 +88,7 @@ export default function OpenIconSpeedDial(props) {
         <SpeedDialAction
           className={classes.action}
           icon={<BlurCircularIcon />}
-          tooltipTitle={"Sensor Driven"}
+          tooltipTitle={"Sensor Based"}
           tooltipOpen
           onClick={selectSensorBasedAction}
         />
@@ -102,7 +102,7 @@ export default function OpenIconSpeedDial(props) {
         <SpeedDialAction
           className={classes.action}
           icon={<TimerIcon />}
-          tooltipTitle={"Scheduled"}
+          tooltipTitle={"Time Based"}
           tooltipOpen
           onClick={selectTimerAction}
         />

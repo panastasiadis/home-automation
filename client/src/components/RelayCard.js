@@ -13,7 +13,7 @@ import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    // width: "100%",
     backgroundColor: "white",
     borderRadius: "10px",
     display: "flex",
@@ -170,12 +170,12 @@ export default function OutlinedCard(props) {
         />
       </div>
       <div className={classes.info}>
-        <div className={classes.roomInfo}>
+        {/* <div className={classes.roomInfo}>
           <RoomIcon />
           <Typography variant="subtitle1" component="subtitle1">
             {props.roomName}
           </Typography>
-        </div>
+        </div> */}
         <div className={classes.deviceInfoIndividual}>
           <BlurCircularIcon />
           <Typography variant="subtitle1" component="subtitle1">
