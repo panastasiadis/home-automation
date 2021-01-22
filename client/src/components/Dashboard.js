@@ -131,21 +131,21 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   dashBoardLabel: {
-    display: "inline",
-    paddingTop: 3,
-    paddingBottom: 3,
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-    color: "white",
-    backgroundColor: theme.palette.primary.main,
-    borderRadius: "10px",
+    // display: "inline",
+    // paddingTop: 3,
+    // paddingBottom: 3,
+    // padding: theme.spacing(1),
+    // paddingRight: theme.spacing(1),
+    // color: "white",
+    // backgroundColor: theme.palette.primary.main,
+    // borderRadius: "10px",
   },
 
   currentTab: {
     textAlign: "center",
     // borderBottom: `5pxsolid ${theme.palette.secondary.main}`,
     // width: "60vh",
-    margin: "0 auto",
+    // margin: "0 auto",
     marginTop: theme.spacing(2),
   },
   hiMessage: {
@@ -340,7 +340,7 @@ function Dashboard(props) {
             >
               Dashboard
             </Typography>
-            <Typography variant="subtitle1">
+            <Typography variant="h6">
               {currentlyDisplayedItem.tab}
               {currentlyDisplayedItem.tab === "All" ||
               currentlyDisplayedItem.tab === "Actions"

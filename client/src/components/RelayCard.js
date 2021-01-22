@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: "wrap",
     alignItems: "center",
     justifyContent: "center",
+    // flexDirection: "column",
   },
   info: {
     display: "flex",
@@ -27,8 +28,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     flexDirection: "column",
     justifyContent: "space-around",
-    borderColor: theme.palette.secondary.main,
     borderRadius: "10px",
+    // backgroundColor: theme.palette.secondary.main,
+    // border:`2px solid ${theme.palette.secondary.main}`,
     margin: theme.spacing(1),
   },
   deviceInfoIndividual: {
@@ -38,11 +40,7 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-    color: "white",
-    // borderStyle: "solid",
-    // borderColor: theme.palette.secondar.main,
-    borderRadius: "10px",
+    color: theme.palette.secondary.main,
   },
   divContent: {
     display: "flex",
@@ -57,8 +55,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
   },
   imageLightClosed: {
     margin: theme.spacing(1),
@@ -67,8 +65,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
-    width: 50,
-    height: 50,
+    width: 70,
+    height: 70,
   },
   currentState: {
     display: "flex",
@@ -152,7 +150,7 @@ export default function OutlinedCard(props) {
           <div className={classes.imageLightClosed} />
         )}
         <div className={classes.currentState}>
-          <Typography variant="h6">{"Current State "}</Typography>
+          <Typography variant="subtitle1">{"Current state "}</Typography>
           <Typography className={classes.onOff} variant="subtitle2">
             {relayState}
           </Typography>
@@ -170,12 +168,12 @@ export default function OutlinedCard(props) {
         />
       </div>
       <div className={classes.info}>
-        {/* <div className={classes.roomInfo}>
+        <div className={classes.roomInfo}>
           <RoomIcon />
-          <Typography variant="subtitle1" component="subtitle1">
+          <Typography variant="h5">
             {props.roomName}
           </Typography>
-        </div> */}
+        </div>
         <div className={classes.deviceInfoIndividual}>
           <BlurCircularIcon />
           <Typography variant="subtitle1" component="subtitle1">

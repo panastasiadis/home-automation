@@ -44,9 +44,9 @@ export default function SensorGridItem(props) {
           <Typography variant="h6" className={classes.title}>
             Temperature & Humidity
           </Typography>
-          <Typography className={classes.roomTitle}>
+          {/* <Typography className={classes.roomTitle}>
             {props.sensor.room}
-          </Typography>
+          </Typography> */}
           <TemperatureHumidityCard
             topic={props.sensor.pubTopic}
             roomName={props.sensor.room}
@@ -61,9 +61,9 @@ export default function SensorGridItem(props) {
       <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>
           <Typography variant="h6" className={classes.title}>Lights</Typography>
-          <Typography className={classes.roomTitle}>
+          {/* <Typography className={classes.roomTitle}>
             {props.sensor.room}
-          </Typography>
+          </Typography> */}
           <RelayCard
             roomName={props.sensor.room}
             device={props.sensor.deviceId}

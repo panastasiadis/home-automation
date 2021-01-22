@@ -19,6 +19,7 @@ const actionSchema = new mongoose.Schema(
   {
     sensorName: { type: String, required: true },
     deviceId: { type: String, required: true },
+    sensorType: { type: String, required: true },
     roomName: { type: String, required: true },
     command: { type: String, required: true },
     commandTopic: { type: String, required: true },

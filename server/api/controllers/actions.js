@@ -188,7 +188,7 @@ module.exports.actionsList = (req, res) => {
 module.exports.addSensorBasedAction = (req, res) => {
   console.log(req.body);
 
-  if (!req.body.sensorName) {
+  if (!req.body.sensorType) {
     sendJsonResponse(res, 400, { message: "No sensor was specified" });
     return;
   } else if (!req.body.command) {
@@ -215,6 +215,7 @@ module.exports.addSensorBasedAction = (req, res) => {
   }
 
   let action = {
+    sensorType: req.body.sensorType,
     sensorName: req.body.sensorName,
     deviceId: req.body.deviceId,
     roomName: req.body.roomName,
@@ -259,7 +260,7 @@ module.exports.addTimerAction = (req, res) => {
 
   const timeUnit = req.body.recurrenceTimeUnit;
   const recurrenceNumber = req.body.recurrenceNumber;
-  if (!req.body.sensorName) {
+  if (!req.body.sensorType) {
     sendJsonResponse(res, 400, { message: "No sensor specified" });
     return;
   } else if (!req.body.command) {
@@ -271,6 +272,7 @@ module.exports.addTimerAction = (req, res) => {
   }
 
   let action = {
+    sensorType: req.body.sensorType,
     sensorName: req.body.sensorName,
     deviceId: req.body.deviceId,
     roomName: req.body.roomName,

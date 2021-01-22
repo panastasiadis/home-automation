@@ -7,7 +7,7 @@ import RouterIcon from "@material-ui/icons/Router";
 import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 import axios from "axios";
-
+import average from "../assets/temperature/average.svg"
 import mqttService from "../utils/MQTT";
 
 const useStyles = makeStyles((theme) => ({
@@ -18,7 +18,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexWrap: "wrap",
     alignItems: "center",
-    justifyContent: "space-around",
+    justifyContent: "center",
+    // flexDirection: "column",
   },
   degrees: {
     textAlign: "center",
@@ -49,6 +50,16 @@ const useStyles = makeStyles((theme) => ({
     width: 50,
     height: 50,
   },
+  imageAverage: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    backgroundImage: `url(${average})`,
+    backgroundPosition: "center",
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    width: 50,
+    height: 50,
+  },
   divContent: {
     display: "flex",
     alignItems: "center",
@@ -61,7 +72,8 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     flexDirection: "column",
     justifyContent: "space-around",
-    borderColor: theme.palette.secondary.main,
+    // backgroundColor: theme.palette.secondary.main,
+    // border:`2px solid ${theme.palette.primary.main}`,
     borderRadius: "10px",
     margin: theme.spacing(1),
   },
@@ -72,9 +84,8 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-    color: "white",
-
+    // backgroundColor: theme.palette.secondary.main,
+    color: theme.palette.secondary.main,
     borderRadius: "10px",
   },
   roomInfo: {
@@ -100,7 +111,11 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     flexDirection: "column",
     // justifyContent: "space-around",
+    backgroundColor: theme.palette.secondary.main,
     padding: theme.spacing(1),
+    borderRadius: "10px",
+    margin: theme.spacing(1),
+    color: "white",
     // flexWrap: "wrap",
   },
 }));
@@ -119,7 +134,7 @@ export default function OutlinedCard(props) {
     humidity: "Loading...",
   });
 
-  let displayedAvg = "Few Samples";
+  let displayedAvg = "No Samples yet";
 
   if (averageData.avgTemp !== null) {
     displayedAvg = `${Math.round(averageData.avgTemp)}\u00B0C /
@@ -142,13 +157,16 @@ export default function OutlinedCard(props) {
           avgHum += measurementBucket.humiditiesSum;
           total += measurementBucket.measurementsCounter;
         }
-        avgTemp = avgTemp / total;
-        avgHum = avgHum / total;
-        setAverageData({
-          avgTemp: avgTemp,
-          avgHum: avgHum,
-          isFetching: false,
-        });
+        console.log(response.data)
+        if (response.data.length !== 0) {
+          avgTemp = avgTemp / total;
+          avgHum = avgHum / total;
+          setAverageData({
+            avgTemp: avgTemp,
+            avgHum: avgHum,
+            isFetching: false,
+          });
+        }
       } catch (error) {
         console.log(error);
         setAverageData({ avgTemp: null, avgHum: null, isFetching: false });
@@ -179,6 +197,7 @@ export default function OutlinedCard(props) {
     <div className={classes.root}>
       <div className={classes.averageMeasurementsDiv}>
         <Typography variant="subtitle1">{"Average"}</Typography>
+        <div className={classes.imageAverage} />
         <Typography className={classes.degrees}>{displayedAvg}</Typography>
       </div>
       <div className={classes.tempHum}>
@@ -201,12 +220,12 @@ export default function OutlinedCard(props) {
       </div>
 
       <div className={classes.info}>
-        {/* <div className={classes.roomInfo}>
+        <div className={classes.roomInfo}>
           <RoomIcon />
-          <Typography variant="subtitle1" component="subtitle1">
+          <Typography variant="h5">
             {props.roomName}
           </Typography>
-        </div> */}
+        </div>
         <div className={classes.deviceInfoIndividual}>
           <BlurCircularIcon />
           <Typography variant="subtitle1">{props.sensorName}</Typography>

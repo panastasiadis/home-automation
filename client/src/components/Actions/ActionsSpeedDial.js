@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
   action: {
     margin: theme.spacing(2),
+    backgroundColor: theme.palette.primary.main,
   },
 }));
 
@@ -89,21 +90,21 @@ export default function OpenIconSpeedDial(props) {
           className={classes.action}
           icon={<BlurCircularIcon />}
           tooltipTitle={"Sensor Based"}
-          tooltipOpen
+
           onClick={selectSensorBasedAction}
         />
         <SpeedDialAction
           className={classes.action}
           icon={<EditLocationIcon />}
           tooltipTitle={"Location Based"}
-          tooltipOpen
+          
           onClick={handleClose}
         />
         <SpeedDialAction
           className={classes.action}
           icon={<TimerIcon />}
           tooltipTitle={"Time Based"}
-          tooltipOpen
+          
           onClick={selectTimerAction}
         />
         {dialog}

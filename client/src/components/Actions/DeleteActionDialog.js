@@ -66,10 +66,10 @@ export default function ResponsiveDialog(props) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleClose} color="primary">
+          <Button variant="contained" autoFocus onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={deleteAction} color="primary" autoFocus>
+          <Button variant="contained" autoFocus onClick={deleteAction} color="primary" autoFocus>
             Delete
           </Button>
         </DialogActions>

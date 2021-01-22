@@ -71,6 +71,7 @@ export default function TimerActionDialog(props) {
     setLoading(true);
     axios
       .post("http://192.168.1.66:5000/api/timerActions", {
+        sensorType: selectedSensor.type,
         sensorName: selectedSensor.name,
         deviceId: selectedSensor.deviceId,
         roomName: selectedSensor.room,

@@ -4,7 +4,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import {getMeasurementsByType} from "../../utils/SensorSpecific";
+import {getMeasurementNamesByType} from "../../utils/SensorSpecific";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -36,7 +36,7 @@ export default function MeasurementTypesMenu(props) {
     setOpen(true);
   };
 
-  const measurementTypes = getMeasurementsByType(props.type);
+  const measurementTypes = getMeasurementNamesByType(props.type);
   return (
     <div>
       <FormControl required className={classes.formControl}>

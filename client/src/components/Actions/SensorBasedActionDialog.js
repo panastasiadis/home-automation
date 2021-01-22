@@ -75,6 +75,7 @@ export default function SensorBasedActionDialog(props) {
     setLoading(true);
     axios
       .post("http://192.168.1.66:5000/api/sensorBasedActions", {
+        sensorType: selectedCommandSensor.type,
         sensorName: selectedCommandSensor.name,
         deviceId: selectedCommandSensor.deviceId,
         roomName: selectedCommandSensor.room,
