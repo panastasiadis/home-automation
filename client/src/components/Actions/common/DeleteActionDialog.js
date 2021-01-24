@@ -82,7 +82,6 @@ export default function ResponsiveDialog(props) {
             autoFocus
             onClick={deleteAction}
             color="primary"
-            autoFocus
           >
             Delete
           </Button>

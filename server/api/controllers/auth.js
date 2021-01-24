@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const utils = require("../../util");
+const utils = require("../../auth_util");
 const jwt = require("jsonwebtoken");
 
 // static user details

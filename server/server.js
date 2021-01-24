@@ -4,17 +4,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const scheduleStoredActions = require("./api/controllers/actions").scheduleStoredActions;
 const app = express();
+const path = require("path");
 
 const aedesBroker = require("./aedes_broker");
 const db = require("./api/models/db");
 const routesApi = require("./api/routes/index");
-const {getActiveSensors } = require("./sensor_util");
+const scheduleStoredActions = require("./api/controllers/actions")
+  .scheduleStoredActions;
+
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, "../client/build")));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -51,8 +54,6 @@ app.use((req, res, next) => {
   });
 });
 
-
-
 db.connectDb(() => {
   // server listens to 3000
   const server = app.listen(port, function () {
@@ -62,10 +63,13 @@ db.connectDb(() => {
     aedesBroker.connect();
     scheduleStoredActions();
 
-    app.get("/active-sensors", (req, res) => {
-      res.send(getActiveSensors());
+    // If no API routes are hit, send the React app
+    app.use((req, res) => {
+      res.sendFile(path.join(__dirname, "../client/build", "index.html"));
     });
 
-    
+    app.get("/", (req, res) => {
+      res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+    });
   });
 });

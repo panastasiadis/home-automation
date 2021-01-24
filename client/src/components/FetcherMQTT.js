@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from "react";
 import AlertMessage from "./AlertMessage";
 import Dashboard from "./Dashboard";
 import { backendApiUrl } from "../utils/Config";
-const URL = backendApiUrl.server + "active-sensors";
+const URL = backendApiUrl.server + "api/activeSensors";
 
 const FetcherΜQTT = () => {
   const [data, setData] = useState({ sensors: [] });

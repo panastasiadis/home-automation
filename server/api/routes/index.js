@@ -1,13 +1,14 @@
 const express = require("express");
 const router = express.Router();
+
 const ctrlAuth = require("../controllers/auth");
 const ctrlActions = require("../controllers/actions");
 const ctrlMeasurements = require("../controllers/measurements");
+const { getActiveSensors } = require("../../sensor_util");
 
-// If no API routes are hit, send the React app
-// router.use(function (req, res) {
-//   res.sendFile(path.join(__dirname, "../client/build/index.html"));
-// });
+router.get("/activeSensors", (req, res) => {
+  res.send(getActiveSensors());
+});
 
 router.post("/timerActions", ctrlActions.addTimerAction);
 router.post("/sensorBasedActions", ctrlActions.addSensorBasedAction);
