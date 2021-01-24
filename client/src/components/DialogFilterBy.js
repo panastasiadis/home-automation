@@ -13,9 +13,9 @@ import DeviceHubIcon from "@material-ui/icons/DeviceHub";
 import Typography from "@material-ui/core/Typography";
 import RoomIcon from "@material-ui/icons/Room";
 import CategoryIcon from "@material-ui/icons/Category";
-const capitalize = (s) => {
-  return s && s[0].toUpperCase() + s.slice(1);
-};
+// const capitalize = (s) => {
+//   return s && s[0].toUpperCase() + s.slice(1);
+// };
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,7 +44,7 @@ export function SimpleDialog(props) {
   };
 
   const handleListItemClick = (value) => {
-    onClose(value.toLowerCase());
+    onClose(value);
   };
 
   return (
@@ -75,7 +75,7 @@ export function SimpleDialog(props) {
                     )}
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={capitalize(item)} />
+                <ListItemText primary={item} />
               </ListItem>
             );
           })}

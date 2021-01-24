@@ -1,6 +1,12 @@
+export const SENSOR_TYPE = {
+  RELAY_LIGHTBULB: "Lightbulb",
+  TEMPERATURE_HUMIDITY: "Temperature-Humidity",
+  LIGHT_INTENSITY: "Light-Intensity",
+};
+
 export const commandsByType = (type, command) => {
   switch (type) {
-    case "relay":
+    case SENSOR_TYPE.RELAY_LIGHTBULB:
       switch (command) {
         case "ON":
           return { command: "ON", description: "Turn the lights on" };
@@ -21,8 +27,10 @@ export const commandsByType = (type, command) => {
 
 export const getMeasurementNamesByType = (type) => {
   switch (type) {
-    case "temperature-humidity":
-      return ["Temperature", "Humidity"];
+    case SENSOR_TYPE.TEMPERATURE_HUMIDITY:
+      return ["Temperature (Celcius)", "Humidity (%)"];
+    case SENSOR_TYPE.LIGHT_INTENSITY:
+      return ["Light Intensity (%)"];
     default:
       break;
   }
@@ -30,9 +38,11 @@ export const getMeasurementNamesByType = (type) => {
 
 export const getMeasurementUnitsName = (measurementName) => {
   switch (measurementName) {
-    case "Temperature":
+    case "Temperature (Celcius)":
       return "Celcius";
-    case "Humidity":
+    case "Humidity (%)":
+      return "%";
+    case "Light Intensity (%)":
       return "%";
     default:
       break;

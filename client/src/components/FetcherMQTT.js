@@ -16,12 +16,7 @@ const FetcherΜQTT = () => {
         // setData({ sensors: data.sensors, isFetching: true });
         const response = await axios.get(URL);
         setData({ sensors: response.data });
-        for (const sensor of response.data) {
-          console.log(sensor);
-          if (sensor.type === "temperature-humidity") {
-            sensor.room = "kitchen";
-          }
-        }
+        
         dataRef.current = { sensors: response.data };
 
         for (const sensor of response.data) {

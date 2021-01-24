@@ -1,6 +1,12 @@
 const { measurementSchema } = require("./api/models/models");
 const mongoose = require("mongoose");
 
+const SENSOR_TYPE = {
+  RELAY_LIGHTBULB: "Lightbulb",
+  TEMPERATURE_HUMIDITY: "Temperature-Humidity",
+  LIGHT_INTENSITY: "Light-Intensity",
+};
+
 let activeSensors = [];
 
 const getActiveSensors = () => {
@@ -55,7 +61,7 @@ const sensorTopicConstructor = (sensorType, sensorName, roomName, deviceId) => {
   let commandTopic;
   let pubTopic;
   switch (sensorType) {
-    case "relay":
+    case SENSOR_TYPE.RELAY_LIGHTBULB:
       pubTopic = topicPrefix + sensorType + "-state" + "/" + sensorName;
       commandTopic = topicPrefix + sensorType + "/" + sensorName;
       break;
@@ -81,7 +87,7 @@ const storeSensorData = (mqttTopic, mqttPayload) => {
     ];
 
   switch (sensor.type) {
-    case "temperature-humidity":
+    case SENSOR_TYPE.TEMPERATURE_HUMIDITY:
       const splitStr = mqttPayload.toString().split("-");
 
       const currentDate = new Date();
@@ -141,9 +147,11 @@ const storeSensorData = (mqttTopic, mqttPayload) => {
           }
         });
       break;
-    case "relay":
+    case SENSOR_TYPE.RELAY_LIGHTBULB:
       sensor.currentState = mqttPayload.toString();
       break;
+    case SENSOR_TYPE.LIGHT_INTENSITY:
+      sensor.lightIntensity = mqttPayload.toString();
     default:
       break;
   }
@@ -166,16 +174,22 @@ const retrieveSensorData = (sensorName, option) => {
 
   if (sensor) {
     switch (sensor.type) {
-      case "temperature-humidity":
+      case SENSOR_TYPE.TEMPERATURE_HUMIDITY:
         switch (option) {
-          case "Temperature":
+          case "Temperature (Celcius)":
             return parseFloat(sensor.currentMeasurement.temperature);
-          case "Humidity":
+          case "Humidity (%)":
             return parseFloat(sensor.currentMeasurement.humidity);
           default:
             return parseFloat(sensor.currentMeasurement.temperature);
         }
-
+      case SENSOR_TYPE.LIGHT_INTENSITY:
+        switch (option) {
+          case "Light Intensity (%)":
+            lux = parseFloat(sensor.lightIntensity);
+            percentageLux = (lux / 100) * 100;
+            return percentageLux;
+        }
       default:
         break;
     }

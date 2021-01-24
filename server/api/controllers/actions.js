@@ -60,7 +60,7 @@ const createSensorBasedRule = (action) => {
   console.log(action.measurementType, measurement);
   console.log(action.comparisonType, action.quantity);
 
-  if (!measurement) {
+  if (measurement === undefined) {
     return;
   }
 
@@ -149,9 +149,10 @@ module.exports.scheduleStoredActions = () => {
         } else if (action.actionCategory === "Sensor-Based Action") {
           const currentDate = new Date();
           const everyMinuteRule = createCronRule(currentDate, "Minutes", 1);
+          const everyFiveSecsRule = `*/5 * * * * *`;
 
           const scheduledAction = schedule.scheduleJob(
-            { start: currentDate, rule: everyMinuteRule },
+            { start: currentDate, rule: everyFiveSecsRule },
             () => {
               console.log("Trying sensor-based action...");
 
@@ -237,9 +238,10 @@ module.exports.addSensorBasedAction = (req, res) => {
       sendJsonResponse(res, 201, action);
       const currentDate = new Date();
       const everyMinuteRule = createCronRule(currentDate, "Minutes", 1);
+      const everyFiveSecsRule = `*/5 * * * * *`;
 
       const scheduledAction = schedule.scheduleJob(
-        { start: currentDate, rule: everyMinuteRule },
+        { start: currentDate, rule: everyFiveSecsRule },
         () => {
           console.log("Trying sensor-based action...");
 

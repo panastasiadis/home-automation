@@ -1,5 +1,4 @@
 #include <ArduinoJson.h>
-
 #include "DHT.h" // including the library of DHT11 temperature and humidity sensor
 #include <ESP8266WiFi.h> // Esp8266/NodeMCU Library
 #include <PubSubClient.h> // MQTT Library
@@ -15,12 +14,9 @@ const char *ssid = "YOUR_SSID";
 const char *password = "YOUR_PASSWORD";
 const char *mqtt_server = "192.168.1.66";
 
-// const char *topicTemperature =
-// 	"livingroom/lr-NodeMCU/temperature"; // Topic temperature
-// const char *topicHumidity = "livingroom/lr-NodeMCU/humidity"; // Topic humidity
-const char *topicTemperHumid = "livingroom/lr-NodeMCU/temperature-humidity/dht11";
-const char *topicLightBulb = "livingroom/lr-NodeMCU/relay/lightbulb";
-const char *topicLightBulbState = "livingroom/lr-NodeMCU/relay-state/lightbulb";
+const char *topicTemperHumid = "livingroom/lr-NodeMCU/Temperature-Humidity/dht11";
+const char *topicLightBulb = "livingroom/lr-NodeMCU/Lightbulb/relay-lb-1";
+const char *topicLightBulbState = "livingroom/lr-NodeMCU/Lightbulb-state/relay-lb-1";
 
 const char *clientID =
 	"lr-NodeMCU"; // The client id identifies the NodeMCU device.
@@ -143,18 +139,12 @@ void setup(void)
 	StaticJsonDocument<256> doc;
 	JsonArray sensors = doc.createNestedArray("sensors");
 	JsonObject tempHumSensor = sensors.createNestedObject();
-	tempHumSensor["type"] = "temperature-humidity";
+	tempHumSensor["type"] = "Temperature-Humidity";
 	tempHumSensor["name"] = "dht11";
 
 	JsonObject relaySensor = sensors.createNestedObject();
-	relaySensor["type"] = "relay";
-	relaySensor["name"] = "lightbulb";
-
-	// JsonArray pub_protocols = doc.createNestedArray("pub_protocols");
-
-	// // pub_protocols.add(topicTemperature);
-	// pub_protocols.add(topicTemperHumid);
-	// pub_protocols.add(topicLightBulbState);
+	relaySensor["type"] = "Lightbulb";
+	relaySensor["name"] = "relay-lb-1";
 
 	serializeJson(doc, buffer);
 
@@ -203,8 +193,6 @@ void loop()
 		client.publish(topicTemperHumid,
 			       temperHumid); // Publishing temperature
 
-		// client.publish(topicHumidity, humi); // Publishing humidity
-
 		if (isnan(temp[16]) ||
 		    isnan(humi[16])) { // Check if there DHT is working
 			Serial.println("Failed to read from DHT sensor!");
@@ -222,7 +210,4 @@ void loop()
 		publishRelayState();
 	}
 
-	// client.loop();
-
-	// delay(1000);
 }

@@ -8,7 +8,7 @@ import { Typography } from "@material-ui/core";
 import RelayCard from "./RelayCard";
 import LightIntensityCard from "./LightIntensityCard";
 import TemperatureHumidityCard from "./TemperatureHumidityCard";
-
+import { SENSOR_TYPE } from "../../utils/SensorSpecific";
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(1),
@@ -39,18 +39,23 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SensorGridItem(props) {
   const classes = useStyles();
-  if (props.sensor === "kati") {
+  if (props.sensor.type === SENSOR_TYPE.LIGHT_INTENSITY) {
     return (
       <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>
           <Typography variant="h6" className={classes.title}>
-            Room ambient light
+            Room brightness
           </Typography>
-          <LightIntensityCard />
+          <LightIntensityCard
+            topic={props.sensor.pubTopic}
+            roomName={props.sensor.room}
+            device={props.sensor.deviceId}
+            sensorName={props.sensor.name}
+          />
         </Paper>
       </Grid>
     );
-  } else if (props.sensor.type === "temperature-humidity") {
+  } else if (props.sensor.type === SENSOR_TYPE.TEMPERATURE_HUMIDITY) {
     return (
       <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>
@@ -69,7 +74,7 @@ export default function SensorGridItem(props) {
         </Paper>
       </Grid>
     );
-  } else if (props.sensor.type === "relay") {
+  } else if (props.sensor.type === SENSOR_TYPE.RELAY_LIGHTBULB) {
     return (
       <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>

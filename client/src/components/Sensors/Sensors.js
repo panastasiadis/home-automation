@@ -38,7 +38,6 @@ export default function Sensors(props) {
       {sensors.map((sensor) => {
         return <Sensor sensor={sensor} key={sensor.name} />;
       })}
-      <Sensor sensor={"kati"}/>
     </Grid>
 
   );

@@ -170,21 +170,15 @@ export default function OutlinedCard(props) {
       <div className={classes.info}>
         <div className={classes.roomInfo}>
           <RoomIcon />
-          <Typography variant="h5">
-            {props.roomName}
-          </Typography>
+          <Typography variant="h5">{props.roomName}</Typography>
         </div>
         <div className={classes.deviceInfoIndividual}>
           <BlurCircularIcon />
-          <Typography variant="subtitle1" component="subtitle1">
-            {props.name}
-          </Typography>
+          <Typography variant="subtitle1">{props.name}</Typography>
         </div>
         <div className={classes.deviceInfoIndividual}>
           <RouterIcon />
-          <Typography variant="subtitle1" component="subtitle1">
-            {props.device}
-          </Typography>
+          <Typography variant="subtitle1">{props.device}</Typography>
         </div>
       </div>
     </div>
