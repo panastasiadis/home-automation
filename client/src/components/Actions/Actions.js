@@ -4,7 +4,9 @@ import ActionCard from "./ActionCard";
 import axios from "axios";
 import NoContentPage from "../NoContentPage";
 import ActionsSpeedDial from "./ActionsSpeedDial";
-const URL = "http://192.168.1.66:5000/api/actions";
+import { backendApiUrl } from "../../utils/Config";
+
+const URL = backendApiUrl.server + "api/actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -8,6 +8,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import axios from "axios";
+import { backendApiUrl } from "../../../utils/Config";
 
 export default function ResponsiveDialog(props) {
   const [open, setOpen] = React.useState(false);
@@ -26,11 +27,13 @@ export default function ResponsiveDialog(props) {
     setError(null);
 
     axios
-      .delete(`http://192.168.1.66:5000/api/actions/${props.action._id}`, {
+      .delete(`${backendApiUrl.server}api/actions/${props.action._id}`, {
         data: props.action._id,
       })
       .then((response) => {
-        props.updateActions(props.action._id.toString() + Math.random().toString(16).substr(2, 8));
+        props.updateActions(
+          props.action._id.toString() + Math.random().toString(16).substr(2, 8)
+        );
         setOpen(false);
       })
       .catch((error) => {
@@ -66,10 +69,21 @@ export default function ResponsiveDialog(props) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" autoFocus onClick={handleClose} color="primary">
+          <Button
+            variant="contained"
+            autoFocus
+            onClick={handleClose}
+            color="primary"
+          >
             Cancel
           </Button>
-          <Button variant="contained" autoFocus onClick={deleteAction} color="primary" autoFocus>
+          <Button
+            variant="contained"
+            autoFocus
+            onClick={deleteAction}
+            color="primary"
+            autoFocus
+          >
             Delete
           </Button>
         </DialogActions>

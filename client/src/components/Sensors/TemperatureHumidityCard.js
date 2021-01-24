@@ -11,6 +11,7 @@ import temperature from "../../assets/temperature/thermometer.svg";
 import humidity from "../../assets/temperature/humidity.svg";
 import average from "../../assets/temperature/average.svg";
 import mqttService from "../../utils/MQTT";
+import { backendApiUrl } from "../../utils/Config";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -148,7 +149,7 @@ export default function OutlinedCard(props) {
       try {
         setAverageData({ avgTemp: null, avgHum: null, isFetching: true });
         const response = await axios.get(
-          `http://192.168.1.66:5000/api/measurements/${props.sensorName}`
+          `${backendApiUrl.server}api/measurements/${props.sensorName}`
         );
 
         let avgTemp = 0;

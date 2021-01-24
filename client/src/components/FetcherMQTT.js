@@ -3,8 +3,8 @@ import mqttService from "../utils/MQTT";
 import React, { useEffect, useState, useRef } from "react";
 import AlertMessage from "./AlertMessage";
 import Dashboard from "./Dashboard";
-
-const URL = "http://192.168.1.66:5000/active-sensors";
+import { backendApiUrl } from "../utils/Config";
+const URL = backendApiUrl.server + "active-sensors";
 
 const FetcherΜQTT = () => {
   const [data, setData] = useState({ sensors: [] });

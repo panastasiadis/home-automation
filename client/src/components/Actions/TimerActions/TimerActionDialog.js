@@ -16,6 +16,7 @@ import SelectCommandMenu from "../common/SelectCommandMenu";
 import SelectRepeatMenu from "./SelectRepeatMenu";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { backendApiUrl } from "../../../utils/Config";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,7 +71,7 @@ export default function TimerActionDialog(props) {
     setStatus({ message: null, color: null });
     setLoading(true);
     axios
-      .post("http://192.168.1.66:5000/api/timerActions", {
+      .post(backendApiUrl.server + "api/timerActions", {
         sensorType: selectedSensor.type,
         sensorName: selectedSensor.name,
         deviceId: selectedSensor.deviceId,

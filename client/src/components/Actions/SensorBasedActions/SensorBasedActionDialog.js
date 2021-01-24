@@ -12,6 +12,7 @@ import SelectMeasurementTypeMenu from "./SelectMeasurementTypeMenu";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
+import { backendApiUrl } from "../../../utils/Config";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -74,7 +75,7 @@ export default function SensorBasedActionDialog(props) {
     setStatus({ message: null, color: null });
     setLoading(true);
     axios
-      .post("http://192.168.1.66:5000/api/sensorBasedActions", {
+      .post(backendApiUrl.server + "api/sensorBasedActions", {
         sensorType: selectedCommandSensor.type,
         sensorName: selectedCommandSensor.name,
         deviceId: selectedCommandSensor.deviceId,

@@ -12,6 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { setUserSession } from "../utils/Common";
 import SideImg from "../assets/home-automation3.svg";
+import { backendApiUrl } from "../utils/Config";
 
 function Copyright() {
   return (
@@ -71,7 +72,7 @@ export default function SignInSide(props) {
     setLoading(true);
 
     axios
-      .post("http://192.168.1.66:5000/api/users/signin", {
+      .post(backendApiUrl.server + "api/users/signin", {
         username: username.value,
         password: password.value,
       })
