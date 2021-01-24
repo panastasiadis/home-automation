@@ -60,32 +60,12 @@ db.connectDb(() => {
 
     //connect to the mqtt broker
     aedesBroker.connect();
-
-    app.get("/", (req, res) => {
-      if (!req.user) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Invalid user to access it." });
-      }
-      // res.send("hello world!", req.user.name);
-      res.status(200).send(req.user.name)
-      console.log("Homepage is displayed");
-    });
-
-    app.post("/command", (req, res) => {
-      console.log(req.body.topic, req.body.message);
-      const topic = req.body.topic;
-      const msg = req.body.message;
-
-      aedesBroker.publishMessage(topic, msg);
-      res.status(200).send("Message sent to mqtt");
-    });
+    scheduleStoredActions();
 
     app.get("/active-sensors", (req, res) => {
       res.send(getActiveSensors());
     });
 
-    scheduleStoredActions();
     
   });
 });

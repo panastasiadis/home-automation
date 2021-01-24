@@ -1,10 +1,13 @@
-import TemperatureHumidityCard from "./TemperatureHumidityCard";
 import React from "react";
 import Grid from "@material-ui/core/Grid";
-import RelayCard from "./RelayCard";
+
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+
+import RelayCard from "./RelayCard";
+import LightIntensityCard from "./LightIntensityCard";
+import TemperatureHumidityCard from "./TemperatureHumidityCard";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -21,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "10px",
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
-    textAlign: "center"
+    textAlign: "center",
   },
   roomTitle: {
     textAlign: "center",
@@ -36,8 +39,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SensorGridItem(props) {
   const classes = useStyles();
-
-  if (props.sensor.type === "temperature-humidity") {
+  if (props.sensor === "kati") {
+    return (
+      <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
+        <Paper className={classes.paper} elevation={6}>
+          <Typography variant="h6" className={classes.title}>
+            Room ambient light
+          </Typography>
+          <LightIntensityCard />
+        </Paper>
+      </Grid>
+    );
+  } else if (props.sensor.type === "temperature-humidity") {
     return (
       <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>
@@ -60,7 +73,9 @@ export default function SensorGridItem(props) {
     return (
       <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>
-          <Typography variant="h6" className={classes.title}>Lights</Typography>
+          <Typography variant="h6" className={classes.title}>
+            Lights
+          </Typography>
           {/* <Typography className={classes.roomTitle}>
             {props.sensor.room}
           </Typography> */}

@@ -6,8 +6,8 @@ import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
 import TimerIcon from "@material-ui/icons/Timer";
 import EditLocationIcon from "@material-ui/icons/EditLocation";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
-import TimerActionDialog from "./TimerActionDialog";
-import SensorBasedActionDialog from "./SensorBasedActionDialog";
+import TimerActionDialog from "./TimerActions/TimerActionDialog";
+import SensorBasedActionDialog from "./SensorBasedActions/SensorBasedActionDialog";
 import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme) => ({

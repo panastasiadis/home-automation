@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import Switch from "@material-ui/core/Switch";
-import mqttService from "../utils/MQTT";
+import mqttService from "../../utils/MQTT";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import lightBulbOpen from "../assets/lightbulb-open2.svg";
-import lightBulbClosed from "../assets/lightbulb-closed2.svg";
+import lightBulbOpen from "../../assets/lightbulb-open2.svg";
+import lightBulbClosed from "../../assets/lightbulb-closed2.svg";
 import RouterIcon from "@material-ui/icons/Router";
 import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";

@@ -1,5 +1,18 @@
 const mongoose = require("mongoose");
 
+const actionSchema = new mongoose.Schema(
+  {
+    sensorName: { type: String, required: true },
+    deviceId: { type: String, required: true },
+    sensorType: { type: String, required: true },
+    roomName: { type: String, required: true },
+    command: { type: String, required: true },
+    commandTopic: { type: String, required: true },
+    registrationDate: { type: Date, required: true },
+  },
+  { discriminatorKey: "actionCategory" }
+);
+
 const timerActionSchema = new mongoose.Schema({
   startTime: { type: Date, required: true },
   recurrenceNumber: { type: Number },
@@ -14,63 +27,6 @@ const sensorBasedActionSchema = new mongoose.Schema({
   comparisonType: { type: String, required: true },
   measurementType: { type: String },
 });
-
-const actionSchema = new mongoose.Schema(
-  {
-    sensorName: { type: String, required: true },
-    deviceId: { type: String, required: true },
-    sensorType: { type: String, required: true },
-    roomName: { type: String, required: true },
-    command: { type: String, required: true },
-    commandTopic: { type: String, required: true },
-    registrationDate: { type: Date, required: true },
-  },
-  { discriminatorKey: "actionCategory" }
-);
-
-const Action = mongoose.model("Action", actionSchema);
-module.exports.Action = Action;
-
-module.exports.SensorBasedAction = Action.discriminator(
-  "Sensor-Based Action",
-  sensorBasedActionSchema
-);
-
-module.exports.TimerAction = Action.discriminator(
-  "Timer Action",
-  timerActionSchema
-);
-
-const sensorSchema = new mongoose.Schema(
-  {
-    _id: { type: String },
-    subTopic: { type: String },
-  },
-  {
-    discriminatorKey: "sensorType", // our discriminator key, could be anything
-  }
-);
-
-const relaySchema = new mongoose.Schema(
-  {
-    commandTopic: { type: String, required: true },
-    openCommand: { type: String, default: "ON", required: true },
-    closeCommand: { type: String, default: "OFF", required: true },
-    currentState: { type: String, default: "OFF" },
-  },
-  { _id: false }
-);
-
-const tempsHumsSchema = new mongoose.Schema(
-  {
-    currentMeasurement: {
-      temperature: { type: Number },
-      humidity: { type: Number },
-      timestamp: { type: Date },
-    },
-  },
-  { _id: false }
-);
 
 const measurementSchema = new mongoose.Schema(
   {
@@ -93,31 +49,20 @@ const measurementSchema = new mongoose.Schema(
   { versionKey: false }
 );
 
-const deviceSchema = new mongoose.Schema({
-  _id: String, //device's name
-  // status: { type: String, enum: ["connected", "disconnected"], required: true },
-  // timeOfDisconnection: { type: Date },
-  sensors: [sensorSchema],
-});
+const Action = mongoose.model("Action", actionSchema);
 
-const roomSchema = new mongoose.Schema(
-  {
-    _id: String, //room's name
-    devices: [deviceSchema],
-  },
-  { versionKey: false }
+module.exports.Action = Action;
+
+module.exports.SensorBasedAction = Action.discriminator(
+  "Sensor-Based Action",
+  sensorBasedActionSchema
 );
 
-roomSchema.path("devices.sensors").discriminator("Relay", relaySchema);
-
-roomSchema
-  .path("devices.sensors")
-  .discriminator("Temperature-Humidity", tempsHumsSchema);
+module.exports.TimerAction = Action.discriminator(
+  "Timer Action",
+  timerActionSchema
+);
 
 module.exports.Measurement = mongoose.model("Measurement", measurementSchema);
 module.exports.measurementSchema = measurementSchema;
-module.exports.Room = mongoose.model("Room", roomSchema);
-module.exports.Sensor = {
-  relay: mongoose.model("Relay", relaySchema),
-  temperatureHumidity: mongoose.model("Temperature-Humidity", tempsHumsSchema),
-};
+

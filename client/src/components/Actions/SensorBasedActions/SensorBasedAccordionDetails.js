@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import { getMeasurementUnitsName } from "../../utils/SensorSpecific";
+import { getMeasurementUnitsName } from "../../../utils/SensorSpecific";
 import RoomIcon from "@material-ui/icons/Room";
 import RouterIcon from "@material-ui/icons/Router";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";

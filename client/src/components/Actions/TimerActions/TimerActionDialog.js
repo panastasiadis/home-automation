@@ -11,8 +11,8 @@ import {
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 import Button from "@material-ui/core/Button";
-import SelectSensorMenu from "./SelectSensorMenu";
-import SelectCommandMenu from "./SelectCommandMenu";
+import SelectSensorMenu from "../common/SelectSensorMenu";
+import SelectCommandMenu from "../common/SelectCommandMenu";
 import SelectRepeatMenu from "./SelectRepeatMenu";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";

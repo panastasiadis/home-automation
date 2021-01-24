@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
-import temperature from "../assets/temperature/thermometer.svg";
-import humidity from "../assets/temperature/humidity.svg";
 import RouterIcon from "@material-ui/icons/Router";
 import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
-import axios from "axios";
-import average from "../assets/temperature/average.svg"
-import mqttService from "../utils/MQTT";
+
+import temperature from "../../assets/temperature/thermometer.svg";
+import humidity from "../../assets/temperature/humidity.svg";
+import average from "../../assets/temperature/average.svg";
+import mqttService from "../../utils/MQTT";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -157,7 +159,7 @@ export default function OutlinedCard(props) {
           avgHum += measurementBucket.humiditiesSum;
           total += measurementBucket.measurementsCounter;
         }
-        console.log(response.data)
+        console.log(response.data);
         if (response.data.length !== 0) {
           avgTemp = avgTemp / total;
           avgHum = avgHum / total;
@@ -222,9 +224,7 @@ export default function OutlinedCard(props) {
       <div className={classes.info}>
         <div className={classes.roomInfo}>
           <RoomIcon />
-          <Typography variant="h5">
-            {props.roomName}
-          </Typography>
+          <Typography variant="h5">{props.roomName}</Typography>
         </div>
         <div className={classes.deviceInfoIndividual}>
           <BlurCircularIcon />

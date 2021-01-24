@@ -8,9 +8,9 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Divider from "@material-ui/core/Divider";
-import DeleteActionDialog from "./DeleteActionDialog";
-import TimerActionAccordionDetails from "./TimerActionAccordionDetails";
-import SensorBasedAccordionDetails from "./SensorBasedAccordionDetails";
+import DeleteActionDialog from "./common/DeleteActionDialog";
+import TimerActionAccordionDetails from "./TimerActions/TimerActionAccordionDetails";
+import SensorBasedAccordionDetails from "./SensorBasedActions/SensorBasedAccordionDetails";
 import { commandsByType } from "../../utils/SensorSpecific";
 const useStyles = makeStyles((theme) => ({
   root: {
