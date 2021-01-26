@@ -355,3 +355,8 @@ MigrationBackup/
 #Webstorm IDE
 .idea
 
+
+#specified by me
+#VS Code
+.eslintcache
+.vscode
