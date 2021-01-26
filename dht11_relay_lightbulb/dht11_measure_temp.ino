@@ -12,7 +12,7 @@
 
 const char *ssid = "YOUR_SSID";
 const char *password = "YOUR_PASSWORD";
-const char *mqtt_server = "192.168.1.66";
+const char *mqtt_server = "192.168.1.70";
 
 const char *topicTemperHumid = "livingroom/lr-NodeMCU/Temperature-Humidity/dht11";
 const char *topicLightBulb = "livingroom/lr-NodeMCU/Lightbulb/relay-lb-1";

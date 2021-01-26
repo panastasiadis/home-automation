@@ -11,7 +11,6 @@ const URL = backendApiUrl.server + "api/actions";
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
-    // padding: theme.spacing(1),
   },
 }));
 
@@ -66,10 +65,6 @@ export default function MaterialUIPickers(props) {
         sensors={props.sensors}
         updateActions={rerenderOnActionChange}
       />
-      {/* <TimerActionDialog
-        sensors={props.sensors}
-        updateActions={rerenderOnActionChange}
-      /> */}
     </div>
   );
 }
