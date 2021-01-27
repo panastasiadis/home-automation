@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+const ctrlLocation = require("../controllers/location");
 const ctrlAuth = require("../controllers/auth");
 const ctrlActions = require("../controllers/actions");
 const ctrlMeasurements = require("../controllers/measurements");
@@ -19,6 +20,8 @@ router.get(
   "/measurements/:sensorName",
   ctrlMeasurements.getLastHourMeasurements
 );
+
+router.post("/location",ctrlLocation.getClientLocation);
 
 router.post("/users/signin", ctrlAuth.userSignIn);
 router.get("/verifyToken", ctrlAuth.verifyToken);
