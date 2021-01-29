@@ -15,7 +15,7 @@ const sendJsonResponse = (res, status, content) => {
   res.json(content);
 };
 
-const sendNotification = (actionInfo) => {
+module.exports.sendNotification = (actionInfo) => {
   infoForBrowserJSON = {
     actionInfo: actionInfo,
     action: 'action',
@@ -195,7 +195,7 @@ module.exports.addLocationBasedAction = (req, res) => {
   } else if (!req.body.command) {
     sendJsonResponse(res, 400, { message: 'No command was specified' });
     return;
-  } else if (!req.body.measurementSensorName) {
+  } else if (!req.body.radius) {
     sendJsonResponse(res, 400, {
       message: 'No radius was specified',
     });

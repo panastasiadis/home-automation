@@ -2,7 +2,7 @@ const geolib = require('geolib');
 const LocationBasedAction = require('../models/models').LocationBasedAction;
 const aedesBroker = require('../../aedes_broker');
 const sensor_util = require('../../sensor_util');
-
+const {sendNotification} = require("../controllers/actions");
 const SERVER_LOCATION = {
   latitude: 39.3612,
   longitude: 22.9539,
@@ -40,7 +40,7 @@ module.exports.getClientLocation = (req, res) => {
           const measurement = sensor_util.retrieveSensorData(action.sensorName);
           console.log('previous state ->', measurement);
 
-          if (state === undefined) {
+          if (measurement === undefined) {
             return;
           }
 
