@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const actionSchema = new mongoose.Schema(
   {
@@ -10,8 +10,12 @@ const actionSchema = new mongoose.Schema(
     commandTopic: { type: String, required: true },
     registrationDate: { type: Date, required: true },
   },
-  { discriminatorKey: "actionCategory" }
+  { discriminatorKey: 'actionCategory' }
 );
+
+const locationBasedActionSchema = new mongoose.Schema({
+  radius: { type: Number, required: true },
+});
 
 const timerActionSchema = new mongoose.Schema({
   startTime: { type: Date, required: true },
@@ -21,7 +25,7 @@ const timerActionSchema = new mongoose.Schema({
 
 const sensorBasedActionSchema = new mongoose.Schema({
   measurementSensorName: { type: String, required: true },
-  measurementDeviceId:  { type: String, required: true },
+  measurementDeviceId: { type: String, required: true },
   measurementRoomName: { type: String, required: true },
   quantity: { type: Number, required: true },
   comparisonType: { type: String, required: true },
@@ -49,20 +53,24 @@ const measurementSchema = new mongoose.Schema(
   { versionKey: false }
 );
 
-const Action = mongoose.model("Action", actionSchema);
+const Action = mongoose.model('Action', actionSchema);
 
 module.exports.Action = Action;
 
+module.exports.LocationBasedAction = Action.discriminator(
+  'Location-Based Action',
+  locationBasedActionSchema
+);
+
 module.exports.SensorBasedAction = Action.discriminator(
-  "Sensor-Based Action",
+  'Sensor-Based Action',
   sensorBasedActionSchema
 );
 
 module.exports.TimerAction = Action.discriminator(
-  "Timer Action",
+  'Timer Action',
   timerActionSchema
 );
 
-module.exports.Measurement = mongoose.model("Measurement", measurementSchema);
+module.exports.Measurement = mongoose.model('Measurement', measurementSchema);
 module.exports.measurementSchema = measurementSchema;
-

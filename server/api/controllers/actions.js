@@ -1,11 +1,12 @@
-const schedule = require("node-schedule");
-const aedesBroker = require("../../aedes_broker");
+const schedule = require('node-schedule');
+const aedesBroker = require('../../aedes_broker');
 
-const Action = require("../models/models").Action;
-const TimerAction = require("../models/models").TimerAction;
-const SensorBasedAction = require("../models/models").SensorBasedAction;
+const Action = require('../models/models').Action;
+const TimerAction = require('../models/models').TimerAction;
+const SensorBasedAction = require('../models/models').SensorBasedAction;
+const LocationBasedAction = require('../models/models').LocationBasedAction;
 
-const sensor_util = require("../../sensor_util");
+const sensor_util = require('../../sensor_util');
 
 let scheduledCronActions = [];
 
@@ -17,25 +18,25 @@ const sendJsonResponse = (res, status, content) => {
 const sendNotification = (actionInfo) => {
   infoForBrowserJSON = {
     actionInfo: actionInfo,
-    action: "action",
+    action: 'action',
   };
 
-  aedesBroker.publishMessage("browser", JSON.stringify(infoForBrowserJSON));
+  aedesBroker.publishMessage('browser', JSON.stringify(infoForBrowserJSON));
 };
 
 const createCronRule = (date, timeUnit, recurrenceNumber) => {
   let requestedRule;
 
   switch (timeUnit) {
-    case "Minutes":
+    case 'Minutes':
       console.log(`0 */${recurrenceNumber} * * * *`);
       requestedRule = `0 */${recurrenceNumber} * * * *`;
       break;
-    case "Hours":
+    case 'Hours':
       console.log(`0 ${date.getMinutes() + 1} */${recurrenceNumber} * * *`);
       requestedRule = `0 ${date.getMinutes() + 1} */${recurrenceNumber} * * *`;
       break;
-    case "Days":
+    case 'Days':
       console.log(
         `0 ${
           date.getMinutes() + 1
@@ -65,25 +66,25 @@ const createSensorBasedRule = (action) => {
   }
 
   switch (action.comparisonType) {
-    case "Below":
+    case 'Below':
       if (action.quantity > measurement) {
         aedesBroker.publishMessage(action.commandTopic, action.command);
         sendNotification(action);
-        console.log("Sensor-Based Action Triggered!");
+        console.log('Sensor-Based Action Triggered!');
       }
       break;
-    case "Over":
+    case 'Over':
       if (action.quantity < measurement) {
         aedesBroker.publishMessage(action.commandTopic, action.command);
         sendNotification(action);
-        console.log("Sensor-Based Action Triggered!");
+        console.log('Sensor-Based Action Triggered!');
       }
       break;
-    case "Equal To":
+    case 'Equal To':
       if (action.quantity === measurement) {
         aedesBroker.publishMessage(action.commandTopic, action.command);
         sendNotification(action);
-        console.log("Sensor-Based Action Triggered!");
+        console.log('Sensor-Based Action Triggered!');
       }
       break;
     default:
@@ -99,7 +100,7 @@ module.exports.scheduleStoredActions = () => {
 
     if (actions.length !== 0) {
       for (const action of actions) {
-        if (action.actionCategory === "Timer Action") {
+        if (action.actionCategory === 'Timer Action') {
           const date = new Date(action.startTime);
           let requestedRule;
           let scheduledAction;
@@ -115,7 +116,7 @@ module.exports.scheduleStoredActions = () => {
               { start: date, rule: requestedRule },
               () => {
                 aedesBroker.publishMessage(action.commandTopic, action.command);
-                console.log("Action Triggered!");
+                console.log('Action Triggered!');
                 sendNotification(action);
               }
             );
@@ -131,12 +132,12 @@ module.exports.scheduleStoredActions = () => {
                 if (err) {
                   console.log(err);
                 }
-                console.log("Old unused action was deleted");
+                console.log('Old unused action was deleted');
               });
             } else {
               scheduledAction = schedule.scheduleJob(date, () => {
                 aedesBroker.publishMessage(action.commandTopic, action.command);
-                console.log("Action Triggered!");
+                console.log('Action Triggered!');
                 sendNotification(action);
               });
 
@@ -146,15 +147,15 @@ module.exports.scheduleStoredActions = () => {
               });
             }
           }
-        } else if (action.actionCategory === "Sensor-Based Action") {
+        } else if (action.actionCategory === 'Sensor-Based Action') {
           const currentDate = new Date();
-          const everyMinuteRule = createCronRule(currentDate, "Minutes", 1);
+          const everyMinuteRule = createCronRule(currentDate, 'Minutes', 1);
           const everyFiveSecsRule = `*/5 * * * * *`;
 
           const scheduledAction = schedule.scheduleJob(
             { start: currentDate, rule: everyFiveSecsRule },
             () => {
-              console.log("Trying sensor-based action...");
+              console.log('Trying sensor-based action...');
 
               createSensorBasedRule(action);
             }
@@ -172,11 +173,11 @@ module.exports.scheduleStoredActions = () => {
 
 module.exports.actionsList = (req, res) => {
   Action.find({})
-    .sort({ startTime: "desc" })
+    .sort({ startTime: 'desc' })
     .exec((err, actionDocs) => {
       // console.log(actionDocs);
       if (actionDocs.length === 0) {
-        sendJsonResponse(res, 404, { message: "No actions found" });
+        sendJsonResponse(res, 404, { message: 'No actions found' });
         return;
       } else if (err) {
         sendJsonResponse(res, 404, err);
@@ -186,32 +187,67 @@ module.exports.actionsList = (req, res) => {
     });
 };
 
+module.exports.addLocationBasedAction = (req, res) => {
+  console.log(req.body);
+  if (!req.body.sensorType) {
+    sendJsonResponse(res, 400, { message: 'No sensor was specified' });
+    return;
+  } else if (!req.body.command) {
+    sendJsonResponse(res, 400, { message: 'No command was specified' });
+    return;
+  } else if (!req.body.measurementSensorName) {
+    sendJsonResponse(res, 400, {
+      message: 'No radius was specified',
+    });
+    return;
+  }
+
+  let action = {
+    sensorType: req.body.sensorType,
+    sensorName: req.body.sensorName,
+    deviceId: req.body.deviceId,
+    roomName: req.body.roomName,
+    command: req.body.command,
+    commandTopic: req.body.commandTopic,
+    registrationDate: req.body.registrationDate,
+    radius: req.body.radius,
+  };
+
+  LocationBasedAction.create(action, (err, action) => {
+    if (err) {
+      sendJsonResponse(res, 400, err);
+    } else {
+      sendJsonResponse(res, 204, action);
+    }
+  });
+};
+
 module.exports.addSensorBasedAction = (req, res) => {
   console.log(req.body);
 
   if (!req.body.sensorType) {
-    sendJsonResponse(res, 400, { message: "No sensor was specified" });
+    sendJsonResponse(res, 400, { message: 'No sensor was specified' });
     return;
   } else if (!req.body.command) {
-    sendJsonResponse(res, 400, { message: "No command was specified" });
+    sendJsonResponse(res, 400, { message: 'No command was specified' });
     return;
   } else if (!req.body.measurementSensorName) {
     sendJsonResponse(res, 400, {
-      message: "No measurement sensor was specified",
+      message: 'No measurement sensor was specified',
     });
     return;
   } else if (!req.body.comparisonType) {
     sendJsonResponse(res, 400, {
-      message: "No comparison operator was specified",
+      message: 'No comparison operator was specified',
     });
     return;
   } else if (!req.body.measurementType) {
     sendJsonResponse(res, 400, {
-      message: "No measurement type was specified",
+      message: 'No measurement type was specified',
     });
     return;
   } else if (!req.body.quantity) {
-    sendJsonResponse(res, 400, { message: "No quantity was specified" });
+    sendJsonResponse(res, 400, { message: 'No quantity was specified' });
     return;
   }
 
@@ -237,13 +273,13 @@ module.exports.addSensorBasedAction = (req, res) => {
     } else {
       sendJsonResponse(res, 201, action);
       const currentDate = new Date();
-      const everyMinuteRule = createCronRule(currentDate, "Minutes", 1);
+      const everyMinuteRule = createCronRule(currentDate, 'Minutes', 1);
       const everyFiveSecsRule = `*/5 * * * * *`;
 
       const scheduledAction = schedule.scheduleJob(
         { start: currentDate, rule: everyFiveSecsRule },
         () => {
-          console.log("Trying sensor-based action...");
+          console.log('Trying sensor-based action...');
 
           createSensorBasedRule(action);
         }
@@ -263,13 +299,13 @@ module.exports.addTimerAction = (req, res) => {
   const timeUnit = req.body.recurrenceTimeUnit;
   const recurrenceNumber = req.body.recurrenceNumber;
   if (!req.body.sensorType) {
-    sendJsonResponse(res, 400, { message: "No sensor specified" });
+    sendJsonResponse(res, 400, { message: 'No sensor specified' });
     return;
   } else if (!req.body.command) {
-    sendJsonResponse(res, 400, { message: "No command specified" });
+    sendJsonResponse(res, 400, { message: 'No command specified' });
     return;
   } else if (!req.body.timestamp) {
-    sendJsonResponse(res, 400, { message: "Not Valid Date-Time" });
+    sendJsonResponse(res, 400, { message: 'Not Valid Date-Time' });
     return;
   }
 
@@ -307,14 +343,14 @@ module.exports.addTimerAction = (req, res) => {
           { start: date, rule: requestedRule },
           () => {
             aedesBroker.publishMessage(req.body.commandTopic, req.body.command);
-            console.log("Action Triggered!");
+            console.log('Action Triggered!');
             sendNotification(action);
           }
         );
       } else {
         scheduledAction = schedule.scheduleJob(date, () => {
           aedesBroker.publishMessage(req.body.commandTopic, req.body.command);
-          console.log("Action Triggered!");
+          console.log('Action Triggered!');
           sendNotification(action);
         });
       }
@@ -334,7 +370,7 @@ module.exports.deleteAction = (req, res) => {
     Action.findByIdAndRemove(actionId).exec((err, action) => {
       if (err || !action) {
         sendJsonResponse(res, 404, {
-          message: "Something Went Wrong. Action not found on database",
+          message: 'Something Went Wrong. Action not found on database',
         });
         return;
       }
@@ -358,7 +394,7 @@ module.exports.deleteAction = (req, res) => {
     });
   } else {
     sendJsonResponse(res, 404, {
-      message: "No action specified",
+      message: 'No action specified',
     });
   }
 };

@@ -1,10 +1,10 @@
-const { measurementSchema } = require("./api/models/models");
-const mongoose = require("mongoose");
+const { measurementSchema } = require('./api/models/models');
+const mongoose = require('mongoose');
 
 const SENSOR_TYPE = {
-  RELAY_LIGHTBULB: "Lightbulb",
-  TEMPERATURE_HUMIDITY: "Temperature-Humidity",
-  LIGHT_INTENSITY: "Light-Intensity",
+  RELAY_LIGHTBULB: 'Lightbulb',
+  TEMPERATURE_HUMIDITY: 'Temperature-Humidity',
+  LIGHT_INTENSITY: 'Light-Intensity',
 };
 
 let activeSensors = [];
@@ -57,17 +57,17 @@ const removeDisconnectedSensors = (mqttTopic) => {
 };
 
 const sensorTopicConstructor = (sensorType, sensorName, roomName, deviceId) => {
-  const topicPrefix = roomName + "/" + deviceId + "/";
+  const topicPrefix = roomName + '/' + deviceId + '/';
   let commandTopic;
   let pubTopic;
   switch (sensorType) {
     case SENSOR_TYPE.RELAY_LIGHTBULB:
-      pubTopic = topicPrefix + sensorType + "-state" + "/" + sensorName;
-      commandTopic = topicPrefix + sensorType + "/" + sensorName;
+      pubTopic = topicPrefix + sensorType + '-state' + '/' + sensorName;
+      commandTopic = topicPrefix + sensorType + '/' + sensorName;
       break;
 
     default:
-      pubTopic = topicPrefix + sensorType + "/" + sensorName;
+      pubTopic = topicPrefix + sensorType + '/' + sensorName;
       break;
   }
 
@@ -88,7 +88,7 @@ const storeSensorData = (mqttTopic, mqttPayload) => {
 
   switch (sensor.type) {
     case SENSOR_TYPE.TEMPERATURE_HUMIDITY:
-      const splitStr = mqttPayload.toString().split("-");
+      const splitStr = mqttPayload.toString().split('-');
 
       const currentDate = new Date();
       const startTime = new Date(currentDate);
@@ -136,7 +136,7 @@ const storeSensorData = (mqttTopic, mqttPayload) => {
       };
 
       mongoose
-        .model("Measurement", measurementSchema, deviceInfo.sensorName)
+        .model('Measurement', measurementSchema, deviceInfo.sensorName)
         .findOneAndUpdate(query, update, {
           upsert: true,
           new: true,
@@ -159,7 +159,7 @@ const storeSensorData = (mqttTopic, mqttPayload) => {
 
 const retrieveTimeSensorData = async (sensorName, startTime, endTime) => {
   const measurements = await mongoose
-    .model("Measurement", measurementSchema, sensorName)
+    .model('Measurement', measurementSchema, sensorName)
     .find({
       sensorId: sensorName,
       startTime: { $gt: startTime },
@@ -176,27 +176,29 @@ const retrieveSensorData = (sensorName, option) => {
     switch (sensor.type) {
       case SENSOR_TYPE.TEMPERATURE_HUMIDITY:
         switch (option) {
-          case "Temperature (Celcius)":
+          case 'Temperature (Celcius)':
             return parseFloat(sensor.currentMeasurement.temperature);
-          case "Humidity (%)":
+          case 'Humidity (%)':
             return parseFloat(sensor.currentMeasurement.humidity);
           default:
             return parseFloat(sensor.currentMeasurement.temperature);
         }
       case SENSOR_TYPE.LIGHT_INTENSITY:
         switch (option) {
-          case "Light Intensity (%)":
+          case 'Light Intensity (%)':
             lux = parseFloat(sensor.lightIntensity);
             percentageLux = (lux / 100) * 100;
             return percentageLux;
         }
+      case SENSOR_TYPE.RELAY_LIGHTBULB:
+        return sensor.currentState;
       default:
         break;
     }
   }
 };
 const convertTopicToInfo = (mqttTopic) => {
-  const splitStr = mqttTopic.split("/");
+  const splitStr = mqttTopic.split('/');
 
   [room, deviceId, sensorType, sensorName] = splitStr;
 

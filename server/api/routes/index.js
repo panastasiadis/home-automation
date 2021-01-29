@@ -13,6 +13,7 @@ router.get("/activeSensors", (req, res) => {
 
 router.post("/timerActions", ctrlActions.addTimerAction);
 router.post("/sensorBasedActions", ctrlActions.addSensorBasedAction);
+router.post("/locationBasedActions",ctrlActions.addLocationBasedAction);
 router.get("/actions", ctrlActions.actionsList);
 router.delete("/actions/:actionid", ctrlActions.deleteAction);
 
