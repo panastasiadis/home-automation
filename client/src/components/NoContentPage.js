@@ -1,4 +1,4 @@
-import NotFoundImage from "../assets/not-found.svg";
+import {NotFound} from "../utils/AssetImages";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 
@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme) => ({
   image: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    backgroundImage: `url(${NotFoundImage})`,
+    backgroundImage: `url(${NotFound})`,
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",

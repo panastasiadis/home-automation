@@ -9,7 +9,7 @@ import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import BrightnessIcon from "../../assets/brightness.svg";
+import {Brightness} from "../../utils/AssetImages";
 import mqttService from "../../utils/MQTT";
 
 const useStyles = makeStyles((theme) => ({
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   brightnessIcon: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    backgroundImage: `url(${BrightnessIcon})`,
+    backgroundImage: `url(${Brightness})`,
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",

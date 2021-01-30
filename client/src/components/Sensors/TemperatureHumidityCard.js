@@ -7,9 +7,8 @@ import RouterIcon from "@material-ui/icons/Router";
 import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 
-import temperature from "../../assets/temperature/thermometer.svg";
-import humidity from "../../assets/temperature/humidity.svg";
-import average from "../../assets/temperature/average.svg";
+import {Temperature, Humidity, Average} from "../../utils/AssetImages";
+
 import mqttService from "../../utils/MQTT";
 import { backendApiUrl } from "../../utils/Config";
 
@@ -36,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   imageTemperature: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    backgroundImage: `url(${temperature})`,
+    backgroundImage: `url(${Temperature})`,
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
@@ -46,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   imageHumidity: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    backgroundImage: `url(${humidity})`,
+    backgroundImage: `url(${Humidity})`,
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
@@ -56,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   imageAverage: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    backgroundImage: `url(${average})`,
+    backgroundImage: `url(${Average})`,
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",

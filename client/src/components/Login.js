@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import { setUserSession } from "../utils/Common";
-import SideImg from "../assets/home-automation3.svg";
+import {LoginBackground } from "../utils/AssetImages";
 import { backendApiUrl } from "../utils/Config";
 
 function Copyright() {
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     height: "100vh",
   },
   image: {
-    backgroundImage: `url(${SideImg})`,
+    backgroundImage: `url(${LoginBackground})`,
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"

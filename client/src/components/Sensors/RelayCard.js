@@ -5,8 +5,9 @@ import Switch from "@material-ui/core/Switch";
 import mqttService from "../../utils/MQTT";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import lightBulbOpen from "../../assets/lightbulb-open2.svg";
-import lightBulbClosed from "../../assets/lightbulb-closed2.svg";
+import {LightBulbOpen} from "../../utils/AssetImages";
+import {LightBulbClosed} from "../../utils/AssetImages";
+
 import RouterIcon from "@material-ui/icons/Router";
 import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
@@ -51,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   imageLightOpen: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    backgroundImage: `url(${lightBulbOpen})`,
+    backgroundImage: `url(${LightBulbOpen})`,
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
@@ -61,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
   imageLightClosed: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    backgroundImage: `url(${lightBulbClosed})`,
+    backgroundImage: `url(${LightBulbClosed})`,
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",

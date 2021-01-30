@@ -26,11 +26,12 @@ import Dialog from "./DialogFilterBy";
 import Paper from "@material-ui/core/Paper";
 import { withRouter } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
-import Logo from "../assets/home-automation.svg";
 import Link from "@material-ui/core/Link";
 import Actions from "./Actions/Actions";
-import backgroundImage from "../assets/home-automation4.svg";
 import MenuBar from "./MenuBar";
+
+import {DashboardBackground, AppBarLogo} from "../utils/AssetImages";
+
 
 function Copyright() {
   return (
@@ -152,7 +153,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(2),
   },
   behindBackground: {
-    backgroundImage: `url(${backgroundImage})`,
+    backgroundImage: `url(${DashboardBackground})`,
     backgroundPosition: "center",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
@@ -253,7 +254,7 @@ function Dashboard(props) {
               underline="none"
               variant="h5"
             >
-              {<img src={Logo} alt="" height={50} />}
+              {<img src={AppBarLogo} alt="" height={50} />}
             </Link>
           </div>
 
