@@ -68,14 +68,17 @@ const createSensorBasedRule = (action) => {
   );
 
   const commandSensorValue = sensor_util.retrieveSensorData(action.sensorName);
-  console.log('previous state -> ', commandSensorValue);
-  console.log('action command -> ', action.command);
-
-  if (measurement === undefined) {
-    return;
-  }
-  console.log(action.measurementType, measurement);
-  console.log(action.comparisonType, action.quantity);
+  console.log(
+    '[ Now:',
+    commandSensorValue,
+    '] [ Want:',
+    action.command,
+    '] [ Rule:',
+    action.comparisonType,
+    action.quantity,"] [",
+    action.measurementType,
+    measurement,"]"
+  );
 
   if (measurement === undefined) {
     return;
@@ -402,7 +405,6 @@ module.exports.addTimerAction = (req, res) => {
 
 module.exports.deleteAction = (req, res) => {
   const actionId = req.params.actionid;
-  // console.log(actionId);
 
   if (actionId) {
     Action.findByIdAndRemove(actionId).exec((err, action) => {
@@ -413,22 +415,18 @@ module.exports.deleteAction = (req, res) => {
         return;
       }
       sendJsonResponse(res, 204, null);
-      console.log(scheduledCronActions);
-      console.log(action._id);
       cronActionIdx = scheduledCronActions.findIndex((el) => {
         console.log(el);
         return el.actionId === action._id.toString();
       });
-      console.log(cronActionIdx);
+      console.log('Deleting action ' + action._id);
 
       scheduledCronActions = scheduledCronActions.filter((cronAction) => {
         if (cronAction.actionId === action._id.toString()) {
-          console.log(cronAction.cronJob);
           cronAction.cronJob.cancel();
         }
         return cronAction.actionId !== action._id.toString();
       });
-      console.log(scheduledCronActions);
     });
   } else {
     sendJsonResponse(res, 404, {
