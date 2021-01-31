@@ -24,7 +24,13 @@ const sendNotification = (actionInfo) => {
   aedesBroker.publishMessage('browser', JSON.stringify(infoForBrowserJSON));
 };
 
-module.exports.sendNotification = sendNotification;
+const triggerAction = (action) => {
+  aedesBroker.publishMessage(action.commandTopic, action.command);
+  sendNotification(action);
+  console.log(action.actionCategory + ' Triggered!');
+};
+
+module.exports.triggerAction = triggerAction;
 
 const createCronRule = (date, timeUnit, recurrenceNumber) => {
   let requestedRule;
@@ -74,33 +80,58 @@ const createSensorBasedRule = (action) => {
   if (measurement === undefined) {
     return;
   }
-
-  if (commandSensorValue && action.command != commandSensorValue) {
-    switch (action.comparisonType) {
-      case 'Below':
-        if (action.quantity > measurement) {
-          aedesBroker.publishMessage(action.commandTopic, action.command);
-          sendNotification(action);
-          console.log('Sensor-Based Action Triggered!');
+  const actionOnFail = {
+    roomName: action.roomName,
+    actionCategory: action.actionCategory,
+    sensorType: action.sensorType,
+    command: action.commandOnFailure,
+    commandTopic: action.commandTopic,
+  };
+  switch (action.comparisonType) {
+    case 'Below':
+      if (action.quantity > measurement) {
+        if (commandSensorValue && action.command != commandSensorValue) {
+          triggerAction(action);
         }
-        break;
-      case 'Over':
-        if (action.quantity < measurement) {
-          aedesBroker.publishMessage(action.commandTopic, action.command);
-          sendNotification(action);
-          console.log('Sensor-Based Action Triggered!');
+      } else {
+        if (
+          commandSensorValue &&
+          action.commandOnFailure != commandSensorValue
+        ) {
+          // triggerAction(actionOnFail);
         }
-        break;
-      case 'Equal To':
-        if (action.quantity === measurement) {
-          aedesBroker.publishMessage(action.commandTopic, action.command);
-          sendNotification(action);
-          console.log('Sensor-Based Action Triggered!');
+      }
+      break;
+    case 'Over':
+      if (action.quantity < measurement) {
+        if (commandSensorValue && action.command != commandSensorValue) {
+          triggerAction(action);
         }
-        break;
-      default:
-        break;
-    }
+      } else {
+        if (
+          commandSensorValue &&
+          action.commandOnFailure != commandSensorValue
+        ) {
+          // triggerAction(actionOnFail);
+        }
+      }
+      break;
+    case 'Equal To':
+      if (action.quantity === measurement) {
+        if (commandSensorValue && action.command != commandSensorValue) {
+          triggerAction(action);
+        }
+      } else {
+        if (
+          commandSensorValue &&
+          action.commandOnFailure != commandSensorValue
+        ) {
+          // triggerAction(actionOnFail);
+        }
+      }
+      break;
+    default:
+      break;
   }
 };
 
@@ -127,9 +158,7 @@ module.exports.scheduleStoredActions = () => {
             scheduledAction = schedule.scheduleJob(
               { start: date, rule: requestedRule },
               () => {
-                aedesBroker.publishMessage(action.commandTopic, action.command);
-                console.log('Action Triggered!');
-                sendNotification(action);
+                triggerAction(action);
               }
             );
 
@@ -148,9 +177,7 @@ module.exports.scheduleStoredActions = () => {
               });
             } else {
               scheduledAction = schedule.scheduleJob(date, () => {
-                aedesBroker.publishMessage(action.commandTopic, action.command);
-                console.log('Action Triggered!');
-                sendNotification(action);
+                triggerAction(action);
               });
 
               scheduledCronActions.push({
@@ -185,7 +212,7 @@ module.exports.scheduleStoredActions = () => {
 
 module.exports.actionsList = (req, res) => {
   Action.find({})
-    .sort({ startTime: 'desc' })
+    .sort({ registrationDate: 'desc' })
     .exec((err, actionDocs) => {
       // console.log(actionDocs);
       if (actionDocs.length === 0) {
@@ -276,6 +303,7 @@ module.exports.addSensorBasedAction = (req, res) => {
     measurementDeviceId: req.body.measurementDeviceId,
     measurementRoomName: req.body.measurementRoomName,
     measurementSensorType: req.body.measurementSensorType,
+    commandOnFailure: req.body.commandOnFailure,
     quantity: req.body.quantity,
     comparisonType: req.body.comparisonType,
     measurementType: req.body.measurementType,
@@ -356,16 +384,12 @@ module.exports.addTimerAction = (req, res) => {
         scheduledAction = schedule.scheduleJob(
           { start: date, rule: requestedRule },
           () => {
-            aedesBroker.publishMessage(req.body.commandTopic, req.body.command);
-            console.log('Action Triggered!');
-            sendNotification(action);
+            triggerAction(action);
           }
         );
       } else {
         scheduledAction = schedule.scheduleJob(date, () => {
-          aedesBroker.publishMessage(req.body.commandTopic, req.body.command);
-          console.log('Action Triggered!');
-          sendNotification(action);
+          triggerAction(action);
         });
       }
       scheduledCronActions.push({

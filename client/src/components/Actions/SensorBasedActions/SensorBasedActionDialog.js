@@ -1,28 +1,29 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Button from "@material-ui/core/Button";
-import SelectSensorMenu from "../common/SelectSensorMenu";
-import SelectCommandMenu from "../common/SelectCommandMenu";
-import SelectComparedQuantityMenu from "./SelectComparedQuantityMenu";
-import SelectMeasurementTypeMenu from "./SelectMeasurementTypeMenu";
-import axios from "axios";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Typography from "@material-ui/core/Typography";
-import { backendApiUrl } from "../../../utils/Config";
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import SelectSensorMenu from '../common/SelectSensorMenu';
+import SelectCommandMenu from '../common/SelectCommandMenu';
+import SelectComparedQuantityMenu from './SelectComparedQuantityMenu';
+import SelectMeasurementTypeMenu from './SelectMeasurementTypeMenu';
+import axios from 'axios';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import { backendApiUrl } from '../../../utils/Config';
+import { commandsByType } from '../../../utils/SensorSpecific';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
+    display: 'flex',
   },
   wrapDiv: {
-    display: "flex",
-    justifyContent: "flex-start",
+    display: 'flex',
+    justifyContent: 'flex-start',
     // alignItems: "center",
-    flexDirection: "column",
+    flexDirection: 'column',
   },
   picker: {
     padding: theme.spacing(1),
@@ -36,23 +37,23 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
     // textAlign: "center",
-    color: "white",
-    borderRadius: "10px",
+    color: 'white',
+    borderRadius: '10px',
   },
 }));
 export default function SensorBasedActionDialog(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const [selectedWhenSensor, setSelectedWhenSensor] = React.useState("");
-  const [selectedCommandSensor, setSelectedCommandSensor] = React.useState("");
-  const [selectedCommand, setSelectedCommand] = React.useState("");
+  const [selectedWhenSensor, setSelectedWhenSensor] = React.useState('');
+  const [selectedCommandSensor, setSelectedCommandSensor] = React.useState('');
+  const [selectedCommand, setSelectedCommand] = React.useState('');
   const [selectedMeasurementType, setSelectedMeasurementType] = React.useState(
-    ""
+    ''
   );
 
-  const [selectedQuantity, setSelectedQuantity] = React.useState("");
+  const [selectedQuantity, setSelectedQuantity] = React.useState('');
   const [selectedComparisonType, setSelectedComparisonType] = React.useState(
-    ""
+    ''
   );
 
   const [status, setStatus] = React.useState({ message: null, color: null });
@@ -63,19 +64,25 @@ export default function SensorBasedActionDialog(props) {
     props.closeDialog();
     setOpen(false);
     setStatus({ message: null, color: null });
-    setSelectedCommandSensor("");
-    setSelectedWhenSensor("");
-    setSelectedCommand("");
-    setSelectedMeasurementType("");
-    setSelectedQuantity("");
-    setSelectedComparisonType("");
+    setSelectedCommandSensor('');
+    setSelectedWhenSensor('');
+    setSelectedCommand('');
+    setSelectedMeasurementType('');
+    setSelectedQuantity('');
+    setSelectedComparisonType('');
   };
 
   const addAction = () => {
     setStatus({ message: null, color: null });
     setLoading(true);
+
+    const { commandOnFailure } = commandsByType(
+      selectedCommandSensor.type,
+      selectedCommand
+    );
+
     axios
-      .post(backendApiUrl.server + "api/sensorBasedActions", {
+      .post(backendApiUrl.server + 'api/sensorBasedActions', {
         sensorType: selectedCommandSensor.type,
         sensorName: selectedCommandSensor.name,
         deviceId: selectedCommandSensor.deviceId,
@@ -87,6 +94,7 @@ export default function SensorBasedActionDialog(props) {
         measurementDeviceId: selectedWhenSensor.deviceId,
         measurementRoomName: selectedWhenSensor.room,
         measurementSensorType: selectedWhenSensor.type,
+        commandOnFailure: commandOnFailure,
         comparisonType: selectedComparisonType,
         quantity: selectedQuantity,
         measurementType: selectedMeasurementType,
@@ -95,12 +103,12 @@ export default function SensorBasedActionDialog(props) {
         // console.log(response.data)
         props.updateActions(response.data._id);
         setLoading();
-        setStatus({ message: "Action added successfully", color: "green" });
+        setStatus({ message: 'Action added successfully', color: 'green' });
       })
       .catch((error) => {
         if (error.response) {
           console.log(error.response.data.message);
-          setStatus({ message: error.response.data.message, color: "red" });
+          setStatus({ message: error.response.data.message, color: 'red' });
         }
         setLoading(false);
       });
@@ -127,7 +135,7 @@ export default function SensorBasedActionDialog(props) {
                 isCommandSensor={true}
               />
             </div>
-            {selectedCommandSensor === "" ? null : (
+            {selectedCommandSensor === '' ? null : (
               <div className={classes.picker}>
                 <SelectCommandMenu
                   type={selectedCommandSensor.type}
@@ -145,7 +153,7 @@ export default function SensorBasedActionDialog(props) {
                 isCommandSensor={false}
               />
             </div>
-            {selectedWhenSensor === "" ? null : (
+            {selectedWhenSensor === '' ? null : (
               <div className={classes.picker}>
                 <SelectMeasurementTypeMenu
                   type={selectedWhenSensor.type}

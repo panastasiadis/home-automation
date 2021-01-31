@@ -84,17 +84,11 @@ export default function TimerActionContent(props) {
     <div className={classes.accordionContent}>
       <div className={classes.whenDescription}>
         <Typography variant="subtitle1">
-          {`When ${props.measurementType.toLowerCase()} is ${props.comparisonType.toLowerCase()} `}
-        </Typography>
-        <Typography className={classes.labelDynamicContent} variant="subtitle1">
-          {`${props.quantity} `}
-        </Typography>
-        <Typography variant="subtitle1">
-          {`${getMeasurementUnitsName(props.measurementType)}.`}
+          {`When ${props.measurementType.toLowerCase()} is ${props.comparisonType.toLowerCase()} ${props.quantity} ${getMeasurementUnitsName(props.measurementType)}.`}
         </Typography>
       </div>
       <div className={classes.whenSensorDescription}>
-      <Typography variant="subtitle1" color="primary">{props.measurementSensorType}</Typography>
+      <Typography variant="subtitle1" color="secondary">{"Sensor: " + props.measurementSensorType}</Typography>
       </div>
       <div className={classes.whenSensorDescription}>
         <div className={classes.roomInfo}>

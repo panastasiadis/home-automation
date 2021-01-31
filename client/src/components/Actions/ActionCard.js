@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
   heading: {
     // fontSize: theme.typography.pxToRem(15),
     // padding: theme.spacing(1),
+    width: "100px",
     margin: theme.spacing(1),
     flexShrink: 0,
   },

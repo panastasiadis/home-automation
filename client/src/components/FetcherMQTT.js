@@ -84,7 +84,7 @@ const FetcherΜQTT = () => {
               actionCategory: infoObj.actionInfo.actionCategory,
               command: infoObj.actionInfo.command,
               roomName: infoObj.actionInfo.roomName,
-              sensorName: infoObj.actionInfo.sensorName,
+              sensorType: infoObj.actionInfo.sensorType,
             },
           };
           dataRef.current = newData;

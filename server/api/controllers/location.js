@@ -1,8 +1,6 @@
 const geolib = require('geolib');
 const LocationBasedAction = require('../models/models').LocationBasedAction;
-const aedesBroker = require('../../aedes_broker');
-const sensor_util = require('../../sensor_util');
-const { sendNotification } = require('../controllers/actions');
+const { triggerAction } = require('../controllers/actions');
 
 //my house address, Volos-Magnesia
 const SERVER_LOCATION = {
@@ -26,17 +24,7 @@ const executeLocationTask = async (clientLocation) => {
           action.radius
         );
         if (overlap && !action.triggered) {
-          // const measurement = sensor_util.retrieveSensorData(action.sensorName);
-          // console.log('previous state ->', measurement);
-
-          // if (measurement === undefined)  {
-          //   return;
-          // }
-
-          // if (measurement !== action.command) {
-          aedesBroker.publishMessage(action.commandTopic, action.command);
-          console.log('Location Action Triggered!');
-          sendNotification(action);
+          triggerAction(action);
           action.triggered = true;
           await action.save();
           // }

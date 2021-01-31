@@ -4,7 +4,6 @@ import SpeedDial from "@material-ui/lab/SpeedDial";
 import SpeedDialIcon from "@material-ui/lab/SpeedDialIcon";
 import SpeedDialAction from "@material-ui/lab/SpeedDialAction";
 import TimerIcon from "@material-ui/icons/Timer";
-import EditLocationIcon from "@material-ui/icons/EditLocation";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 import TimerActionDialog from "./TimerActions/TimerActionDialog";
 import SensorBasedActionDialog from "./SensorBasedActions/SensorBasedActionDialog";
@@ -92,13 +91,6 @@ export default function OpenIconSpeedDial(props) {
           tooltipTitle={"Sensor Based"}
 
           onClick={selectSensorBasedAction}
-        />
-        <SpeedDialAction
-          className={classes.action}
-          icon={<EditLocationIcon />}
-          tooltipTitle={"Location Based"}
-          
-          onClick={handleClose}
         />
         <SpeedDialAction
           className={classes.action}
