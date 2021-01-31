@@ -1,20 +1,24 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Typography from "@material-ui/core/Typography";
-import RouterIcon from "@material-ui/icons/Router";
-import RoomIcon from "@material-ui/icons/Room";
-import BlurCircularIcon from "@material-ui/icons/BlurCircular";import Accordion from "@material-ui/core/Accordion";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import Divider from "@material-ui/core/Divider";
-import DeleteActionDialog from "./common/DeleteActionDialog";
-import TimerActionAccordionDetails from "./TimerActions/TimerActionAccordionDetails";
-import SensorBasedAccordionDetails from "./SensorBasedActions/SensorBasedAccordionDetails";
-import { commandsByType } from "../../utils/SensorSpecific";
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import RouterIcon from '@material-ui/icons/Router';
+import RoomIcon from '@material-ui/icons/Room';
+import BlurCircularIcon from '@material-ui/icons/BlurCircular';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Divider from '@material-ui/core/Divider';
+import DeleteActionDialog from './common/DeleteActionDialog';
+import TimerActionAccordionDetails from './TimerActions/TimerActionAccordionDetails';
+import SensorBasedAccordionDetails from './SensorBasedActions/SensorBasedAccordionDetails';
+import LocationActionAccordionDetails from './LocationBasedActions/LocationActionAccordionDetails';
+import { commandsByType } from '../../utils/SensorSpecific';
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    width: '100%',
   },
   command: {
     color: theme.palette.primary.main,
@@ -22,18 +26,18 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
     margin: theme.spacing(1),
     flexShrink: 0,
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderColor: theme.palette.primary.main,
-    borderRadius: "10px",
+    borderRadius: '10px',
     backgroundColor: theme.palette.secondary.main,
   },
   headingCommand: {
     // borderStyle: "dashed",
     borderColor: theme.palette.secondary.main,
-    borderRadius: "10px",
-    display: "flex",
-    flexWrap: "wrap",
-    alignItems: "center",
+    borderRadius: '10px',
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
   },
   heading: {
     // fontSize: theme.typography.pxToRem(15),
@@ -48,45 +52,45 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
   },
   summary: {
-    display: "flex",
-    alignItems: "center",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
   },
 
   deviceInfoIndividual: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     margin: theme.spacing(1),
     color: theme.palette.secondary.main,
   },
   roomInfo: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
-    color: "white",
+    color: 'white',
 
-    borderRadius: "10px",
+    borderRadius: '10px',
   },
   deviceInfo: {
-    display: "flex",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-    [theme.breakpoints.down("md")]: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    [theme.breakpoints.down('md')]: {
       marginTop: theme.spacing(2),
     },
   },
 
   deleteButton: {
-    display: "flex",
-    justifyContent: "center",
+    display: 'flex',
+    justifyContent: 'center',
   },
 }));
 
@@ -101,13 +105,13 @@ export default function ActionCard(props) {
 
   let details = null;
   switch (props.action.actionCategory) {
-    case "Timer Action":
+    case 'Timer Action':
       let date;
       let recurrenceMessage;
       if (props.action.recurrenceNumber) {
         recurrenceMessage = `Every ${props.action.recurrenceNumber} ${props.action.recurrenceTimeUnit}`;
       } else {
-        recurrenceMessage = "None";
+        recurrenceMessage = 'None';
       }
       date = new Date(props.action.startTime);
       details = (
@@ -117,7 +121,7 @@ export default function ActionCard(props) {
         />
       );
       break;
-    case "Sensor-Based Action":
+    case 'Sensor-Based Action':
       details = (
         <SensorBasedAccordionDetails
           measurementType={props.action.measurementType}
@@ -128,6 +132,9 @@ export default function ActionCard(props) {
           measurementRoomName={props.action.measurementRoomName}
         />
       );
+      break;
+    case 'Location-Based Action':
+      details = <LocationActionAccordionDetails radius={props.action.radius} />;
       break;
     default:
       break;
@@ -141,8 +148,8 @@ export default function ActionCard(props) {
   return (
     <div className={classes.root}>
       <Accordion
-        expanded={expanded === "panel1"}
-        onChange={handleChange("panel1")}
+        expanded={expanded === 'panel1'}
+        onChange={handleChange('panel1')}
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -174,13 +181,13 @@ export default function ActionCard(props) {
               </div>
               <div className={classes.deviceInfoIndividual}>
                 <RouterIcon />
-                <Typography variant="subtitle1" >
+                <Typography variant="subtitle1">
                   {props.action.deviceId}
                 </Typography>
               </div>
             </div>
             <Typography className={classes.secondaryHeading}>
-              {"Registered on: "}
+              {'Registered on: '}
               {registrationDate.toLocaleString()}
             </Typography>
           </div>
