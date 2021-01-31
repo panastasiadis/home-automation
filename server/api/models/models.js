@@ -15,6 +15,7 @@ const actionSchema = new mongoose.Schema(
 
 const locationBasedActionSchema = new mongoose.Schema({
   radius: { type: Number, required: true },
+  triggered: {type: Boolean, required: false}
 });
 
 const timerActionSchema = new mongoose.Schema({

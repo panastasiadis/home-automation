@@ -15,7 +15,7 @@ const sendJsonResponse = (res, status, content) => {
   res.json(content);
 };
 
-module.exports.sendNotification = (actionInfo) => {
+const sendNotification = (actionInfo) => {
   infoForBrowserJSON = {
     actionInfo: actionInfo,
     action: 'action',
@@ -23,6 +23,8 @@ module.exports.sendNotification = (actionInfo) => {
 
   aedesBroker.publishMessage('browser', JSON.stringify(infoForBrowserJSON));
 };
+
+module.exports.sendNotification = sendNotification;
 
 const createCronRule = (date, timeUnit, recurrenceNumber) => {
   let requestedRule;
@@ -58,6 +60,14 @@ const createSensorBasedRule = (action) => {
     action.measurementSensorName,
     action.measurementType
   );
+
+  const commandSensorValue = sensor_util.retrieveSensorData(action.sensorName);
+  console.log('previous state -> ', commandSensorValue);
+  console.log('action command -> ', action.command);
+
+  if (measurement === undefined) {
+    return;
+  }
   console.log(action.measurementType, measurement);
   console.log(action.comparisonType, action.quantity);
 
@@ -65,30 +75,32 @@ const createSensorBasedRule = (action) => {
     return;
   }
 
-  switch (action.comparisonType) {
-    case 'Below':
-      if (action.quantity > measurement) {
-        aedesBroker.publishMessage(action.commandTopic, action.command);
-        sendNotification(action);
-        console.log('Sensor-Based Action Triggered!');
-      }
-      break;
-    case 'Over':
-      if (action.quantity < measurement) {
-        aedesBroker.publishMessage(action.commandTopic, action.command);
-        sendNotification(action);
-        console.log('Sensor-Based Action Triggered!');
-      }
-      break;
-    case 'Equal To':
-      if (action.quantity === measurement) {
-        aedesBroker.publishMessage(action.commandTopic, action.command);
-        sendNotification(action);
-        console.log('Sensor-Based Action Triggered!');
-      }
-      break;
-    default:
-      break;
+  if (commandSensorValue && action.command != commandSensorValue) {
+    switch (action.comparisonType) {
+      case 'Below':
+        if (action.quantity > measurement) {
+          aedesBroker.publishMessage(action.commandTopic, action.command);
+          sendNotification(action);
+          console.log('Sensor-Based Action Triggered!');
+        }
+        break;
+      case 'Over':
+        if (action.quantity < measurement) {
+          aedesBroker.publishMessage(action.commandTopic, action.command);
+          sendNotification(action);
+          console.log('Sensor-Based Action Triggered!');
+        }
+        break;
+      case 'Equal To':
+        if (action.quantity === measurement) {
+          aedesBroker.publishMessage(action.commandTopic, action.command);
+          sendNotification(action);
+          console.log('Sensor-Based Action Triggered!');
+        }
+        break;
+      default:
+        break;
+    }
   }
 };
 
@@ -211,6 +223,7 @@ module.exports.addLocationBasedAction = (req, res) => {
     commandTopic: req.body.commandTopic,
     registrationDate: req.body.registrationDate,
     radius: req.body.radius,
+    triggered: true,
   };
 
   LocationBasedAction.create(action, (err, action) => {
