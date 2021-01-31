@@ -275,6 +275,7 @@ module.exports.addSensorBasedAction = (req, res) => {
     measurementSensorName: req.body.measurementSensorName,
     measurementDeviceId: req.body.measurementDeviceId,
     measurementRoomName: req.body.measurementRoomName,
+    measurementSensorType: req.body.measurementSensorType,
     quantity: req.body.quantity,
     comparisonType: req.body.comparisonType,
     measurementType: req.body.measurementType,

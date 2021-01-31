@@ -18,7 +18,6 @@ const useStyles = makeStyles((theme) => ({
   },
   whenDescription: {
     display: "flex",
-
     alignItems: "center",
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
@@ -93,6 +92,9 @@ export default function TimerActionContent(props) {
         <Typography variant="subtitle1">
           {`${getMeasurementUnitsName(props.measurementType)}.`}
         </Typography>
+      </div>
+      <div className={classes.whenSensorDescription}>
+      <Typography variant="subtitle1" color="primary">{props.measurementSensorType}</Typography>
       </div>
       <div className={classes.whenSensorDescription}>
         <div className={classes.roomInfo}>

@@ -86,6 +86,7 @@ export default function SensorBasedActionDialog(props) {
         measurementSensorName: selectedWhenSensor.name,
         measurementDeviceId: selectedWhenSensor.deviceId,
         measurementRoomName: selectedWhenSensor.room,
+        measurementSensorType: selectedWhenSensor.type,
         comparisonType: selectedComparisonType,
         quantity: selectedQuantity,
         measurementType: selectedMeasurementType,

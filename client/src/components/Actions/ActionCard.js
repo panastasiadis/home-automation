@@ -130,6 +130,7 @@ export default function ActionCard(props) {
           measurementSensorName={props.action.measurementSensorName}
           measurementDeviceId={props.action.measurementDeviceId}
           measurementRoomName={props.action.measurementRoomName}
+          measurementSensorType={props.action.measurementSensorType}
         />
       );
       break;
@@ -162,6 +163,7 @@ export default function ActionCard(props) {
                 {props.action.actionCategory}
               </Typography>
               <Typography className={classes.command}>
+                {props.action.sensorType + " | "}
                 {commandDescription.description}
               </Typography>
             </div>

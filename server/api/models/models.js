@@ -28,6 +28,7 @@ const sensorBasedActionSchema = new mongoose.Schema({
   measurementSensorName: { type: String, required: true },
   measurementDeviceId: { type: String, required: true },
   measurementRoomName: { type: String, required: true },
+  measurementSensorType: { type: String, required: true },
   quantity: { type: Number, required: true },
   comparisonType: { type: String, required: true },
   measurementType: { type: String },
