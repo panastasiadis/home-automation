@@ -8,11 +8,20 @@ const relayLightBulb = {
   closeAction: 'Turning the lights off!',
 };
 
+const relayHeat = {
+  type: 'Heat',
+  openCommand: 'ON',
+  closeCommand: 'OFF',
+  openCommandDescription: 'Turn the heat on',
+  closeCommandDescription: 'Turn the heat off',
+  openAction: 'Turning the heat on!',
+  closeAction: 'Turning the heat off!',
+};
 const motionDetector = {
   type: 'Motion-Detector',
   unit: 'Detection status',
   detection: 'Motion detected',
-  noDetection: 'No motion detected'
+  noDetection: 'No motion detected',
 };
 
 const temperatureHumidity = {
@@ -29,10 +38,9 @@ const lightIntensity = {
   unit: '%',
 };
 
-
-
 export const SENSOR_TYPE = {
   RELAY_LIGHTBULB: relayLightBulb.type,
+  RELAY_HEAT: relayHeat.type,
   TEMPERATURE_HUMIDITY: temperatureHumidity.type,
   LIGHT_INTENSITY: lightIntensity.type,
   MOTION_DETECTOR: motionDetector.type,
@@ -44,7 +52,8 @@ const measurementOutputSensors = [
 ];
 const optionsOutputSensors = [
   relayLightBulb.type,
-  motionDetector.type
+  relayHeat.type,
+  motionDetector.type,
 ];
 
 export const actionsByType = (type, command) => {
@@ -53,9 +62,18 @@ export const actionsByType = (type, command) => {
       switch (command) {
         case relayLightBulb.openCommand:
           return relayLightBulb.openAction;
-
         case relayLightBulb.closeCommand:
           return relayLightBulb.closeAction;
+        default:
+          break;
+      }
+      break;
+    case relayHeat.type:
+      switch (command) {
+        case relayHeat.openCommand:
+          return relayHeat.openAction;
+        case relayHeat.closeCommand:
+          return relayHeat.closeAction;
         default:
           break;
       }
@@ -66,14 +84,15 @@ export const actionsByType = (type, command) => {
 };
 
 export const commandsByType = (type, command) => {
+  let openObj, closeObj;
   switch (type) {
     case SENSOR_TYPE.RELAY_LIGHTBULB:
-      const openObj = {
+      openObj = {
         command: relayLightBulb.openCommand,
         description: relayLightBulb.openCommandDescription,
         commandOnFailure: relayLightBulb.closeCommand,
       };
-      const closeObj = {
+      closeObj = {
         command: relayLightBulb.closeCommand,
         description: relayLightBulb.closeCommandDescription,
         commandOnFailure: relayLightBulb.openCommand,
@@ -84,7 +103,26 @@ export const commandsByType = (type, command) => {
           return openObj;
         case relayLightBulb.closeCommand:
           return closeObj;
+        default:
+          return [openObj, closeObj];
+      }
+    case SENSOR_TYPE.RELAY_HEAT:
+      openObj = {
+        command: relayHeat.openCommand,
+        description: relayHeat.openCommandDescription,
+        commandOnFailure: relayHeat.closeCommand,
+      };
+      closeObj = {
+        command: relayHeat.closeCommand,
+        description: relayHeat.closeCommandDescription,
+        commandOnFailure: relayHeat.openCommand,
+      };
 
+      switch (command) {
+        case relayHeat.openCommand:
+          return openObj;
+        case relayHeat.closeCommand:
+          return closeObj;
         default:
           return [openObj, closeObj];
       }

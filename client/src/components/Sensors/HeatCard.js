@@ -5,8 +5,8 @@ import Switch from "@material-ui/core/Switch";
 import mqttService from "../../utils/MQTT";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import {LightBulbOpen} from "../../utils/AssetImages";
-import {LightBulbClosed} from "../../utils/AssetImages";
+import {NoHeat} from "../../utils/AssetImages";
+import {Heat} from "../../utils/AssetImages";
 
 import RouterIcon from "@material-ui/icons/Router";
 import RoomIcon from "@material-ui/icons/Room";
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
   imageLightOpen: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    backgroundImage: `url(${LightBulbOpen})`,
+    backgroundImage: `url(${Heat})`,
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
   imageLightClosed: {
     margin: theme.spacing(1),
     padding: theme.spacing(1),
-    backgroundImage: `url(${LightBulbClosed})`,
+    backgroundImage: `url(${NoHeat})`,
     backgroundPosition: "center",
     backgroundSize: "contain",
     backgroundRepeat: "no-repeat",
@@ -75,12 +75,14 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
   onOff: {
-    marginLeft: theme.spacing(1),
-    padding: theme.spacing(1),
-    color: theme.palette.secondary.main,
-    borderStyle: "dashed",
-    borderColor: theme.palette.secondary.main,
-    borderRadius: "10px",
+    textAlign: "center",
+    backgroundColor: theme.palette.secondary.main,
+    margin: theme.spacing(1),
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
+    color: "white",
+    borderRadius: "20px",
+    fontWeight: "bold",
   },
   roomInfo: {
     display: "flex",
@@ -91,8 +93,6 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
     color: "white",
-    // borderStyle: "solid",
-    // borderColor: theme.palette.secondar.main,
     borderRadius: "10px",
   },
   circularProgress: {

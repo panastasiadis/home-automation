@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const SENSOR_TYPE = {
   RELAY_LIGHTBULB: 'Lightbulb',
+  RELAY_HEAT: 'Heat',
   TEMPERATURE_HUMIDITY: 'Temperature-Humidity',
   LIGHT_INTENSITY: 'Light-Intensity',
   MOTION_DETECTOR: 'Motion-Detector',
@@ -66,7 +67,10 @@ const sensorTopicConstructor = (sensorType, sensorName, roomName, deviceId) => {
       pubTopic = topicPrefix + sensorType + '-state' + '/' + sensorName;
       commandTopic = topicPrefix + sensorType + '/' + sensorName;
       break;
-
+    case SENSOR_TYPE.RELAY_HEAT:
+      pubTopic = topicPrefix + sensorType + '-state' + '/' + sensorName;
+      commandTopic = topicPrefix + sensorType + '/' + sensorName;
+      break;
     default:
       pubTopic = topicPrefix + sensorType + '/' + sensorName;
       break;
@@ -151,6 +155,9 @@ const storeSensorData = (mqttTopic, mqttPayload) => {
     case SENSOR_TYPE.RELAY_LIGHTBULB:
       sensor.currentState = mqttPayload.toString();
       break;
+    case SENSOR_TYPE.RELAY_HEAT:
+      sensor.currentState = mqttPayload.toString();
+      break;
     case SENSOR_TYPE.LIGHT_INTENSITY:
       sensor.lightIntensity = mqttPayload.toString();
     case SENSOR_TYPE.MOTION_DETECTOR:
@@ -189,9 +196,9 @@ const retrieveDataGeneric = (sensorName, callback) => {
       measurement = retrieveSensorData(sensorName);
       const measurements = [];
       if (measurement) {
-        measurements.push(measurement)
+        measurements.push(measurement);
       }
-      console.log(measurement, "!!!!");
+      console.log(measurement, '!!!!');
       callback(measurements);
     default:
       break;
@@ -232,6 +239,8 @@ const retrieveSensorData = (sensorName, option) => {
             return percentageLux;
         }
       case SENSOR_TYPE.RELAY_LIGHTBULB:
+        return sensor.currentState;
+      case SENSOR_TYPE.RELAY_HEAT:
         return sensor.currentState;
       case SENSOR_TYPE.MOTION_DETECTOR:
         return sensor.lastDetectionTIme;
