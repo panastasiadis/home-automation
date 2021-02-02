@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect}from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -42,6 +42,11 @@ export default function CustomizedSelects(props) {
     setQuantity(event.target.value);
     props.selectQuantity(event.target.value);
   };
+
+  useEffect(() => { 
+    setQuantity('');
+    setComparison('');
+   }, [props.clearEntries]);
   return (
     <div>
       <FormControl className={classes.margin} focused>

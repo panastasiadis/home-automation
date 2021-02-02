@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useRef} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -44,9 +44,11 @@ export default function TimerActionDialog(props) {
   const [open, setOpen] = React.useState(true);
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [selectedSensor, setSelectedSensor] = React.useState("");
+  const sensorRef = useRef(selectedSensor);
   const [selectedCommand, setSelectedCommand] = React.useState("");
   const [selectedRecurrence, setSelectedRecurrence] = React.useState("");
   const [selectedTimeUnits, setSelectedTimeUnits] = React.useState("");
+  const [clearEntries, setClearedEntries] = React.useState(null);
 
   const [status, setStatus] = React.useState({ message: null, color: null });
   const [loading, setLoading] = React.useState(false);
@@ -65,6 +67,7 @@ export default function TimerActionDialog(props) {
     setSelectedRecurrence("");
     setSelectedTimeUnits("");
     setSelectedDate(new Date());
+    setClearedEntries("null");
   };
 
   const addAction = () => {
@@ -98,6 +101,12 @@ export default function TimerActionDialog(props) {
       });
   };
 
+  if (selectedSensor !== sensorRef.current) {
+    setSelectedCommand('');
+    sensorRef.current = selectedSensor;
+    setClearedEntries(Math.random());
+  }
+
   return (
     <div className={classes.root}>
       <Dialog
@@ -120,6 +129,7 @@ export default function TimerActionDialog(props) {
               <SelectCommandMenu
                 type={selectedSensor.type}
                 selectCommand={setSelectedCommand}
+                clearEntries={clearEntries}
               />
             </div>
           )}

@@ -9,7 +9,11 @@ import DashboardBackgroundImage from "../assets/home-automation4.svg";
 import AppBarImage from "../assets/home-automation.svg"
 import LoginLogoImage from "../assets/home-automation3.svg";
 import HomeLocationImage from "../assets/home-location.svg";
+import MotionImage from "../assets/motion.svg";
+import NoMotionImage from "../assets/no-motion.svg";
 
+export const Motion = MotionImage;
+export const NoMotion = NoMotionImage;
 export const HomeLocation = HomeLocationImage;
 export const LoginBackground = LoginLogoImage; 
 export const AppBarLogo = AppBarImage;

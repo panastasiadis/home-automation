@@ -68,17 +68,6 @@ const createSensorBasedRule = (action) => {
   );
 
   const commandSensorValue = sensor_util.retrieveSensorData(action.sensorName);
-  console.log(
-    '[ Now:',
-    commandSensorValue,
-    '] [ Want:',
-    action.command,
-    '] [ Rule:',
-    action.comparisonType,
-    action.quantity,"] [",
-    action.measurementType,
-    measurement,"]"
-  );
 
   if (measurement === undefined) {
     return;
@@ -90,51 +79,74 @@ const createSensorBasedRule = (action) => {
     command: action.commandOnFailure,
     commandTopic: action.commandTopic,
   };
-  switch (action.comparisonType) {
-    case 'Below':
-      if (action.quantity > measurement) {
-        if (commandSensorValue && action.command != commandSensorValue) {
-          triggerAction(action);
+  if (action.comparisonType) {
+    console.log(
+      '[ Now:',
+      commandSensorValue,
+      '] [ Want:',
+      action.command,
+      '] [ Rule:',
+      action.comparisonType,
+      action.quantity,
+      '] [',
+      action.measurementType,
+      measurement,
+      ']'
+    );
+
+    switch (action.comparisonType) {
+      case 'Below':
+        if (action.quantity > measurement) {
+          if (commandSensorValue && action.command != commandSensorValue) {
+            triggerAction(action);
+          }
+        } else {
+          if (
+            commandSensorValue &&
+            action.commandOnFailure != commandSensorValue
+          ) {
+            // triggerAction(actionOnFail);
+          }
         }
-      } else {
-        if (
-          commandSensorValue &&
-          action.commandOnFailure != commandSensorValue
-        ) {
-          // triggerAction(actionOnFail);
+        break;
+      case 'Over':
+        if (action.quantity < measurement) {
+          if (commandSensorValue && action.command != commandSensorValue) {
+            triggerAction(action);
+          }
+        } else {
+          if (
+            commandSensorValue &&
+            action.commandOnFailure != commandSensorValue
+          ) {
+            // triggerAction(actionOnFail);
+          }
         }
+        break;
+      case 'Equal To':
+        if (action.quantity === measurement) {
+          if (commandSensorValue && action.command != commandSensorValue) {
+            triggerAction(action);
+          }
+        } else {
+          if (
+            commandSensorValue &&
+            action.commandOnFailure != commandSensorValue
+          ) {
+            // triggerAction(actionOnFail);
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  else {
+    if (measurement === action.option) {
+      if (commandSensorValue && action.command != commandSensorValue) {
+        triggerAction(action);
       }
-      break;
-    case 'Over':
-      if (action.quantity < measurement) {
-        if (commandSensorValue && action.command != commandSensorValue) {
-          triggerAction(action);
-        }
-      } else {
-        if (
-          commandSensorValue &&
-          action.commandOnFailure != commandSensorValue
-        ) {
-          // triggerAction(actionOnFail);
-        }
-      }
-      break;
-    case 'Equal To':
-      if (action.quantity === measurement) {
-        if (commandSensorValue && action.command != commandSensorValue) {
-          triggerAction(action);
-        }
-      } else {
-        if (
-          commandSensorValue &&
-          action.commandOnFailure != commandSensorValue
-        ) {
-          // triggerAction(actionOnFail);
-        }
-      }
-      break;
-    default:
-      break;
+    }
   }
 };
 
@@ -217,8 +229,9 @@ module.exports.actionsList = (req, res) => {
   Action.find({})
     .sort({ registrationDate: 'desc' })
     .exec((err, actionDocs) => {
+
       // console.log(actionDocs);
-      if (actionDocs.length === 0) {
+      if (actionDocs && actionDocs.length === 0) {
         sendJsonResponse(res, 404, { message: 'No actions found' });
         return;
       } else if (err) {
@@ -279,18 +292,20 @@ module.exports.addSensorBasedAction = (req, res) => {
       message: 'No measurement sensor was specified',
     });
     return;
-  } else if (!req.body.comparisonType) {
-    sendJsonResponse(res, 400, {
-      message: 'No comparison operator was specified',
-    });
-    return;
   } else if (!req.body.measurementType) {
     sendJsonResponse(res, 400, {
       message: 'No measurement type was specified',
     });
     return;
-  } else if (!req.body.quantity) {
-    sendJsonResponse(res, 400, { message: 'No quantity was specified' });
+  } else if (
+    !req.body.option &&
+    !req.body.comparisonType &&
+    !req.body.quantity
+  ) {
+    sendJsonResponse(res, 400, {
+      message:
+        'No option or comparison type along with quantity were specified',
+    });
     return;
   }
 
@@ -310,6 +325,7 @@ module.exports.addSensorBasedAction = (req, res) => {
     quantity: req.body.quantity,
     comparisonType: req.body.comparisonType,
     measurementType: req.body.measurementType,
+    option: req.body.option,
   };
 
   SensorBasedAction.create(action, (err, action) => {
@@ -416,7 +432,6 @@ module.exports.deleteAction = (req, res) => {
       }
       sendJsonResponse(res, 204, null);
       cronActionIdx = scheduledCronActions.findIndex((el) => {
-        console.log(el);
         return el.actionId === action._id.toString();
       });
       console.log('Deleting action ' + action._id);

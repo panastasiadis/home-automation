@@ -8,6 +8,7 @@ import { Typography } from "@material-ui/core";
 import RelayCard from "./RelayCard";
 import LightIntensityCard from "./LightIntensityCard";
 import TemperatureHumidityCard from "./TemperatureHumidityCard";
+import MotionDetectionCard from "./MotionDetectorCard"
 import { SENSOR_TYPE } from "../../utils/SensorSpecific";
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -39,7 +40,24 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SensorGridItem(props) {
   const classes = useStyles();
-  if (props.sensor.type === SENSOR_TYPE.LIGHT_INTENSITY) {
+  if (props.sensor.type === SENSOR_TYPE.MOTION_DETECTOR) {
+    return (
+      <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
+        <Paper className={classes.paper} elevation={6}>
+          <Typography variant="h6" className={classes.title}>
+            Motion Detector
+          </Typography>
+          <MotionDetectionCard
+            topic={props.sensor.pubTopic}
+            roomName={props.sensor.room}
+            device={props.sensor.deviceId}
+            sensorName={props.sensor.name}
+          />
+        </Paper>
+      </Grid>
+    );
+  }
+  else if (props.sensor.type === SENSOR_TYPE.LIGHT_INTENSITY) {
     return (
       <Grid item xs={"auto"} md={"auto"} lg={"auto"}>
         <Paper className={classes.paper} elevation={6}>

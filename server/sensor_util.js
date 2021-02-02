@@ -1,10 +1,11 @@
-const { measurementSchema } = require('./api/models/models');
+const { measurementSchema, Measurement } = require('./api/models/models');
 const mongoose = require('mongoose');
 
 const SENSOR_TYPE = {
   RELAY_LIGHTBULB: 'Lightbulb',
   TEMPERATURE_HUMIDITY: 'Temperature-Humidity',
   LIGHT_INTENSITY: 'Light-Intensity',
+  MOTION_DETECTOR: 'Motion-Detector',
 };
 
 let activeSensors = [];
@@ -152,6 +153,46 @@ const storeSensorData = (mqttTopic, mqttPayload) => {
       break;
     case SENSOR_TYPE.LIGHT_INTENSITY:
       sensor.lightIntensity = mqttPayload.toString();
+    case SENSOR_TYPE.MOTION_DETECTOR:
+      if (
+        sensor.movement === 'Motion detected' &&
+        mqttPayload.toString() === 'No motion detected'
+      ) {
+        sensor.lastDetectionTIme = new Date();
+      }
+      sensor.movement = mqttPayload.toString();
+    default:
+      break;
+  }
+};
+
+const retrieveDataGeneric = (sensorName, callback) => {
+  const sensor = activeSensors.find((item) => item.name === sensorName);
+
+  switch (sensor.type) {
+    case SENSOR_TYPE.TEMPERATURE_HUMIDITY:
+      const currentDate = new Date();
+      console.log(currentDate);
+
+      const startTime = new Date(currentDate);
+      startTime.setHours(startTime.getHours() - 1);
+      startTime.setMinutes(startTime.getMinutes() - 30);
+      console.log(startTime);
+
+      retrieveTimeSensorData(sensorName, startTime, currentDate).then(
+        (measurements) => {
+          callback(measurements);
+        }
+      );
+      break;
+    case SENSOR_TYPE.MOTION_DETECTOR:
+      measurement = retrieveSensorData(sensorName);
+      const measurements = [];
+      if (measurement) {
+        measurements.push(measurement)
+      }
+      console.log(measurement, "!!!!");
+      callback(measurements);
     default:
       break;
   }
@@ -192,6 +233,8 @@ const retrieveSensorData = (sensorName, option) => {
         }
       case SENSOR_TYPE.RELAY_LIGHTBULB:
         return sensor.currentState;
+      case SENSOR_TYPE.MOTION_DETECTOR:
+        return sensor.lastDetectionTIme;
       default:
         break;
     }
@@ -217,4 +260,5 @@ module.exports = {
   storeSensorData,
   retrieveTimeSensorData,
   retrieveSensorData,
+  retrieveDataGeneric,
 };

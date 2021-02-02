@@ -23,6 +23,18 @@ char pass[] =
     "***REMOVED***"; // your network password (use for WPA, or use as key for WEP)
 int status = WL_IDLE_STATUS; // the WiFi radio's status
 
+// mqtt
+const char *mqtt_server = "192.168.1.66";
+const char *topicMotionDetector = "hall/hl-MKR100/Motion-Detector/hc-srR501";
+const char *clientID = "hl-MKR100";
+const char *willTopic = "hall/hl-MKR100/device"; // Topic Status
+const char *willMessage = "offline";             // 0 - Disconnecetd
+char buffer[256];
+int willQoS = 0;
+boolean willRetain = true;
+// int counter = 0; // Used to reconnect to MQTT server
+WiFiClient wifiClient;
+PubSubClient client(wifiClient); // 1883 is the listener port for the Broker
 
 void setup_wifi() {
   delay(10);
@@ -46,81 +58,81 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
+void reconnect() {
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    if (client.connect(clientID, "", "", willTopic, willQoS, willRetain,
+                       willMessage, true)) {
+      client.publish(willTopic, buffer, true);
+      Serial.println("Connected to MQTT Broker!");
+      // counter = 0;
+    } else {
+      Serial.println(
+          "Connection to MQTT Broker failed. Trying again in 2 seconds");
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      // ++counter;
+      // if (counter > 180)
+      //   ESP.reset();
+      delay(2000);
+    }
+  }
+}
+
 void setup() {
   pinMode(PIR_PIN, INPUT);
   // Initialize serial and wait for port to open:
   Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
+
   setup_wifi();
   delay(20000); /* Power On Warm Up Delay */
+
+  client.setServer(mqtt_server, 1883);
+
+
+  StaticJsonDocument<256> doc;
+  JsonArray sensors = doc.createNestedArray("sensors");
+  JsonObject pirSensor = sensors.createNestedObject();
+  pirSensor["type"] = "Motion-Detector";
+  pirSensor["name"] = "hc-srR501";
+
+  serializeJson(doc, buffer);
+
+  if (client.connect(clientID, "", "", willTopic, willQoS, willRetain,
+                     willMessage, true)) {
+    // Connecting to MQTT Broker
+    client.publish(willTopic, buffer, true);
+
+    Serial.print(clientID);
+    Serial.println(" connected to MQTT Broker!");
+  } else {
+    Serial.print(clientID);
+    Serial.println(" connection to MQTT Broker failed...");
+  }
 }
+
 int warm_up = 1;
 void loop() {
-  
+
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
+
   int sensor_output = digitalRead(PIR_PIN);
   if (sensor_output == LOW) {
     if (warm_up == 1) {
-      Serial.print("Warming Up\n\n");
+      Serial.print("Warming Up\n");
       warm_up = 0;
       delay(2000);
     }
-    Serial.print("No object in sight\n\n");
+    client.publish(topicMotionDetector, "No motion detected");
+    Serial.print("No object in sight\n");
     delay(1000);
   } else {
-    Serial.print("Object detected\n\n");
+    client.publish(topicMotionDetector, "Motion detected");
+    Serial.print("Object detected\n");
     warm_up = 1;
     delay(1000);
   }
-}
-
-void printWiFiData() {
-  // print your WiFi shield's IP address:
-  IPAddress ip = WiFi.localIP();
-  Serial.print("IP Address: ");
-  Serial.println(ip);
-  Serial.println(ip);
-
-  // print your MAC address:
-  byte mac[6];
-  WiFi.macAddress(mac);
-  Serial.print("MAC address: ");
-  printMacAddress(mac);
-}
-
-void printCurrentNet() {
-  // print the SSID of the network you're attached to:
-  Serial.print("SSID: ");
-  Serial.println(WiFi.SSID());
-
-  // print the MAC address of the router you're attached to:
-  byte bssid[6];
-  WiFi.BSSID(bssid);
-  Serial.print("BSSID: ");
-  printMacAddress(bssid);
-
-  // print the received signal strength:
-  long rssi = WiFi.RSSI();
-  Serial.print("signal strength (RSSI):");
-  Serial.println(rssi);
-
-  // print the encryption type:
-  byte encryption = WiFi.encryptionType();
-  Serial.print("Encryption Type:");
-  Serial.println(encryption, HEX);
-  Serial.println();
-}
-
-void printMacAddress(byte mac[]) {
-  for (int i = 5; i >= 0; i--) {
-    if (mac[i] < 16) {
-      Serial.print("0");
-    }
-    Serial.print(mac[i], HEX);
-    if (i > 0) {
-      Serial.print(":");
-    }
-  }
-  Serial.println();
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -9,11 +9,15 @@ import SelectSensorMenu from '../common/SelectSensorMenu';
 import SelectCommandMenu from '../common/SelectCommandMenu';
 import SelectComparedQuantityMenu from './SelectComparedQuantityMenu';
 import SelectMeasurementTypeMenu from './SelectMeasurementTypeMenu';
+import SelectSensorOptionsMenu from './SelectSensorOptionsMenu';
 import axios from 'axios';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import { backendApiUrl } from '../../../utils/Config';
-import { commandsByType } from '../../../utils/SensorSpecific';
+import {
+  commandsByType,
+  getSensorOutputType,
+} from '../../../utils/SensorSpecific';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -45,7 +49,10 @@ export default function SensorBasedActionDialog(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
   const [selectedWhenSensor, setSelectedWhenSensor] = React.useState('');
+  const whenSensorRef = useRef(selectedWhenSensor);
   const [selectedCommandSensor, setSelectedCommandSensor] = React.useState('');
+  const cmdSensorRef = useRef(selectedCommandSensor);
+
   const [selectedCommand, setSelectedCommand] = React.useState('');
   const [selectedMeasurementType, setSelectedMeasurementType] = React.useState(
     ''
@@ -55,6 +62,10 @@ export default function SensorBasedActionDialog(props) {
   const [selectedComparisonType, setSelectedComparisonType] = React.useState(
     ''
   );
+  const [selectedSensorOption, setSelectedSensorOption] = React.useState('');
+
+  const [clearWhenEntries, setClearedWhenEntries] = React.useState(null);
+  const [clearCmdEntries, setClearedCmdEntries] = React.useState(null);
 
   const [status, setStatus] = React.useState({ message: null, color: null });
   const [loading, setLoading] = React.useState(false);
@@ -70,16 +81,23 @@ export default function SensorBasedActionDialog(props) {
     setSelectedMeasurementType('');
     setSelectedQuantity('');
     setSelectedComparisonType('');
+    setSelectedSensorOption('');
+    setClearedWhenEntries(null);
+    setClearedCmdEntries(null);
   };
 
   const addAction = () => {
     setStatus({ message: null, color: null });
     setLoading(true);
 
-    const { commandOnFailure } = commandsByType(
-      selectedCommandSensor.type,
-      selectedCommand
-    );
+    let cmdOnFail;
+    if (selectedCommandSensor) {
+      const { commandOnFailure } = commandsByType(
+        selectedCommandSensor.type,
+        selectedCommand
+      );
+      cmdOnFail = commandOnFailure;
+    }
 
     axios
       .post(backendApiUrl.server + 'api/sensorBasedActions', {
@@ -94,10 +112,11 @@ export default function SensorBasedActionDialog(props) {
         measurementDeviceId: selectedWhenSensor.deviceId,
         measurementRoomName: selectedWhenSensor.room,
         measurementSensorType: selectedWhenSensor.type,
-        commandOnFailure: commandOnFailure,
+        commandOnFailure: cmdOnFail,
         comparisonType: selectedComparisonType,
         quantity: selectedQuantity,
         measurementType: selectedMeasurementType,
+        option: selectedSensorOption
       })
       .then((response) => {
         // console.log(response.data)
@@ -113,6 +132,42 @@ export default function SensorBasedActionDialog(props) {
         setLoading(false);
       });
   };
+
+  if (selectedCommandSensor !== cmdSensorRef.current) {
+    setSelectedCommand('');
+    cmdSensorRef.current = selectedCommandSensor;
+    setClearedCmdEntries(Math.random());
+  }
+
+  if (selectedWhenSensor !== whenSensorRef.current) {
+    setSelectedMeasurementType('');
+    setSelectedQuantity('');
+    setSelectedComparisonType('');
+    setSelectedSensorOption('');
+    whenSensorRef.current = selectedWhenSensor;
+    setClearedWhenEntries(Math.random());
+  }
+
+  let whenSensorOutputMenu = null;
+  if (getSensorOutputType(selectedWhenSensor.type) === 'measurement') {
+    whenSensorOutputMenu = (
+      <SelectComparedQuantityMenu
+        selectComparison={setSelectedComparisonType}
+        selectQuantity={setSelectedQuantity}
+        clearEntries={clearWhenEntries}
+      />
+    );
+  } else if (getSensorOutputType(selectedWhenSensor.type) === 'options') {
+    whenSensorOutputMenu =
+      selectedMeasurementType === '' ? null : (
+        <div className={classes.picker}>
+          <SelectSensorOptionsMenu
+            selectOption={setSelectedSensorOption}
+            outputType={selectedMeasurementType}
+          />
+        </div>
+      );
+  }
 
   return (
     <div className={classes.root}>
@@ -140,6 +195,7 @@ export default function SensorBasedActionDialog(props) {
                 <SelectCommandMenu
                   type={selectedCommandSensor.type}
                   selectCommand={setSelectedCommand}
+                  clearEntries={clearCmdEntries}
                 />
               </div>
             )}
@@ -154,18 +210,18 @@ export default function SensorBasedActionDialog(props) {
               />
             </div>
             {selectedWhenSensor === '' ? null : (
-              <div className={classes.picker}>
-                <SelectMeasurementTypeMenu
-                  type={selectedWhenSensor.type}
-                  selectMeasurementType={setSelectedMeasurementType}
-                />
+              <div>
+                <div className={classes.picker}>
+                  <SelectMeasurementTypeMenu
+                    type={selectedWhenSensor.type}
+                    selectMeasurementType={setSelectedMeasurementType}
+                    clearEntries={clearWhenEntries}
+                  />
+                </div>
+                {whenSensorOutputMenu}
               </div>
             )}
 
-            <SelectComparedQuantityMenu
-              selectComparison={setSelectedComparisonType}
-              selectQuantity={setSelectedQuantity}
-            />
             {status.message && (
               <>
                 <small style={{ color: status.color }}>{status.message}</small>

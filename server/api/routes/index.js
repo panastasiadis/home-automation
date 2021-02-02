@@ -19,7 +19,7 @@ router.delete("/actions/:actionid", ctrlActions.deleteAction);
 
 router.get(
   "/measurements/:sensorName",
-  ctrlMeasurements.getLastHourMeasurements
+  ctrlMeasurements.getMeasurements
 );
 
 router.post("/location",ctrlLocation.getClientLocation);
