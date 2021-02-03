@@ -1,5 +1,5 @@
 export const backendApiUrl = {
-  server: 'http://localhost/',
-  ws: 'http://localhost:8883',
+  server: 'http://localhost:5000/',
+  ws: 'home-automation-wss.loca.lt',
 };
 
