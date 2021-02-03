@@ -1,7 +1,7 @@
 import mqtt from "mqtt";
 import { backendApiUrl } from "./Config";
 
-const websocketUrl = backendApiUrl.ws;
+const websocketUrl = "wss://" + backendApiUrl.ws;
 const clientId = "mqttjs_brower_" + Math.random().toString(16).substr(2, 4);
 let client;
 
@@ -99,3 +99,4 @@ const mqttService = {
 };
 
 export default mqttService;
+
