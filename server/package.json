@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "aedes": "^0.44.0",
+    "aedes-server-factory": "^0.1.2",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
