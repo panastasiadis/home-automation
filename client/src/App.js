@@ -9,6 +9,7 @@ import PublicRoute from "./utils/PublicRoute";
 import { getToken, removeUserSession, setUserSession } from "./utils/Common";
 import axios from 'axios';
 import FetcherMQTT from "./components/FetcherMQTT";
+import {backendApiUrl} from "./utils/Config";
 
 function App() {
   const [authLoading, setAuthLoading] = useState(true);
@@ -20,7 +21,7 @@ function App() {
     }
 
     axios
-      .get(`http://localhost:5000/api/verifyToken?token=${token}`)
+      .get(`${backendApiUrl}api/verifyToken?token=${token}`)
       .then((response) => {
         setUserSession(response.data.token, response.data.user);
         setAuthLoading(false);
