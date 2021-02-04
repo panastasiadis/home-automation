@@ -7,6 +7,7 @@ import Select from '@material-ui/core/Select';
 import RouterIcon from '@material-ui/icons/Router';
 import RoomIcon from '@material-ui/icons/Room';
 import BlurCircularIcon from '@material-ui/icons/BlurCircular';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -20,6 +21,10 @@ const useStyles = makeStyles((theme) => ({
   menuItem: {
     padding: theme.spacing(1),
     display: 'flex',
+  },
+  sensType: {
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
   },
 }));
 
@@ -78,17 +83,14 @@ export default function ControlledOpenSelect(props) {
             ? filteredSensors.map((sensor) => {
                 return (
                   <MenuItem value={sensor} key={sensor.name}>
-                    <BlurCircularIcon />
-                    {'  '}
-                    {sensor.name}
-                    {'  '}
-                    <RoomIcon />
-                    {'  '}
-                    {sensor.room}
-                    {'  '}
-                    <RouterIcon />
-                    {'  '}
-                    {sensor.deviceId}
+                    {`${sensor.type} [`}
+                    <BlurCircularIcon fontSize="small" />
+                    <Typography variant="caption">{sensor.name}</Typography>
+                    <RoomIcon fontSize="small" />
+                    <Typography variant="caption">{sensor.room}</Typography>
+                    <RouterIcon fontSize="small" />
+                    <Typography variant="caption">{sensor.deviceId}</Typography>
+                    {']'}
                   </MenuItem>
                 );
               })
