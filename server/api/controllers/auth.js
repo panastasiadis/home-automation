@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 // static user details
 const userData = {
   userId: "789879",
-  password: "1312",
+  password: "home#auto1234",
   name: "Home Owner",
   username: "homeowner",
   isAdmin: true,
