@@ -1,5 +1,6 @@
 const { measurementSchema, Measurement } = require('./api/models/models');
 const mongoose = require('mongoose');
+const schedule = require('node-schedule');
 
 const SENSOR_TYPE = {
   RELAY_LIGHTBULB: 'Lightbulb',
@@ -217,6 +218,35 @@ const retrieveTimeSensorData = async (sensorName, startTime, endTime) => {
   return measurements;
 };
 
+const removeOlderThanWeekSensorData = async (sensorName) => {
+  const sevenDaysAgoDate = new Date();
+
+  sevenDaysAgoDate.setHours(sevenDaysAgoDate.getHours() - 24 * 7);
+  try {
+    const oldMeasurements = await mongoose
+      .model('Measurement', measurementSchema, sensorName)
+      .deleteMany({
+        endTime: { $lt: sevenDaysAgoDate },
+      });
+    console.log('Succesfull deletion of older than a week data!');
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const scheduleOldTimeDataDeletion = () => {
+  const requestedRule = `0 0 */178 * * *`;
+
+  const scheduledAction = schedule.scheduleJob(
+    { start: new Date(), rule: requestedRule },
+    () => {
+      for (const sensor of activeSensors) {
+        removeOlderThanWeekSensorData(sensor.name);
+      }
+    }
+  );
+};
+
 const retrieveSensorData = (sensorName, option) => {
   const sensor = activeSensors.find((item) => item.name === sensorName);
 
@@ -263,6 +293,7 @@ const convertTopicToInfo = (mqttTopic) => {
 };
 
 module.exports = {
+  scheduleOldTimeDataDeletion,
   getActiveSensors,
   storeConnectedSensors,
   removeDisconnectedSensors,

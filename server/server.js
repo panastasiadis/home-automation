@@ -13,6 +13,8 @@ const routesApi = require("./api/routes/index");
 const scheduleStoredActions = require("./api/controllers/actions")
   .scheduleStoredActions;
 
+const scheduleOldTimeDataDeletion = require("./sensor_util").scheduleOldTimeDataDeletion;
+
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -62,7 +64,7 @@ db.connectDb(() => {
     //connect to the mqtt broker
     aedesBroker.connect();
     scheduleStoredActions();
-
+    scheduleOldTimeDataDeletion();
     // If no API routes are hit, send the React app
     app.use((req, res) => {
       res.sendFile(path.join(__dirname, "../client/build", "index.html"));
