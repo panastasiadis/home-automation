@@ -37,7 +37,7 @@ export default function SensorOptionsMenu(props) {
   useEffect(() => {
     setSelectedOption('');
   }, [props.clearEntries]);
-  
+
   const sensorOptions = getSensorOption(props.outputType);
   return (
     <div>

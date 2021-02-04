@@ -13,9 +13,6 @@ import DeviceHubIcon from "@material-ui/icons/DeviceHub";
 import Typography from "@material-ui/core/Typography";
 import RoomIcon from "@material-ui/icons/Room";
 import CategoryIcon from "@material-ui/icons/Category";
-// const capitalize = (s) => {
-//   return s && s[0].toUpperCase() + s.slice(1);
-// };
 
 const useStyles = makeStyles((theme) => ({
   root: {

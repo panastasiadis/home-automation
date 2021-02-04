@@ -1,31 +1,31 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import RouterIcon from "@material-ui/icons/Router";
-import RoomIcon from "@material-ui/icons/Room";
-import BlurCircularIcon from "@material-ui/icons/BlurCircular";
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import RouterIcon from '@material-ui/icons/Router';
+import RoomIcon from '@material-ui/icons/Room';
+import BlurCircularIcon from '@material-ui/icons/BlurCircular';
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    display: "block",
+    display: 'block',
     marginTop: theme.spacing(2),
   },
   formControl: {
     minWidth: 120,
-    maxWidth: 250
+    maxWidth: 250,
   },
   menuItem: {
     padding: theme.spacing(1),
-    display: "flex",
+    display: 'flex',
   },
 }));
 
 export default function ControlledOpenSelect(props) {
   const classes = useStyles();
-  const [selectedSensor, setSelectedSensor] = React.useState("");
+  const [selectedSensor, setSelectedSensor] = React.useState('');
   const [open, setOpen] = React.useState(false);
 
   const handleChange = (event) => {
@@ -79,15 +79,15 @@ export default function ControlledOpenSelect(props) {
                 return (
                   <MenuItem value={sensor} key={sensor.name}>
                     <BlurCircularIcon />
-                    {"  "}
+                    {'  '}
                     {sensor.name}
-                    {"  "}
+                    {'  '}
                     <RoomIcon />
-                    {"  "}
+                    {'  '}
                     {sensor.room}
-                    {"  "}
+                    {'  '}
                     <RouterIcon />
-                    {"  "}
+                    {'  '}
                     {sensor.deviceId}
                   </MenuItem>
                 );

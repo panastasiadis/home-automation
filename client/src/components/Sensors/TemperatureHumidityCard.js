@@ -8,7 +8,6 @@ import RoomIcon from "@material-ui/icons/Room";
 import BlurCircularIcon from "@material-ui/icons/BlurCircular";
 
 import {Temperature, Humidity, Average} from "../../utils/AssetImages";
-
 import mqttService from "../../utils/MQTT";
 import { backendApiUrl } from "../../utils/Config";
 
@@ -74,8 +73,6 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     flexDirection: "column",
     justifyContent: "space-around",
-    // backgroundColor: theme.palette.secondary.main,
-    // border:`2px solid ${theme.palette.primary.main}`,
     borderRadius: "10px",
     margin: theme.spacing(1),
   },
@@ -86,7 +83,6 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
     margin: theme.spacing(1),
-    // backgroundColor: theme.palette.secondary.main,
     color: theme.palette.secondary.main,
     borderRadius: "10px",
   },

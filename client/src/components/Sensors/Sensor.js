@@ -11,6 +11,7 @@ import TemperatureHumidityCard from './TemperatureHumidityCard';
 import MotionDetectionCard from './MotionDetectorCard';
 import HeatCard from './HeatCard';
 import { SENSOR_TYPE } from '../../utils/SensorSpecific';
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(1),

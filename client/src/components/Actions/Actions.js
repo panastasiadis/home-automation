@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import ActionCard from "./ActionCard";
-import axios from "axios";
-import NoContentPage from "../NoContentPage";
-import ActionsSpeedDial from "./ActionsSpeedDial";
-import { backendApiUrl } from "../../utils/Config";
+import React, { useEffect, useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import ActionCard from './ActionCard';
+import axios from 'axios';
+import NoContentPage from '../NoContentPage';
+import ActionsSpeedDial from './ActionsSpeedDial';
+import { backendApiUrl } from '../../utils/Config';
 
-const URL = backendApiUrl.server + "api/actions";
+const URL = backendApiUrl.server + 'api/actions';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,7 +41,7 @@ export default function MaterialUIPickers(props) {
     fetchDevices();
 
     return () => {
-      console.log("unmounting actions");
+      console.log('unmounting actions');
     };
   }, [effectUpdate]);
 

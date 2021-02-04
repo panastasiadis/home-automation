@@ -1,10 +1,11 @@
-import axios from "axios";
-import mqttService from "../utils/MQTT";
-import React, { useEffect, useState, useRef } from "react";
-import AlertMessage from "./AlertMessage";
-import Dashboard from "./Dashboard";
-import { backendApiUrl } from "../utils/Config";
-const URL = backendApiUrl.server + "api/activeSensors";
+import axios from 'axios';
+import mqttService from '../utils/MQTT';
+import React, { useEffect, useState, useRef } from 'react';
+import AlertMessage from './AlertMessage';
+import Dashboard from './Dashboard';
+import { backendApiUrl } from '../utils/Config';
+
+const URL = backendApiUrl.server + 'api/activeSensors';
 
 const FetcherΜQTT = () => {
   const [data, setData] = useState({ sensors: [] });
@@ -16,7 +17,7 @@ const FetcherΜQTT = () => {
         // setData({ sensors: data.sensors, isFetching: true });
         const response = await axios.get(URL);
         setData({ sensors: response.data });
-        
+
         dataRef.current = { sensors: response.data };
 
         for (const sensor of response.data) {
@@ -36,9 +37,9 @@ const FetcherΜQTT = () => {
     const messageHandler = (topic, payload, packet) => {
       console.log(payload.toString(), topic);
 
-      if (topic === "browser") {
+      if (topic === 'browser') {
         const infoObj = JSON.parse(payload.toString());
-        if (infoObj.action === "disconnected") {
+        if (infoObj.action === 'disconnected') {
           const newData = {
             sensors: dataRef.current.sensors.filter((sensor) => {
               if (sensor.deviceId === infoObj.deviceId) {
@@ -53,12 +54,12 @@ const FetcherΜQTT = () => {
           };
           dataRef.current = newData;
           setData(newData);
-        } else if (infoObj.action === "connected") {
+        } else if (infoObj.action === 'connected') {
           const existingSensor = dataRef.current.sensors.find(
             (el) => el.deviceId === infoObj.newSensors[0].deviceId
           );
           if (existingSensor) {
-            console.log("Exists!!! No action taken!");
+            console.log('Exists!!! No action taken!');
             return;
           } else {
             const newData = {
@@ -75,7 +76,7 @@ const FetcherΜQTT = () => {
             dataRef.current = newData;
             setData(newData);
           }
-        } else if (infoObj.action === "action") {
+        } else if (infoObj.action === 'action') {
           console.log(infoObj);
           const newData = {
             sensors: dataRef.current.sensors,
@@ -94,11 +95,11 @@ const FetcherΜQTT = () => {
       }
     };
 
-    client.on("message", messageHandler);
+    client.on('message', messageHandler);
 
     return () => {
-      console.log("Dashboard was unmounted!");
-      client.off("message", messageHandler);
+      console.log('Dashboard was unmounted!');
+      client.off('message', messageHandler);
     };
   }, []);
 

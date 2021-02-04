@@ -1,45 +1,44 @@
-import React from "react";
-import clsx from "clsx";
-import { makeStyles } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Drawer from "@material-ui/core/Drawer";
-import Box from "@material-ui/core/Box";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import Container from "@material-ui/core/Container";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import Button from "@material-ui/core/Button";
-import { getUser, removeUserSession } from "../utils/Common";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import Sensors from "./Sensors/Sensors";
-import DashboardIcon from "@material-ui/icons/Dashboard";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import Dialog from "./DialogFilterBy";
-import Paper from "@material-ui/core/Paper";
-import { withRouter } from "react-router-dom";
-import { Link as RouterLink } from "react-router-dom";
-import Link from "@material-ui/core/Link";
-import Actions from "./Actions/Actions";
-import MenuBar from "./MenuBar";
+import React from 'react';
+import clsx from 'clsx';
+import { makeStyles } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Drawer from '@material-ui/core/Drawer';
+import Box from '@material-ui/core/Box';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import Container from '@material-ui/core/Container';
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import Button from '@material-ui/core/Button';
+import { getUser, removeUserSession } from '../utils/Common';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Sensors from './Sensors/Sensors';
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import Dialog from './DialogFilterBy';
+import Paper from '@material-ui/core/Paper';
+import { withRouter } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import Link from '@material-ui/core/Link';
+import Actions from './Actions/Actions';
+import MenuBar from './MenuBar';
 
-import {DashboardBackground, AppBarLogo} from "../utils/AssetImages";
-
+import { DashboardBackground, AppBarLogo } from '../utils/AssetImages';
 
 function Copyright() {
   return (
     <Typography variant="body2" color="textPrimary" align="center">
-      {"Copyright © "}
-      {"Home Automation "}
+      {'Copyright © '}
+      {'Home Automation '}
       {new Date().getFullYear()}
-      {"."}
+      {'.'}
     </Typography>
   );
 }
@@ -48,22 +47,22 @@ const drawerWidth = 200;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
+    display: 'flex',
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
   },
   toolbarIcon: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    padding: "0 8px",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: '0 8px',
     ...theme.mixins.toolbar,
   },
   appBar: {
     backgroundColor: theme.palette.secondary.main,
     zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(["width", "margin"], {
+    transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
@@ -71,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
   appBarShift: {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
+    transition: theme.transitions.create(['width', 'margin'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -80,38 +79,37 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 36,
   },
   menuButtonHidden: {
-    display: "none",
+    display: 'none',
   },
   title: {
     flexGrow: 1,
     paddingTop: 5,
   },
   drawerPaper: {
-    position: "relative",
-    whiteSpace: "nowrap",
+    position: 'relative',
+    whiteSpace: 'nowrap',
     width: drawerWidth,
-    transition: theme.transitions.create("width", {
+    transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
   drawerPaperClose: {
-    overflowX: "hidden",
-    transition: theme.transitions.create("width", {
+    overflowX: 'hidden',
+    transition: theme.transitions.create('width', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
     width: theme.spacing(7),
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('sm')]: {
       width: theme.spacing(0),
     },
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
-    // backgroundColor: "#fcf4e3",
     flexGrow: 1,
-    height: "100vh",
-    overflow: "auto",
+    height: '100vh',
+    overflow: 'auto',
   },
   container: {
     paddingTop: theme.spacing(4),
@@ -119,34 +117,20 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     padding: theme.spacing(1),
-    display: "flex",
-    overflow: "auto",
-    flexDirection: "column",
-    borderRadius: "10px",
+    display: 'flex',
+    overflow: 'auto',
+    flexDirection: 'column',
+    borderRadius: '10px',
     backgroundColor: theme.palette.secondary.main,
   },
   primaryAction: {
-    borderRadius: "10px",
-    [theme.breakpoints.down("sm")]: {
-      display: "none",
+    borderRadius: '10px',
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
     },
   },
-  dashBoardLabel: {
-    // display: "inline",
-    // paddingTop: 3,
-    // paddingBottom: 3,
-    // padding: theme.spacing(1),
-    // paddingRight: theme.spacing(1),
-    // color: "white",
-    // backgroundColor: theme.palette.primary.main,
-    // borderRadius: "10px",
-  },
-
   currentTab: {
-    textAlign: "center",
-    // borderBottom: `5pxsolid ${theme.palette.secondary.main}`,
-    // width: "60vh",
-    // margin: "0 auto",
+    textAlign: 'center',
     marginTop: theme.spacing(2),
   },
   hiMessage: {
@@ -154,11 +138,11 @@ const useStyles = makeStyles((theme) => ({
   },
   behindBackground: {
     backgroundImage: `url(${DashboardBackground})`,
-    backgroundPosition: "center",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    width: "100vw",
-    height: "100vh",
+    backgroundPosition: 'center',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'no-repeat',
+    width: '100vw',
+    height: '100vh',
   },
 }));
 
@@ -166,8 +150,8 @@ function Dashboard(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [selectedItem, selectItem] = React.useState({
-    selected: "All",
-    type: "all",
+    selected: 'All',
+    type: 'all',
   });
 
   // handle click event of logout button
@@ -175,7 +159,7 @@ function Dashboard(props) {
     // const mqttClient = mqttService.getClient();
     // mqttService.closeConnection(mqttClient);
     removeUserSession();
-    props.history.push("/login");
+    props.history.push('/login');
   };
 
   const handleDrawerOpen = () => {
@@ -187,41 +171,40 @@ function Dashboard(props) {
 
   const handleAllButton = () => {
     selectItem({
-      selected: "All",
-      type: "all",
+      selected: 'All',
+      type: 'all',
     });
   };
 
   const showActions = () => {
     selectItem({
-      selected: "Actions",
-      type: "actions",
+      selected: 'Actions',
+      type: 'actions',
     });
   };
 
   let currentlyDisplayedItem = {
-    tab: "All",
+    tab: 'All',
     content: null,
   };
   switch (selectedItem.type) {
-    case "room":
-      currentlyDisplayedItem.tab = "Room";
+    case 'room':
+      currentlyDisplayedItem.tab = 'Room';
       currentlyDisplayedItem.content = selectedItem.selected;
       break;
-    case "sensor-type":
-      currentlyDisplayedItem.tab = "Sensor Type";
+    case 'sensor-type':
+      currentlyDisplayedItem.tab = 'Sensor Type';
       currentlyDisplayedItem.content = selectedItem.selected;
       break;
-    case "actions":
-      currentlyDisplayedItem.tab = "Actions";
+    case 'actions':
+      currentlyDisplayedItem.tab = 'Actions';
       currentlyDisplayedItem.content = null;
       break;
     default:
-      currentlyDisplayedItem.tab = "All";
+      currentlyDisplayedItem.tab = 'All';
       currentlyDisplayedItem.content = null;
       break;
   }
-
   const rooms = [...new Set(props.sensors.map((sensor) => sensor.room))];
   const categories = [...new Set(props.sensors.map((sensor) => sensor.type))];
   const user = getUser();
@@ -259,7 +242,7 @@ function Dashboard(props) {
           </div>
 
           <Typography variant="body2" className={classes.hiMessage}>
-            {"Hi, "}
+            {'Hi, '}
             {user.name}
           </Typography>
           <Button
@@ -334,24 +317,20 @@ function Dashboard(props) {
             showAllSensors={handleAllButton}
           />
           <div className={classes.currentTab}>
-            <Typography
-              variant="h5"
-              gutterBottom
-              className={classes.dashBoardLabel}
-            >
+            <Typography variant="h5" gutterBottom>
               Dashboard
             </Typography>
             <Typography variant="h6">
               {currentlyDisplayedItem.tab}
-              {currentlyDisplayedItem.tab === "All" ||
-              currentlyDisplayedItem.tab === "Actions"
+              {currentlyDisplayedItem.tab === 'All' ||
+              currentlyDisplayedItem.tab === 'Actions'
                 ? null
-                : " | "}
+                : ' | '}
               {currentlyDisplayedItem.content}
             </Typography>
           </div>
           <Container maxWidth="lg" className={classes.container}>
-            {selectedItem.selected === "Actions" ? (
+            {selectedItem.selected === 'Actions' ? (
               <div>
                 <Paper className={classes.paper} elevation={10}>
                   <Actions sensors={props.sensors} />

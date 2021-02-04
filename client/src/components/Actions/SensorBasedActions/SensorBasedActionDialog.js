@@ -116,12 +116,12 @@ export default function SensorBasedActionDialog(props) {
         comparisonType: selectedComparisonType,
         quantity: selectedQuantity,
         measurementType: selectedMeasurementType,
-        option: selectedSensorOption
+        option: selectedSensorOption,
       })
       .then((response) => {
         // console.log(response.data)
         props.updateActions(response.data._id);
-        setLoading();
+        setLoading(false);
         setStatus({ message: 'Action added successfully', color: 'green' });
       })
       .catch((error) => {

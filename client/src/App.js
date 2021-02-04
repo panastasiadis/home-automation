@@ -21,7 +21,7 @@ function App() {
     }
 
     axios
-      .get(`${backendApiUrl}api/verifyToken?token=${token}`)
+      .get(`${backendApiUrl.server}api/verifyToken?token=${token}`)
       .then((response) => {
         setUserSession(response.data.token, response.data.user);
         setAuthLoading(false);
@@ -38,8 +38,6 @@ function App() {
   return (
     <Router>
       <Switch>
-        {/* <Route exact path="/" component={Home} /> */}
-
         <PrivateRoute path="/dashboard" component={FetcherMQTT} />
         <PublicRoute path="/" component={Login} />
       </Switch>

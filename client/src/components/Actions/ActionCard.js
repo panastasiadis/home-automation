@@ -15,7 +15,6 @@ import SensorBasedAccordionDetails from './SensorBasedActions/SensorBasedAccordi
 import LocationActionAccordionDetails from './LocationBasedActions/LocationActionAccordionDetails';
 import { commandsByType } from '../../utils/SensorSpecific';
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -42,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
   heading: {
     // fontSize: theme.typography.pxToRem(15),
     // padding: theme.spacing(1),
-    width: "100px",
+    width: '100px',
     margin: theme.spacing(1),
     flexShrink: 0,
   },
@@ -165,7 +164,7 @@ export default function ActionCard(props) {
                 {props.action.actionCategory}
               </Typography>
               <Typography className={classes.command}>
-                {props.action.sensorType + " | "}
+                {props.action.sensorType + ' | '}
                 {commandDescription.description}
               </Typography>
             </div>

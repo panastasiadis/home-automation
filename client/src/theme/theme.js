@@ -15,14 +15,12 @@ const theme = createMuiTheme({
             "whiteText": "white"
         },
         "primary": {
-            // "main": "#2ca6d7",
             "main": "#383838",
             "light": "#333333",
             "dark": "#545454"
         },
         "secondary": {
             "main": "#b09058",
-            // "main": "#737373",
             "light": "#deb66f",
             "dark": "#9c7f4e"
         },
@@ -30,30 +28,7 @@ const theme = createMuiTheme({
     },
     // "shadows": [
     //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none",
-    //     "none"
+
     // ]
 });
 

@@ -11,7 +11,7 @@
 
 const char *ssid = "YOUR_SSID";
 const char *password = "YOUR_PASSWORD";
-const char *mqtt_server = "192.168.1.66";
+const char *mqtt_server = "192.168.1.69";
 
 const char *topicLightIntensity =
     "kitchen/ktn-NodeMCU/Light-Intensity/bh1750fvi";

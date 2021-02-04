@@ -24,7 +24,7 @@ char pass[] =
 int status = WL_IDLE_STATUS; // the WiFi radio's status
 
 // mqtt
-const char *mqtt_server = "192.168.1.66";
+const char *mqtt_server = "192.168.1.69";
 const char *topicMotionDetector = "hall/hl-MKR100/Motion-Detector/hc-srR501";
 const char *clientID = "hl-MKR100";
 const char *willTopic = "hall/hl-MKR100/device"; // Topic Status
