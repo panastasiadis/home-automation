@@ -161,6 +161,7 @@ const storeSensorData = (mqttTopic, mqttPayload) => {
       break;
     case SENSOR_TYPE.LIGHT_INTENSITY:
       sensor.lightIntensity = mqttPayload.toString();
+      break;
     case SENSOR_TYPE.MOTION_DETECTOR:
       if (
         sensor.movement === 'Motion detected' &&
@@ -169,6 +170,7 @@ const storeSensorData = (mqttTopic, mqttPayload) => {
         sensor.lastDetectionTIme = new Date();
       }
       sensor.movement = mqttPayload.toString();
+      break;
     default:
       break;
   }
@@ -201,6 +203,7 @@ const retrieveDataGeneric = (sensorName, callback) => {
       }
       console.log(measurement, '!!!!');
       callback(measurements);
+      break;
     default:
       break;
   }
