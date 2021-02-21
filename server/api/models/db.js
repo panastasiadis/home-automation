@@ -1,7 +1,8 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
 
 const url =
-  "mongodb+srv://panagiotis_an:3101@cluster0.9glmt.mongodb.net/my-home-auto-db?retryWrites=true&w=majority";
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.9glmt.mongodb.net/my-home-auto-db?retryWrites=true&w=majority`;
 
 const connectDb = (callbackFunc) => {
   mongoose.connect(url, {
@@ -16,16 +17,6 @@ const connectDb = (callbackFunc) => {
 
   db.once("open", () => {
 
-    //-- code to listen for updates in rooms collection on real time
-    
-    // const roomsCollection = db.collection('rooms');
-    // const changeStream = roomsCollection.watch();
-    // changeStream.on('change', (change) => {
-    //   if(change.operationType === 'update') {
-    //     const updatedFields = change.updateDescription.updatedFields;
-    //     console.log(updatedFields);
-    //   }
-    // });
     callbackFunc();
 
   });

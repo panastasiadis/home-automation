@@ -1,23 +1,16 @@
 const aedes = require("aedes")();
-const { createServer } = require('aedes-server-factory')
+const { createServer } = require('aedes-server-factory');
 const server = require("net").createServer(aedes.handle);
-const httpServer = createServer(aedes, { ws: true })
-// const httpServer = require("http").createServer();
-// const WebSocket = require("ws");
-
-// const wss = new WebSocket.Server({ server: httpServer });
-const { measurementSchema } = require("./api/models/models");
-const sensor_util = require("./sensor_util");
+const httpServer = createServer(aedes, { ws: true });
 const mongoose = require("mongoose");
 
-const port = 1883;
-const wsport = 8883;
+const { measurementSchema } = require("./api/models/models");
+const sensor_util = require("./sensor_util");
+
+const port = process.env.MQTT_PORT || 1883;
+const wsport = process.env.WS_MQTT_PORT || 8883;
 
 const connect = () => {
-  // wss.on("connection", (ws) => {
-  //   const duplex = WebSocket.createWebSocketStream(ws);
-  //   aedes.handle(duplex);
-  // });
 
   server.listen(port, () => {
     console.log(
