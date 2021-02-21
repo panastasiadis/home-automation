@@ -360,3 +360,4 @@ MigrationBackup/
 #VS Code
 .eslintcache
 .vscode
+.env
