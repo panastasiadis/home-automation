@@ -103,7 +103,7 @@ export default function MotionCard(props) {
   useEffect(() => {
     const fetchMeasurements = async () => {
       try {
-        setLastTimeDetection('Fetching...');
+        setLastTimeDetection('No detection yet');
         const response = await axios.get(
           `${backendApiUrl.server}api/measurements/${props.sensorName}`
         );
