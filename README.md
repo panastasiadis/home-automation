@@ -2,6 +2,9 @@
 
 This project is a comprehensive home automation system developed as part of my diploma thesis, "A home automation system based on Raspberry Pi". It integrates hardware sensors, a backend server, a modern web client to provide real-time monitoring and control of a smart home environment.
 
+A mobile app was also created that mirrors the Web application interface and also adds the ability for geolocation home automation actions and exist on separate repo.
+View the project: https://github.com/panastasiadis/raspi-home-automation-mobile-app 
+
 ## Project Structure
 
 - **arduino/**  
