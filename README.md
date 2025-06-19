@@ -1,6 +1,6 @@
 # Home Automation System on a Raspberry Pi
 
-This project is a comprehensive home automation system developed as part of my diploma thesis. It integrates hardware sensors, a backend server, a modern web client to provide real-time monitoring and control of a smart home environment.
+This project is a comprehensive home automation system developed as part of my diploma thesis, "A home automation system based on Raspberry Pi". It integrates hardware sensors, a backend server, a modern web client to provide real-time monitoring and control of a smart home environment.
 
 ## Project Structure
 
