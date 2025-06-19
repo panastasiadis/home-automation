@@ -19,8 +19,7 @@
 #define PIR_PIN 1
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
 char ssid[] = "YOUR_SSID"; // your network SSID (name)
-char pass[] =
-    "***REMOVED***"; // your network password (use for WPA, or use as key for WEP)
+char pass[] = "YOUR_PASSWORD"; // your network password (use for WPA, or use as key for WEP)
 int status = WL_IDLE_STATUS; // the WiFi radio's status
 
 // mqtt
