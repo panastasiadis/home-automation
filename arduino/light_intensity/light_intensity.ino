@@ -11,12 +11,11 @@
 
 const char *ssid = "YOUR_SSID";
 const char *password = "YOUR_PASSWORD";
-const char *mqtt_server = "192.168.1.69";
+const char *mqtt_server = "<BROKER_IP>";
 
 const char *topicLightIntensity =
     "kitchen/ktn-NodeMCU/Light-Intensity/bh1750fvi";
-// const char *topicMotionDetector =
-//     "kitchen/ktn-NodeMCU/Motion-Detector/hc-srR501";
+
 BH1750 lightMeter;
 
 const char *clientID =
@@ -81,8 +80,6 @@ void reconnect() {
 
 void setup() {
 
-  // pinMode(PIR_PIN, INPUT);
-
   Serial.begin(9600);
   setup_wifi();
 
@@ -90,11 +87,7 @@ void setup() {
 
   client.setServer(mqtt_server, 1883);
 
-  // Initialize the I2C bus (BH1750 library doesn't do this automatically)
   Wire.begin(D2, D1);
-  // On esp8266 you can select SCL and SDA pins using Wire.begin(D4, D3);
-  // For Wemos / Lolin D1 Mini Pro and the Ambient Light shield use
-  // Wire.begin(D2, D1);
 
   lightMeter.begin();
   Serial.println(F("BH1750 begin"));
@@ -104,10 +97,6 @@ void setup() {
   JsonObject lightIntSensor = sensors.createNestedObject();
   lightIntSensor["type"] = "Light-Intensity";
   lightIntSensor["name"] = "bh1750fvi";
-
-  // JsonObject pirSensor = sensors.createNestedObject();
-  // pirSensor["type"] = "Motion-Detector";
-  // pirSensor["name"] = "hc-srR501";
 
   serializeJson(doc, buffer);
 
@@ -124,31 +113,11 @@ void setup() {
   }
 }
 
-// int warm_up = 1;
-
 void loop() {
   if (!client.connected()) {
     reconnect();
   }
   client.loop();
-
-  // int sensor_output = digitalRead(PIR_PIN);
-  // if (sensor_output == LOW) {
-  //   if (warm_up == 1) {
-  //     Serial.print("Warming Up\n");
-  //     warm_up = 0;
-  //     delay(2000);
-  //   }
-  //   Serial.print("No object in sight\n");
-  //   client.publish(topicMotionDetector, "No motion detected");
-  //   delay(1000);
-  //   // Publishing temperature
-  // } else {
-  //   Serial.print("Object detected\n");
-  //   client.publish(topicMotionDetector, "Motion detected");
-  //   warm_up = 1;
-  //   delay(1000);
-  // }
 
   unsigned long now = millis();
   if (now - lastMsg > PUBLISH_TIME_PERIOD) {

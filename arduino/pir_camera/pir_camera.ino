@@ -1,17 +1,3 @@
-/*
-
- This example connects to an unencrypted WiFi network.
- Then it prints the  MAC address of the WiFi shield,
- the IP address obtained, and other network details.
-
- Circuit:
- * WiFi shield attached
-
- created 13 July 2010
- by dlf (Metodo2 srl)
- modified 31 May 2012
- by Tom Igoe
- */
 #include <ArduinoJson.h>
 #include <PubSubClient.h> // MQTT Library
 #include <SPI.h>
@@ -23,7 +9,7 @@ char pass[] = "YOUR_PASSWORD"; // your network password (use for WPA, or use as 
 int status = WL_IDLE_STATUS; // the WiFi radio's status
 
 // mqtt
-const char *mqtt_server = "192.168.1.69";
+const char *mqtt_server = "<broker_ip>";
 const char *topicMotionDetector = "hall/hl-MKR100/Motion-Detector/hc-srR501";
 const char *clientID = "hl-MKR100";
 const char *willTopic = "hall/hl-MKR100/device"; // Topic Status
@@ -64,15 +50,11 @@ void reconnect() {
                        willMessage, true)) {
       client.publish(willTopic, buffer, true);
       Serial.println("Connected to MQTT Broker!");
-      // counter = 0;
     } else {
       Serial.println(
           "Connection to MQTT Broker failed. Trying again in 2 seconds");
       Serial.print("failed, rc=");
       Serial.print(client.state());
-      // ++counter;
-      // if (counter > 180)
-      //   ESP.reset();
       delay(2000);
     }
   }
